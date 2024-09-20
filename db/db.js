@@ -1,6 +1,5 @@
 import pkg from 'pg';
 import dotenv from 'dotenv';
-import { ExitStatus } from 'typescript';
 const { Pool } = pkg;
 
 dotenv.config();
@@ -18,7 +17,7 @@ try {
     console.log('Postgres connected on port', process.env.POSTGRES_PORT);
 } catch (error) {
     console.error('Error connecting to Postgres', error);
-    process.exit(ExitStatus)
+    exit(1)
 }
 
 

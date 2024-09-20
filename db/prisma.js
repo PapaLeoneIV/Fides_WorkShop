@@ -41,7 +41,6 @@ const deleteUser = async (req, res, id) => {
     console.log("User deleted : ", id)
     res.json(id)
 }
-
 //GET USER MONEY
 const getUserMoney = async (req, res, id) => {
     const response = await prisma.user.findUnique({
