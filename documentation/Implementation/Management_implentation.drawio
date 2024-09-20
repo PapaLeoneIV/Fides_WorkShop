@@ -1,0 +1,127 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
+  <diagram name="Page-1" id="EsyxztQS6K-e0_OydsNi">
+    <mxGraphModel dx="2948" dy="2397" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-1" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillStyle=hatch;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-323" y="-812" width="690" height="690" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-3" value="&lt;font style=&quot;font-size: 22px;&quot;&gt;ORDER MANAGEMENT MICROSERVICE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;movable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-168" y="-852" width="440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-5" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Deve essere un programma che mantiene una lista di richieste da parte dell UI, e per ogni richiesta una serie di stati:&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- MONEY CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- HOTEL CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- BIKE CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- APPROVED&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;(ho incluso solo i confirmed , penso che sarebbe buono mettere anche degli stati PENDING_SOMETHING)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;il core logic quindi dovra mantenere queste informazioni e rispondere al cliente solo quando lo stato della response&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;sara APPROVED.&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;nel caso di errore bisogna invertire e resetttare le operazioni fatte&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;movable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-328" y="-1030" width="850" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-6" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillStyle=hatch;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-760" y="-573" width="212" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-8" value="&lt;font style=&quot;font-size: 34px;&quot;&gt;UI&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;movable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-668" y="-652" width="60" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-11" value="PARSING BODY REQUEST&lt;div&gt;(sasha mi faceva vedere uno strumento chiamato Zod per expressJS, impone al body della request di rispettare i datatype del db)&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-308" y="-790" width="160" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-11" target="Ce53-nTc2lQ6ASdVfVSJ-13" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-138" y="-460" as="sourcePoint" />
+            <mxPoint x="-88" y="-510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-13" target="Ce53-nTc2lQ6ASdVfVSJ-14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-13" value="Inserire la richiesta in una lista e iniziare a contattare gli altri microservizi" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-78" y="-790" width="157" height="157" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-24" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-30" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-14" value="Mantenere uno stato per la richiesta" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="211.25" y="-527.75" width="121.5" height="121.5" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-17" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-20" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="223.5" y="-547" as="sourcePoint" />
+            <mxPoint x="512" y="-707" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-18" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="223.5" y="-480" as="sourcePoint" />
+            <mxPoint x="502" y="-340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-19" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="342" y="-494.25" as="sourcePoint" />
+            <mxPoint x="532" y="-519" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-20" value="microservizio1" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="502" y="-732" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-21" value="microservizio2" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="502" y="-552.25" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-22" value="microservizio3" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="502" y="-370" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-24" target="Ce53-nTc2lQ6ASdVfVSJ-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-24" target="Ce53-nTc2lQ6ASdVfVSJ-28" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-24" value="APPROVED" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="62" y="-507" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-26" target="Ce53-nTc2lQ6ASdVfVSJ-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-26" value="YES" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-58" y="-507" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-28" target="Ce53-nTc2lQ6ASdVfVSJ-35" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-28" value="NO" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="82" y="-410" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-30" value="Nel&amp;nbsp; frattempo dure al client che stiamo eleborando la richiesta" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="212.75" y="-361" width="120" height="150.75" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-32" value="Rispondere al client con la conferma&amp;nbsp;" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="-238" y="-497" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-35" target="Ce53-nTc2lQ6ASdVfVSJ-22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-35" target="Ce53-nTc2lQ6ASdVfVSJ-21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-35" target="Ce53-nTc2lQ6ASdVfVSJ-20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-35" value="Bisogna contattare i vari servizi per fare un rollback delle operazioni" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
+          <mxGeometry x="62" y="-260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="BVQOmahpqfi0wn1Eic5L-1" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-6" target="Ce53-nTc2lQ6ASdVfVSJ-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-475" y="-460" as="sourcePoint" />
+            <mxPoint x="-425" y="-510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BVQOmahpqfi0wn1Eic5L-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-32" target="Ce53-nTc2lQ6ASdVfVSJ-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-290" y="-472.25" as="sourcePoint" />
+            <mxPoint x="-240" y="-522.25" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
