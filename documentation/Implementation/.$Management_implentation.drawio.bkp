@@ -1,35 +1,35 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8" pages="2">
   <diagram name="Page-1" id="EsyxztQS6K-e0_OydsNi">
-    <mxGraphModel dx="2669" dy="2224" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2799" dy="2304" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-1" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillStyle=hatch;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry y="-842" width="690" height="690" as="geometry" />
+          <mxGeometry x="-190" y="-842" width="690" height="690" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-3" value="&lt;font style=&quot;font-size: 22px;&quot;&gt;ORDER MANAGEMENT MICROSERVICE(OMM)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;movable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="120" y="-882" width="510" height="40" as="geometry" />
+          <mxGeometry x="-70" y="-882" width="510" height="40" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-5" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Deve essere un programma che mantiene una lista di richieste da parte dell UI, e per ogni richiesta una serie di stati:&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- MONEY CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- HOTEL CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- BIKE CONFIRMED&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;- APPROVED&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;(ho incluso solo i confirmed , penso che sarebbe buono mettere anche degli stati PENDING_SOMETHING)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;il core logic quindi dovra mantenere queste informazioni e rispondere al cliente solo quando lo stato della response&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;sara APPROVED.&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;nel caso di errore bisogna invertire e resetttare le operazioni fatte&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=1;points=[];autosize=1;strokeColor=none;fillColor=none;movable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="-5" y="-1060" width="850" height="190" as="geometry" />
+          <mxGeometry x="-195" y="-1060" width="850" height="190" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-6" value="SECURITY MICRO" style="whiteSpace=wrap;html=1;aspect=fixed;fillStyle=hatch;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="-509" y="-603" width="212" height="212" as="geometry" />
+          <mxGeometry x="-699" y="-603" width="212" height="212" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-11" value="PARSING BODY REQUEST&lt;div&gt;(sasha mi faceva vedere uno strumento chiamato Zod per expressJS, impone al body della request di rispettare i datatype del db)&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="15" y="-820" width="160" height="160" as="geometry" />
+          <mxGeometry x="-175" y="-820" width="160" height="160" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-11" target="Ce53-nTc2lQ6ASdVfVSJ-13" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="185" y="-490" as="sourcePoint" />
-            <mxPoint x="235" y="-540" as="targetPoint" />
+            <mxPoint x="-5" y="-490" as="sourcePoint" />
+            <mxPoint x="45" y="-540" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-13" target="Ce53-nTc2lQ6ASdVfVSJ-14" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-13" value="Inserire la richiesta in una lista e iniziare a contattare gli altri microservizi" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="245" y="-820" width="157" height="157" as="geometry" />
+          <mxGeometry x="55" y="-820" width="157" height="157" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-24" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -38,34 +38,34 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-14" value="Mantenere uno stato per la richiesta" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="534.25" y="-557.75" width="121.5" height="121.5" as="geometry" />
+          <mxGeometry x="344.25" y="-557.75" width="121.5" height="121.5" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-17" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-20" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="546.5" y="-577" as="sourcePoint" />
-            <mxPoint x="835" y="-737" as="targetPoint" />
+            <mxPoint x="356.5" y="-577" as="sourcePoint" />
+            <mxPoint x="645" y="-737" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-18" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" target="Ce53-nTc2lQ6ASdVfVSJ-22" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="546.5" y="-510" as="sourcePoint" />
-            <mxPoint x="825" y="-370" as="targetPoint" />
+            <mxPoint x="356.5" y="-510" as="sourcePoint" />
+            <mxPoint x="635" y="-370" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-19" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-14" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="665" y="-524.25" as="sourcePoint" />
-            <mxPoint x="855" y="-549" as="targetPoint" />
+            <mxPoint x="475" y="-524.25" as="sourcePoint" />
+            <mxPoint x="665" y="-549" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-20" value="microservizio1" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="825" y="-762" width="80" height="80" as="geometry" />
+          <mxGeometry x="635" y="-762" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-21" value="microservizio2" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="825" y="-582.25" width="80" height="80" as="geometry" />
+          <mxGeometry x="635" y="-582.25" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-22" value="microservizio3" style="whiteSpace=wrap;html=1;aspect=fixed;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="825" y="-400" width="80" height="80" as="geometry" />
+          <mxGeometry x="635" y="-400" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-24" target="Ce53-nTc2lQ6ASdVfVSJ-26" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -74,106 +74,98 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-24" value="APPROVED" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="385" y="-537" width="120" height="80" as="geometry" />
+          <mxGeometry x="195" y="-537" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-26" target="Ce53-nTc2lQ6ASdVfVSJ-32" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-26" value="YES" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="265" y="-537" width="80" height="80" as="geometry" />
+          <mxGeometry x="75" y="-537" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-28" target="Ce53-nTc2lQ6ASdVfVSJ-35" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-28" value="NO" style="ellipse;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="405" y="-440" width="80" height="80" as="geometry" />
+          <mxGeometry x="215" y="-440" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-30" value="Nel&amp;nbsp; frattempo dure al client che stiamo eleborando la richiesta" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="535.75" y="-391" width="120" height="150.75" as="geometry" />
+          <mxGeometry x="345.75" y="-391" width="120" height="150.75" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-32" value="Rispondere al client con la conferma&amp;nbsp;" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="85" y="-527" width="120" height="60" as="geometry" />
+          <mxGeometry x="-105" y="-527" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" source="rvgjScv6DP8aOiQ79GuQ-5" target="Ce53-nTc2lQ6ASdVfVSJ-20" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="133" y="-210" />
-              <mxPoint x="133" y="-140" />
-              <mxPoint x="920" y="-140" />
-              <mxPoint x="920" y="-722" />
+              <mxPoint x="-57" y="-210" />
+              <mxPoint x="-57" y="-140" />
+              <mxPoint x="730" y="-140" />
+              <mxPoint x="730" y="-722" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="Ce53-nTc2lQ6ASdVfVSJ-35" value="Bisogna contattare i vari servizi per fare un rollback delle operazioni" style="whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" parent="1" vertex="1">
-          <mxGeometry x="385" y="-290" width="120" height="60" as="geometry" />
+          <mxGeometry x="195" y="-290" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="BVQOmahpqfi0wn1Eic5L-1" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-6" target="Ce53-nTc2lQ6ASdVfVSJ-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="-152" y="-490" as="sourcePoint" />
-            <mxPoint x="-102" y="-540" as="targetPoint" />
+            <mxPoint x="-342" y="-490" as="sourcePoint" />
+            <mxPoint x="-292" y="-540" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="BVQOmahpqfi0wn1Eic5L-4" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1.002;entryY=0.613;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-32" target="rvgjScv6DP8aOiQ79GuQ-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="33" y="-502.25" as="sourcePoint" />
-            <mxPoint x="-237" y="-280" as="targetPoint" />
+            <mxPoint x="-157" y="-502.25" as="sourcePoint" />
+            <mxPoint x="-427" y="-280" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="lGpJrID41Ef6McI33P2j-1" value="&lt;div&gt;POST REQ. from SECURITY MICRO to order micro&lt;/div&gt;http://localhost/book&lt;div&gt;HEADER:&lt;/div&gt;&lt;div&gt;-&lt;/div&gt;&lt;div&gt;--&lt;/div&gt;&lt;div&gt;-&lt;/div&gt;&lt;div&gt;BODY&lt;/div&gt;&lt;div&gt;-id&amp;nbsp;&lt;/div&gt;&lt;div&gt;-carta di credito ??&lt;/div&gt;&lt;div&gt;-dove/quando prenotare hotel&lt;/div&gt;&lt;div&gt;-quante bici prenotare&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="-287" y="-672.25" width="300" height="170" as="geometry" />
+          <mxGeometry x="-477" y="-672.25" width="300" height="170" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-1" value="UI" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="-510" y="-315" width="214" height="210" as="geometry" />
+          <mxGeometry x="-700" y="-315" width="214" height="210" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-2" value="SERVIZIO SOLDI&lt;div&gt;POST:&lt;/div&gt;&lt;div&gt;-&lt;span style=&quot;background-color: initial;&quot;&gt;-http://localhost:1234/&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;send_data&lt;/span&gt;&lt;/div&gt;&lt;div&gt;-http://localhost:1234/order_approval&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="172" y="-135" width="220" height="70" as="geometry" />
+          <mxGeometry x="-18" y="-135" width="220" height="70" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-3" value="SERVIZIO HOTEL&lt;div&gt;POST:&lt;/div&gt;&lt;div&gt;-&lt;span style=&quot;background-color: initial;&quot;&gt;-http://localhost:3456/&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;send_data&lt;/span&gt;&lt;/div&gt;&lt;div&gt;-http://localhost:3456/order_approval&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="423" y="-135" width="220" height="70" as="geometry" />
+          <mxGeometry x="233" y="-135" width="220" height="70" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-4" value="SERVIZIO BIKE&lt;div&gt;POST:&lt;/div&gt;&lt;div&gt;-&lt;span style=&quot;background-color: initial;&quot;&gt;-http://localhost:7890/&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;send_data&lt;/span&gt;&lt;/div&gt;&lt;div&gt;-http://localhost:7890/order_approval&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="643" y="-135" width="220" height="70" as="geometry" />
+          <mxGeometry x="453" y="-135" width="220" height="70" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" edge="1" parent="1" source="Ce53-nTc2lQ6ASdVfVSJ-35" target="rvgjScv6DP8aOiQ79GuQ-5">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="385" y="-260" as="sourcePoint" />
-            <mxPoint x="905" y="-722" as="targetPoint" />
+            <mxPoint x="195" y="-260" as="sourcePoint" />
+            <mxPoint x="715" y="-722" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="133" y="-260" />
+              <mxPoint x="-57" y="-260" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-5" value="quelli qui sotto sono alcune degl endpoint che questo servizio usera per contattare gli altri&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="65" y="-250" width="140" height="80" as="geometry" />
+          <mxGeometry x="-125" y="-250" width="140" height="80" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-10" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="Ce53-nTc2lQ6ASdVfVSJ-21">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="920" y="-542" as="sourcePoint" />
-            <mxPoint x="980" y="-587" as="targetPoint" />
+            <mxPoint x="730" y="-542" as="sourcePoint" />
+            <mxPoint x="790" y="-587" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="920" y="-360" as="sourcePoint" />
-            <mxPoint x="905" y="-360" as="targetPoint" />
+            <mxPoint x="730" y="-360" as="sourcePoint" />
+            <mxPoint x="715" y="-360" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-13" value="POST from microservices to&amp;nbsp; OMM&lt;div&gt;dove il body conterrà i vari stati&amp;nbsp;&lt;/div&gt;&lt;div&gt;del pagamento/ prenotazione ecc..&lt;/div&gt;&lt;div&gt;Quindi OMM ascolta :&lt;/div&gt;&lt;div&gt;POST&lt;/div&gt;&lt;div&gt;-http://localhost:0987/receive_update_from_money&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="920" y="-772.25" width="290" height="100" as="geometry" />
+          <mxGeometry x="730" y="-772.25" width="290" height="100" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-14" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;POST from microservices to&amp;nbsp; OMM&lt;/span&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;dove il body conterrà i vari stati&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;del pagamento/ prenotazione ecc..&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Quindi OMM ascolta :&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;POST&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;-http://localhost:0987/receive_update_from_hotel&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;fillColor=none;labelBackgroundColor=default;" vertex="1" parent="1">
-          <mxGeometry x="940" y="-590" width="300" height="110" as="geometry" />
+          <mxGeometry x="750" y="-590" width="300" height="110" as="geometry" />
         </mxCell>
         <mxCell id="rvgjScv6DP8aOiQ79GuQ-15" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;POST from microservices to&amp;nbsp; OMM&lt;/span&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;dove il body conterrà i vari stati&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;del pagamento/ prenotazione ecc..&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Quindi OMM ascolta :&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;POST&lt;/div&gt;&lt;div style=&quot;forced-color-adjust: none; border-color: rgb(0, 0, 0); color: rgb(240, 240, 240); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;-http://localhost:0987/receive_update_from_bike&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;fillColor=none;fillStyle=hatch;labelBackgroundColor=default;" vertex="1" parent="1">
-          <mxGeometry x="940" y="-410" width="300" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="rvgjScv6DP8aOiQ79GuQ-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="rvgjScv6DP8aOiQ79GuQ-17">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1258" y="-537" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="rvgjScv6DP8aOiQ79GuQ-17" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1405" y="-708" width="220" height="341" as="geometry" />
+          <mxGeometry x="750" y="-410" width="300" height="110" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
