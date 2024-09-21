@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram name="Page-1" id="74e2e168-ea6b-b213-b513-2b3c1d86103e">
-    <mxGraphModel dx="2273" dy="2255" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="948" dy="1459" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -163,7 +163,7 @@
         <mxCell id="OSlnMf3arRsxwH7huLOP-6" value="" style="rounded=0;whiteSpace=wrap;html=1;fillStyle=hatch;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
           <mxGeometry x="70" y="-570" width="2020" height="1450" as="geometry" />
         </mxCell>
-        <mxCell id="uEvPLVn9PNmxZmW57GQy-8" value="DB (GENERALE)&lt;div&gt;penso che deve contenere tutte le info e anche la carta per pagare ad esempio&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="uEvPLVn9PNmxZmW57GQy-8" value="DB (GENERALE)&lt;div&gt;penso che deve contenere tutte le info e anche la carta per pagare ad esempio&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="1430" y="-16.75" width="85.5" height="85.5" as="geometry" />
         </mxCell>
       </root>

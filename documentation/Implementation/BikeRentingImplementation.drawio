@@ -1,0 +1,131 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
+  <diagram name="Page-1" id="6i4BEPnJpx0_mgnn5q08">
+    <mxGraphModel dx="917" dy="877" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uWORC637PI1DEcsOsQLI-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.005;entryY=0.128;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="uWORC637PI1DEcsOsQLI-1" target="uWORC637PI1DEcsOsQLI-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="540" />
+              <mxPoint x="320" y="388" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-1" value="MANAMGEMENT MICROSERVICE" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="20" y="490" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-2" value="" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="370" y="335" width="380" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-4" value="POST request&lt;div&gt;richiesta conferma bici&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="160" y="550" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="uWORC637PI1DEcsOsQLI-5" target="uWORC637PI1DEcsOsQLI-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="810" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-9" value="PARSING tramite zod" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uWORC637PI1DEcsOsQLI-7" vertex="1" connectable="0">
+          <mxGeometry x="0.4516" y="-2" relative="1" as="geometry">
+            <mxPoint x="-2" y="52" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-10" value="E poi aggiorniamo il db interno" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uWORC637PI1DEcsOsQLI-7" vertex="1" connectable="0">
+          <mxGeometry x="0.6525" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-5" value="BICICLETTAIO" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="510" y="890" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-8" value="DB" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="670" y="665" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-11" value="BIKE RENTING SERVICE" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="480" y="305" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-12" value="WORKFLOW SERVIZIO INTERNO:&lt;div&gt;- Ricevo richiesta da Management&lt;/div&gt;&lt;div&gt;- Rispondo che stiamo elaborando la richiesta PENDING&lt;/div&gt;&lt;div&gt;- Confronto la richiesta con il nostro database&lt;/div&gt;&lt;div&gt;- Rispondo APPROVED in&amp;nbsp; caso di disponibilita&lt;/div&gt;&lt;div&gt;- Aggiorno il db&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="20" y="195" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-14" value="WORKFLOW SERVIZIO ESTERNO:&lt;div&gt;- Possiamo scegliere se fare noi le richieste al servizio esterno&lt;/div&gt;&lt;div&gt;Oppure&lt;/div&gt;&lt;div&gt;- Restare in ascolta per un aggornamento del DB quando vuole il fonitore&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="355" y="195" width="410" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uWORC637PI1DEcsOsQLI-15" target="uWORC637PI1DEcsOsQLI-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-15" value="Parsing del body della richiesta" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="380" y="350" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uWORC637PI1DEcsOsQLI-17" target="uWORC637PI1DEcsOsQLI-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-17" value="POST request verso management PENDING" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="480" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="I9S56pyE5IQ0sbq4VRFJ-1" target="uWORC637PI1DEcsOsQLI-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="650" />
+              <mxPoint x="600" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="I9S56pyE5IQ0sbq4VRFJ-1" target="uWORC637PI1DEcsOsQLI-23" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-19" value="RICHIESTA AL DB PER DISPONIBILITA BICI" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="450" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uWORC637PI1DEcsOsQLI-21" target="uWORC637PI1DEcsOsQLI-27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-21" value="NO" style="ellipse;whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="565" y="635" width="25" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uWORC637PI1DEcsOsQLI-23" target="uWORC637PI1DEcsOsQLI-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-23" value="SI" style="ellipse;whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="565" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="uWORC637PI1DEcsOsQLI-25" target="uWORC637PI1DEcsOsQLI-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="70" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-25" value="rispondo ad management con APPROVED" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="412.5" y="540" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="uWORC637PI1DEcsOsQLI-27" target="uWORC637PI1DEcsOsQLI-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uWORC637PI1DEcsOsQLI-27" value="rispondo ad management con RICHIESTA DENIED" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="412.5" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="uWORC637PI1DEcsOsQLI-19" target="I9S56pyE5IQ0sbq4VRFJ-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="670" y="510" as="sourcePoint" />
+            <mxPoint x="590" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-1" value="rispondo a management con PENDING" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="552.5" width="100" height="55" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
