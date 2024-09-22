@@ -1,0 +1,19 @@
+{
+  "name": "orderMicro",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.19.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1",
+    "typescript": "^5.6.2"
+  }
+}
