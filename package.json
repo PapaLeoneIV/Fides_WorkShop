@@ -7,5 +7,9 @@
     "order_micro"
   ],
   "dependencies": {
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "express": "^4.21.0"
   }
 }

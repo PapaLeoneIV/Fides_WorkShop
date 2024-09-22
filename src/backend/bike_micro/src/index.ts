@@ -1,4 +1,5 @@
 import express from 'express';
+import { logger } from "../../logger/logger";
 import { db, connectToDatabase } from './db/db';
 import { app, BikeRouter } from "./api/router/bikeRouter"
 const port = 3000;
@@ -8,7 +9,7 @@ function main() {
     app.use("/bike_renting/", BikeRouter);
 
     app.listen(port, () => {
-        console.log("[INFO] Server running on http://localhost:3000");
+        logger.info("[INFO] Server running on http://localhost:3000");
     });
 }
 

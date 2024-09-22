@@ -1,5 +1,6 @@
 import pkg from 'pg';
 import dotenv from 'dotenv';
+import { logger } from "../../../logger/logger";
 import { exit } from 'process';
 
 const { Pool } = pkg;
@@ -15,12 +16,12 @@ export const db = new Pool({
 });
 
 export async function connectToDatabase() {
-    console.log("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
+    logger.info("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
     try {
         await db.connect();
-        console.log('[INFO] Postgres connected on port', process.env.POSTGRES_PORT);
+        logger.info('[INFO] Postgres connected on port', process.env.POSTGRES_PORT);
     } catch (error) {
-        console.error('[ERROR] Error connecting to Postgres', error);
+        logger.error('[ERROR] Error connecting to Postgres', error);
         exit(1);
     }
 }
