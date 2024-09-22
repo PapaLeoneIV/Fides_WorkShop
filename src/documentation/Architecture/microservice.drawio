@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram name="Page-1" id="74e2e168-ea6b-b213-b513-2b3c1d86103e">
-    <mxGraphModel dx="948" dy="1459" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1687" dy="1832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -165,6 +165,9 @@
         </mxCell>
         <mxCell id="uEvPLVn9PNmxZmW57GQy-8" value="DB (GENERALE)&lt;div&gt;penso che deve contenere tutte le info e anche la carta per pagare ad esempio&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="1430" y="-16.75" width="85.5" height="85.5" as="geometry" />
+        </mxCell>
+        <mxCell id="3Lestxz-TURHixocn8Rz-3" value="Questi 2 &quot;servizi&quot; possiamo simularli facendogli fare periodicamente delle azioni randomiche verso i nostri DB. Ad esempio possono avere 2/3 azioni:&lt;div&gt;-aggiungi elementi&lt;/div&gt;&lt;div&gt;-rimuovi elementi&lt;/div&gt;&lt;div&gt;-cambia quantita&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1860" y="400" width="150" height="250" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

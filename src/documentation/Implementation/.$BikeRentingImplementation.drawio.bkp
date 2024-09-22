@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram name="Page-1" id="6i4BEPnJpx0_mgnn5q08">
-    <mxGraphModel dx="1687" dy="982" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="917" dy="877" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -28,16 +28,16 @@
         </mxCell>
         <mxCell id="uWORC637PI1DEcsOsQLI-9" value="PARSING tramite zod" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uWORC637PI1DEcsOsQLI-7" vertex="1" connectable="0">
           <mxGeometry x="0.4516" y="-2" relative="1" as="geometry">
-            <mxPoint x="-12" y="-46" as="offset" />
+            <mxPoint x="-2" y="52" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="uWORC637PI1DEcsOsQLI-10" value="E poi aggiorniamo il db interno" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="uWORC637PI1DEcsOsQLI-7" vertex="1" connectable="0">
           <mxGeometry x="0.6525" relative="1" as="geometry">
-            <mxPoint y="-64" as="offset" />
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="uWORC637PI1DEcsOsQLI-5" value="BICICLETTAIO" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
-          <mxGeometry x="180" y="880" width="80" height="80" as="geometry" />
+          <mxGeometry x="510" y="890" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="uWORC637PI1DEcsOsQLI-8" value="DB" style="whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="670" y="665" width="80" height="80" as="geometry" />
@@ -115,14 +115,14 @@
         <mxCell id="uWORC637PI1DEcsOsQLI-27" value="rispondo ad management con RICHIESTA DENIED" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
           <mxGeometry x="412.5" y="620" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="uWORC637PI1DEcsOsQLI-19" target="I9S56pyE5IQ0sbq4VRFJ-1" edge="1">
+        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="uWORC637PI1DEcsOsQLI-19" target="I9S56pyE5IQ0sbq4VRFJ-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points" />
             <mxPoint x="670" y="510" as="sourcePoint" />
             <mxPoint x="590" y="650" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-1" value="rispondo a management con PENDING" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="I9S56pyE5IQ0sbq4VRFJ-1" value="rispondo a management con PENDING" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="620" y="552.5" width="100" height="55" as="geometry" />
         </mxCell>
       </root>
