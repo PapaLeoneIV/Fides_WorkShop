@@ -1,15 +1,17 @@
 import express from 'express';
 import { db, connectToDatabase } from './db/db';
 import { app, MoneyRouter } from "./api/router/moneyRouter"
+import { logger } from "../../logger/logger";
 
-const port = 3000;
+
+const port = 3002;
 
 function main() {
     connectToDatabase();
     app.use("/money_confirmation/", MoneyRouter);
 
-    app.listen(3000, () => {
-        console.log("Server running on http://localhost:3000");
+    app.listen(port, () => {
+       logger.info("[INFO] Server running on http://localhost:3002");
     });
 }
 

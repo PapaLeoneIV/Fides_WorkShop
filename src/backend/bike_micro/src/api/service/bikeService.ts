@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+
 /*Queata sara la funzione che il nostro Bike microservice usera per ricevere dati dall esterno 
 Verra fatto il parsing, e iniziera la logica interna di questo microservizio per validare la richiesta*/
 export const handler_send_data = async (req: Request, res: Response): Promise<void> => {

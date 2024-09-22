@@ -1,18 +1,6 @@
 version: '3.8'
 services:
-  db_order_management:
-    image: postgres:13
-    container_name: db_order_management
-    environment:
-      POSTGRES_USER: rileone
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: restAPI
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_order_management:/var/lib/postgresql/data
-    networks:
-      - express_network
+ 
   db_bike:
     image: postgres:13
     container_name: db_bike_renting
@@ -22,6 +10,8 @@ services:
       POSTGRES_DB: bike_renting
     ports:
       - "5433:5432"
+    expose:
+      - "5433"
     volumes:
       - db_bike:/var/lib/postgresql/data
     networks:
@@ -52,6 +42,59 @@ services:
       - db_money:/var/lib/postgresql/data
     networks:
       - express_network
+  db_order_management:
+    image: postgres:13
+    container_name: db_order_management
+    environment:
+      POSTGRES_USER: rileone
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_management
+    ports:
+      - "5436:5432"
+    volumes:
+      - db_order_management:/var/lib/postgresql/data
+    networks:
+      - express_network
+  
+  
+  
+  
+  #--------------------------
+  #LOGGING AND MONITORING
+
+  #grafana:
+  #  image: grafana/grafana:latest
+  #  ports:
+  #    - 3000:3000
+  #  volumes:
+  #    - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+  #  environment:
+  #    - GF_AUTH_ANONYMOUS_ENABLED=true
+  #    - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+  #    - GF_AUTH_DISABLE_LOGIN_FORM=true
+  #  networks:
+  #    - express_network
+#
+  #loki:
+  #  image: grafana/loki:latest
+  #  ports:
+  #    - 3100:3100
+  #  command: -config.file=/etc/loki/local-config.yaml
+  #  networks:
+  #    - express_network
+#
+  #promtail:
+  #  image:  grafana/promtail:latest
+  #  container_name: promtail
+  #  volumes:
+  #    - ./config/promtail.yaml:/etc/promtail/docker-config.yaml
+  #    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #    - /var/run/docker.sock:/var/run/docker.sock
+  #  command: -config.file=/etc/promtail/docker-config.yaml
+  #  depends_on:
+  #    - loki
+  #  networks:
+  #    - express_network
 
 volumes:
   db_order_management:

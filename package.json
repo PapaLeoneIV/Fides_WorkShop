@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "workspaces": [
+    "bike_micro",
+    "hotel_micro",
+    "money_micro",
+    "order_micro"
+  ],
+  "dependencies": {
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "express": "^4.21.0"
+  }
+}
