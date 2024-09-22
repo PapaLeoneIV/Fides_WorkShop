@@ -10,7 +10,7 @@ export const db = new Pool({
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     host: 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5435', 10),
+    port: parseInt(process.env.POSTGRES_PORT || '5436', 10),
     database: process.env.POSTGRES_DB,
 });
 

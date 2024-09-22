@@ -1,18 +1,6 @@
 version: '3.8'
 services:
-  db_order_management:
-    image: postgres:13
-    container_name: db_order_management
-    environment:
-      POSTGRES_USER: rileone
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: restAPI
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_order_management:/var/lib/postgresql/data
-    networks:
-      - express_network
+ 
   db_bike:
     image: postgres:13
     container_name: db_bike_renting
@@ -50,6 +38,19 @@ services:
       - "5435:5432"
     volumes:
       - db_money:/var/lib/postgresql/data
+    networks:
+      - express_network
+  db_order_management:
+    image: postgres:13
+    container_name: db_order_management
+    environment:
+      POSTGRES_USER: rileone
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_management
+    ports:
+      - "5436:5432"
+    volumes:
+      - db_order_management:/var/lib/postgresql/data
     networks:
       - express_network
 

@@ -11,4 +11,4 @@ HotelRouter.post("/send_data", handler_send_data);
 console.log("Set up send_data route...");
 HotelRouter.post("/hotel_update", handler_hotel_update)
 
-export { HotelRouter };
+export { HotelRouter }; 
