@@ -13,12 +13,12 @@ export const handler_send_data = async (req: Request, res: Response): Promise<vo
     }
 };
 
-/**Questa sara la funzione che il nostro bike microservice usera quando OOM fara delle richieste
+/**Questa sara la funzione che il nostro bike microservice usera quando OOM(order management service) fara delle richieste
  * per sapere in che stato si trova la sua richiesta(PENDING, APPROVED, DENIED)
  */
 export const handler_confirm_request = async (req: Request, res: Response): Promise<void> => {
     try {
-        /**TODO implemt the response back to OOM to update it about the state of the request */
+        /**TODO implemt the response back to OOM(order management service) to update it about the state of the request */
         const data = { message: "Request taken in consideration, will answear back shortly!" };
         res.status(200).json(data);
     } catch (error) {
@@ -31,7 +31,7 @@ export const handler_confirm_request = async (req: Request, res: Response): Prom
  */
 export const handler_hotel_update = async (req: Request, res: Response): Promise<void> => {
     try {
-        /**TODO implemt the response back to OOM to update it about the state of the request */
+        /**TODO implemt the response back to OOM(order management service) to update it about the state of the request */
         const data = { message: "Request taken in consideration, will answear back shortly!" };
         res.status(200).json(data);
     } catch (error) {
