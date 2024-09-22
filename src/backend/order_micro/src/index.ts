@@ -9,7 +9,7 @@ function main() {
     app.use("/order/", OrderRouter);
 
     app.listen(port, () => {
-        console.log("Server running on http://localhost:3003");
+        console.log("[INFO] Server running on http://localhost:3003");
     });
 }
 

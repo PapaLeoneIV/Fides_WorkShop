@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": [
+    "bike_micro",
+    "hotel_micro",
+    "money_micro",
+    "order_micro"
+  ],
+  "dependencies": {
+  }
+}

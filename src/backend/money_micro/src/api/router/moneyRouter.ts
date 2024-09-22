@@ -6,10 +6,10 @@ export const app = express();
 const MoneyRouter = Router();
 /**TODO these function can be implemented using RABBITMQ and not GET and POST */
 MoneyRouter.get("/confirm_request", handler_confirm_request);
-console.log("Set up confirm_request route...");
+console.log("[INFO] Set up confirm_request route...");
 MoneyRouter.post("/send_data", handler_send_data);
-console.log("Set up send_data route...");
+console.log("[INFO] Set up send_data route...");
 MoneyRouter.post("/bank_update", handler_bank_update)
-console.log("Set up bank_update...");
+console.log("[INFO] Set up bank_update...");
 
 export { MoneyRouter };
