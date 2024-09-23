@@ -53,3 +53,52 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T08:43:13.344Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:43:13.351Z"}
 {"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T08:43:13.367Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T12:37:39.810Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T12:37:39.814Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T12:37:39.814Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T12:37:39.815Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T12:37:39.815Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T12:37:39.833Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T12:37:39.864Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:07:50.231Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:07:50.233Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:07:50.234Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:07:50.234Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:07:50.234Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:07:50.246Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:07:50.265Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:08:25.147Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:08:25.149Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:08:25.150Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:08:25.150Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:08:25.150Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:08:25.165Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:08:25.189Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:09:08.089Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:09:08.092Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:09:08.093Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:09:08.093Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:09:08.094Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:09:08.111Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:09:08.125Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:10:00.780Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:10:00.782Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:10:00.782Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:10:00.782Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:10:00.782Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:10:00.793Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:10:00.808Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:12:59.893Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:12:59.895Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:12:59.896Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:12:59.896Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:12:59.896Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:12:59.908Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:12:59.920Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:32:02.138Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:32:02.139Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:32:02.140Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T16:32:02.140Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:32:02.140Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:32:02.151Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:32:02.163Z"}

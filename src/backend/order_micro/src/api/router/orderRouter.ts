@@ -9,13 +9,13 @@ app.use(express.json())
 const OrderRouter = Router();
 
 /**TODO these function can be implemented using RABBITMQ and not GET and POST */
-OrderRouter.get("book_vacation", handler_book_vacation);
+OrderRouter.post("/book_vacation", handler_book_vacation);
 logger.info("[INFO] Set up handler_book_vacation...")
-OrderRouter.post("payment_update", handler_payment_update );
+OrderRouter.post("/payment_update", handler_payment_update );
 logger.info("[INFO] Set up handler_book_vacation...")
-OrderRouter.post("hotel_update", handler_hotel_update);
+OrderRouter.post("/hotel_update", handler_hotel_update);
 logger.info("[INFO] Set up handler_book_vacation...")
-OrderRouter.post("bike_update", handler_bike_update);
+OrderRouter.post("/bike_update", handler_bike_update);
 logger.info("[INFO] Set up handler_book_vacation...")
 
 

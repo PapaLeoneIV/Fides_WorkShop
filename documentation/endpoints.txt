@@ -5,6 +5,7 @@ ORDER MANAGEMENT SERVICE:
     + receive_update_from_bike
 - POST:
     + book_vacation (endpoint per ricevere richiesta da client)
+    
 
 
 

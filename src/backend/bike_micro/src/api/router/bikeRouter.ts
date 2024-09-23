@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { logger } from "../../../../logger/logger";
 
-import { receive_order, handler_confirm_request, handler_bike_shop_update } from "../service/bikeService";
+import { receive_order, handler_confirm_request, handler_bike_shop_update } from "../controllers/bikeControllers";
 
 export const app = express();
 

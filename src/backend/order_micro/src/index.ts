@@ -5,7 +5,8 @@ import { logger } from "../../logger/logger";
 
 const port = 3003;
 
-function main() {
+function main() { 
+    
     connectToDatabase();
     app.use("/order/", OrderRouter);
 
