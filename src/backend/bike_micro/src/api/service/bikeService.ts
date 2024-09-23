@@ -1,11 +1,26 @@
 import { Request, Response } from 'express';
-
-
+import { z } from "zod"
+/**EXAMPLE OF REQUEST JSON *       
+ *      {UUID: 122,
+            bike {
+                road: 0
+                dirt: 2
+            }
+        }    
+*/
 /*Queata sara la funzione che il nostro Bike microservice usera per ricevere dati dall esterno 
 Verra fatto il parsing, e iniziera la logica interna di questo microservizio per validare la richiesta*/
-export const handler_send_data = async (req: Request, res: Response): Promise<void> => {
+export const receive_order = async (req: Request, res: Response): Promise<void> => {
     try {
         /**TODO implemt the logic to receive data*/
+
+        /*PARSING DELLA RICHIESTA */
+        /**RISPOSTA DI PRESA IN CONSIDERAZIONE VERSO ORDER SERVICE */
+        /**CONTROLLO NEL DB SE CI SONO BICICLETTE DISPONIBILI */
+            /**SI --> Rispondo con APPROVED */
+            /**NO --> Rispondo con DENIED */
+
+        console.log(req.body);
         const data = { message: "Data received successfully!" };
         res.status(200).json(data);
     } catch (error) {

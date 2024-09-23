@@ -8,3 +8,23 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T16:00:50.841Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3000","timestamp":"2024-09-22T16:00:50.857Z"}
 {"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-22T16:00:50.870Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-22T14:09:02.943Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-22T14:09:02.944Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T14:09:02.945Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3000","timestamp":"2024-09-22T14:09:02.953Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-22T14:09:02.960Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-23T08:43:13.426Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-23T08:43:13.428Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-23T08:43:13.428Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3000","timestamp":"2024-09-23T08:43:13.436Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-23T08:43:13.449Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-23T09:33:29.979Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-23T09:33:29.980Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-23T09:33:29.981Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3000","timestamp":"2024-09-23T09:33:29.988Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-23T09:33:29.995Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-23T09:43:19.783Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-23T09:43:19.784Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-23T09:43:19.785Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3000","timestamp":"2024-09-23T09:43:19.795Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-23T09:43:19.805Z"}

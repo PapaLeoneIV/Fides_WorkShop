@@ -4,8 +4,9 @@ import { logger } from "../../../../logger/logger";
 
 export const app = express();
 
-const OrderRouter = Router();
+app.use(express.json())
 
+const OrderRouter = Router();
 
 /**TODO these function can be implemented using RABBITMQ and not GET and POST */
 OrderRouter.get("book_vacation", handler_book_vacation);

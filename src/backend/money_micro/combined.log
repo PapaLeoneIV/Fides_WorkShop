@@ -10,3 +10,15 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T16:00:50.868Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3002","timestamp":"2024-09-22T16:00:50.884Z"}
 {"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-22T16:00:50.903Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-22T14:09:02.958Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-22T14:09:02.959Z"}
+{"level":"info","message":"[INFO] Set up bank_update...","timestamp":"2024-09-22T14:09:02.959Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T14:09:02.960Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3002","timestamp":"2024-09-22T14:09:02.968Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-22T14:09:02.987Z"}
+{"level":"info","message":"[INFO] Set up confirm_request route...","timestamp":"2024-09-23T08:43:13.407Z"}
+{"level":"info","message":"[INFO] Set up send_data route...","timestamp":"2024-09-23T08:43:13.409Z"}
+{"level":"info","message":"[INFO] Set up bank_update...","timestamp":"2024-09-23T08:43:13.409Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-23T08:43:13.410Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3002","timestamp":"2024-09-23T08:43:13.418Z"}
+{"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-23T08:43:13.444Z"}

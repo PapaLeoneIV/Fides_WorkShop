@@ -11,3 +11,45 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T16:00:51.065Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-22T16:00:51.077Z"}
 {"level":"info","message":"[INFO] Postgres connected on port","timestamp":"2024-09-22T16:00:51.088Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-22T14:09:03.016Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-22T14:09:03.018Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-22T14:09:03.018Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-22T14:09:03.018Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-22T14:09:03.018Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-22T14:09:03.029Z"}
+{"code":"3D000","file":"postinit.c","length":101,"level":"error","line":"875","message":"[ERROR] Error connecting to Postgres database \"order_management\" does not exist","name":"error","routine":"InitPostgres","severity":"FATAL","stack":"error: database \"order_management\" does not exist\n    at /home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async connectToDatabase (/home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/src/db/db.ts:22:9)","timestamp":"2024-09-22T14:09:03.053Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:34:42.581Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:34:42.582Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:34:42.583Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:34:42.583Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : ","timestamp":"2024-09-23T08:34:42.583Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:34:42.590Z"}
+{"code":"3D000","file":"postinit.c","length":101,"level":"error","line":"875","message":"[ERROR] Error connecting to Postgres database \"order_management\" does not exist","name":"error","routine":"InitPostgres","severity":"FATAL","stack":"error: database \"order_management\" does not exist\n    at /home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async connectToDatabase (/home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/src/db/db.ts:22:9)","timestamp":"2024-09-23T08:34:42.597Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:36:49.877Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:36:49.878Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:36:49.878Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:36:49.878Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T08:36:49.879Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:36:49.886Z"}
+{"code":"3D000","file":"postinit.c","length":101,"level":"error","line":"875","message":"[ERROR] Error connecting to Postgres database \"order_management\" does not exist","name":"error","routine":"InitPostgres","severity":"FATAL","stack":"error: database \"order_management\" does not exist\n    at /home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async connectToDatabase (/home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/src/db/db.ts:22:9)","timestamp":"2024-09-23T08:36:49.897Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:38:36.300Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:38:36.302Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:38:36.302Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:38:36.302Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T08:38:36.303Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T08:38:36.308Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:38:36.310Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:39:10.489Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:39:10.490Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:39:10.490Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:39:10.490Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T08:39:10.491Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:39:10.499Z"}
+{"code":"3D000","file":"postinit.c","length":101,"level":"error","line":"875","message":"[ERROR] Error connecting to Postgres database \"order_management\" does not exist","name":"error","routine":"InitPostgres","severity":"FATAL","stack":"error: database \"order_management\" does not exist\n    at /home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async connectToDatabase (/home/rick/Desktop/ExpressJS_restAPI/src/backend/order_micro/src/db/db.ts:22:9)","timestamp":"2024-09-23T08:39:10.508Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:43:13.340Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:43:13.342Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:43:13.343Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-23T08:43:13.343Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T08:43:13.344Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T08:43:13.351Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T08:43:13.367Z"}
