@@ -18,3 +18,9 @@ model Order {
   road     String
   dirt     String
 }
+
+model Bikes {
+  id       String  @id @default(uuid())
+  road     Int
+  dirt     Int
+}
