@@ -4,15 +4,18 @@ import { z } from "zod";
 import axios from "axios";
 import { check_bikes_availability } from "../service/bikeService";
 
+const URL_order_management = "http://localhost:3003/order/bike_update";
+
 const order_schema = z.object({
   road: z.string(),
   dirt: z.string(),
 });
 
 interface BikeRequested {
-    road: String;
-    dirt: String;
+  road: String;
+  dirt: String;
 }
+
 let bike_requested: BikeRequested;
 
 /*Queata sara la funzione che il nostro Bike microservice usera per ricevere dati dall esterno 
@@ -23,9 +26,8 @@ export const receive_order = async (
 ): Promise<void> => {
   //PARSING (TODO uscire dal parsing con un obj che rappresenti le diverse bici da guardare nel database)
   try {
-    const parsedBody = order_schema.parse(req.body); 
+    const parsedBody = order_schema.parse(req.body);
     logger.info("Data received:", parsedBody);
-
     bike_requested = {
       road: parsedBody.road,
       dirt: parsedBody.dirt,
@@ -35,23 +37,25 @@ export const receive_order = async (
     res.status(400).json({ error: "Bad Request" });
   }
   //TMP RESPONSE
-  const response = await axios.post(
-    "http://localhost:3003/order/bike_update",
-    { status: "PENDING" }
-  );
+  const response = await axios.post(URL_order_management, {
+    status: "PENDING",
+  });
   //CHECK DB
   const db_response = await check_bikes_availability(bike_requested);
   //RESPOND TO OOM
   if (db_response) {
-    const management_resp = await axios.post(
-      "http://localhost:3003/order/bike_update",
-      { status: "BIKE_APPROVED" }
-    );
+    const management_resp = await axios.post(URL_order_management, {
+      status: "BIKE_APPROVED",
+    });
+
+
+    logger.info("management_resp:", management_resp.data);
+    res.send("Bike approved");
   } else {
-    const management_resp = await axios.post(
-      "http://localhost:3003/order/bike_update",
-      { status: "DENIED" }
-    );
+    const management_resp = await axios.post(URL_order_management, {
+      status: "DENIED",
+    });
+    res.send("Bike denied");
   }
 };
 
@@ -69,7 +73,7 @@ export const handler_confirm_request = async (
     };
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error sending data:", error);
+    logger.error("Error sending data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -87,7 +91,7 @@ export const handler_bike_shop_update = async (
     };
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error sending data:", error);
+    logger.error("Error sending data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
