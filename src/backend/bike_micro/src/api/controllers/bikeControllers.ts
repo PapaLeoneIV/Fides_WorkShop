@@ -12,14 +12,11 @@ const order_schema = z.object({
 });
 
 interface BikeRequested {
-  road: String;
-  dirt: String;
+  road: number;
+  dirt: number;
 }
-
 let bike_requested: BikeRequested;
 
-/*Queata sara la funzione che il nostro Bike microservice usera per ricevere dati dall esterno 
-Verra fatto il parsing, e iniziera la logica interna di questo microservizio per validare la richiesta*/
 export const receive_order = async (
   req: Request,
   res: Response
@@ -29,8 +26,8 @@ export const receive_order = async (
     const parsedBody = order_schema.parse(req.body);
     logger.info("Data received:", parsedBody);
     bike_requested = {
-      road: parsedBody.road,
-      dirt: parsedBody.dirt,
+      road: parseInt(parsedBody.road, 10),
+      dirt: parseInt(parsedBody.dirt, 10),
     };
   } catch (error) {
     logger.error("Error parsing data: request body not valid!", error);
@@ -47,8 +44,6 @@ export const receive_order = async (
     const management_resp = await axios.post(URL_order_management, {
       status: "BIKE_APPROVED",
     });
-
-
     logger.info("management_resp:", management_resp.data);
     res.send("Bike approved");
   } else {
