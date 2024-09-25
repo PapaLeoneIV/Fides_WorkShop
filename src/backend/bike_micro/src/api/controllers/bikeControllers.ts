@@ -17,11 +17,7 @@ interface BikeRequested {
 }
 let bike_requested: BikeRequested;
 
-export const receive_order = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  //PARSING (TODO uscire dal parsing con un obj che rappresenti le diverse bici da guardare nel database)
+export const receive_order = async ( req: Request, res: Response ): Promise<void> => {
   try {
     const parsedBody = order_schema.parse(req.body);
     logger.info("Data received:", parsedBody);
@@ -34,22 +30,16 @@ export const receive_order = async (
     res.status(400).json({ error: "Bad Request" });
   }
   //TMP RESPONSE
-  const response = await axios.post(URL_order_management, {
-    status: "PENDING",
-  });
+  const response = await axios.post(URL_order_management, {status: "PENDING",});
   //CHECK DB
   const db_response = await check_bikes_availability(bike_requested);
   //RESPOND TO OOM
   if (db_response) {
-    const management_resp = await axios.post(URL_order_management, {
-      status: "BIKE_APPROVED",
-    });
+    const management_resp = await axios.post(URL_order_management, {order_status: "BIKE_APPROVED",});
     logger.info("management_resp:", management_resp.data);
     res.send("Bike approved");
   } else {
-    const management_resp = await axios.post(URL_order_management, {
-      status: "DENIED",
-    });
+    const management_resp = await axios.post(URL_order_management, {order_status: "DENIED",});
     res.send("Bike denied");
   }
 };
