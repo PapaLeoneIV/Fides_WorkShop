@@ -37,10 +37,11 @@ export const receive_order = async ( req: Request, res: Response ): Promise<void
   if (db_response) {
     const management_resp = await axios.post(URL_order_management, {order_status: "BIKE_APPROVED",});
     logger.info("management_resp:", management_resp.data);
-    res.send("Bike approved");
+    res.send( {status : "BIKE_APPROVED"} );
   } else {
     const management_resp = await axios.post(URL_order_management, {order_status: "DENIED",});
-    res.send("Bike denied");
+    logger.info("management_resp:", management_resp.data);
+    res.send( {status : "BIKE_DENIED"} );
   }
 };
 
