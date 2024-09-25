@@ -102,3 +102,10 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-23T16:32:02.140Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-23T16:32:02.151Z"}
 {"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-23T16:32:02.163Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-25T09:12:36.345Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-25T09:12:36.346Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-25T09:12:36.347Z"}
+{"level":"info","message":"[INFO] Set up handler_book_vacation...","timestamp":"2024-09-25T09:12:36.347Z"}
+{"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-25T09:12:36.347Z"}
+{"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-25T09:12:36.356Z"}
+{"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-25T09:12:36.410Z"}

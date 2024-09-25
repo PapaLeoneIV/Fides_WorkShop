@@ -17,7 +17,7 @@ interface BikeRequested {
 }
 let bike_requested: BikeRequested;
 
-export const receive_order = async ( req: Request, res: Response ): Promise<void> => {
+export const receive_order = async (req: Request, res: Response): Promise<void> => {
   try {
     const parsedBody = order_schema.parse(req.body);
     logger.info("Data received:", parsedBody);
@@ -29,19 +29,19 @@ export const receive_order = async ( req: Request, res: Response ): Promise<void
     logger.error("Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
   }
-  //TMP RESPONSE
-  const response = await axios.post(URL_order_management, {status: "PENDING",});
+  //TMP RESPONSE (not sure if i want to keep it maybe i can implement it in the future)
+  const response = await axios.post(URL_order_management, { order_status: "PENDING", });
   //CHECK DB
   const db_response = await check_bikes_availability(bike_requested);
   //RESPOND TO OOM
   if (db_response) {
-    const management_resp = await axios.post(URL_order_management, {order_status: "BIKE_APPROVED",});
+    const management_resp = await axios.post(URL_order_management, { order_status: "BIKE_APPROVED", });
     logger.info("management_resp:", management_resp.data);
-    res.send( {status : "BIKE_APPROVED"} );
+    res.send({ order_status: "BIKE_APPROVED" });
   } else {
-    const management_resp = await axios.post(URL_order_management, {order_status: "DENIED",});
+    const management_resp = await axios.post(URL_order_management, { order_status: "DENIED", });
     logger.info("management_resp:", management_resp.data);
-    res.send( {status : "BIKE_DENIED"} );
+    res.send({ order_status: "BIKE_DENIED" });
   }
 };
 
