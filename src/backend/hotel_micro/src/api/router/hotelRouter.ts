@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { receive_order, handler_confirm_request, handler_hotel_update } from "../service/hotelService";
+import { receive_order, handler_confirm_request, handler_hotel_update } from "../controller/hotelController";
 import { logger } from "../../../../logger/logger";
 
 export const app = express();
@@ -8,7 +8,7 @@ app.use(express.json())
 
 
 const HotelRouter = Router();
-/**TODO these function can be implemented using RABBITMQ and not GET and POST */
+/*TODO these function can be implemented using RABBITMQ and not GET and POST */
 HotelRouter.get("/confirm_request", handler_confirm_request);
 console.log("[INFO] Set up confirm_request route...");
 HotelRouter.post("/send_data", receive_order);

@@ -26,10 +26,11 @@ export const handler_book_vacation = async (req: Request, res: Response): Promis
         /*FACCIO IL PARSING DELLA RICHIESTA
         genero i 3 oggetti che rappresentano i 3 diversi ordini*/
         const bikes = req.body.order.bikes
+        const hotel = req.body.order.hotel
 
-        const order = new OrderContext(bikes);
+        const order = new OrderContext(bikes, hotel);
         console.log("Processing the order...")
-        order.processOrder(bikes);
+        order.processOrder(bikes, hotel);
         res.send("Order is being processed OK?\n")
     } catch (error) {
         logger.error('Error sending data:', error);
@@ -40,7 +41,7 @@ export const handler_book_vacation = async (req: Request, res: Response): Promis
 
 export const handler_payment_update = async (req: Request, res: Response): Promise<void> => {
     try {
-        /**TODO implemt the logic to handle the different state of the booking*/
+        /*TODO implemt the logic to handle the different state of the booking*/
         const data = { message: "Data received successfully!" };
         res.status(200).json(data);
     } catch (error) {
@@ -52,7 +53,7 @@ export const handler_payment_update = async (req: Request, res: Response): Promi
 
 export const handler_hotel_update = async (req: Request, res: Response): Promise<void> => {
     try {
-        /**TODO implemt the logic to handle the different state of the booking*/
+        /*TODO implemt the logic to handle the different state of the booking*/
         const data = { message: "Data received successfully!" };
         res.status(200).json(data);
     } catch (error) {

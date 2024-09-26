@@ -109,3 +109,15 @@
 {"level":"info","message":"[INFO] Trying to connect on db on port : 5436","timestamp":"2024-09-25T09:12:36.347Z"}
 {"level":"info","message":"[INFO] Server running on http://localhost:3003","timestamp":"2024-09-25T09:12:36.356Z"}
 {"level":"info","message":"[INFO] Postgres connected on port5436","timestamp":"2024-09-25T09:12:36.410Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:26:16.019Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:26:16.052Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:26:16.053Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:28.644Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:28.651Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:28.653Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:49.914Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:49.930Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:49.948Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:58.280Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:58.293Z"}
+{"level":"error","message":"Error in sending order!","timestamp":"2024-09-26T14:32:58.300Z"}

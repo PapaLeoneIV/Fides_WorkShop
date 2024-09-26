@@ -3,19 +3,18 @@ import { WaitingState } from './waitingState'
 import axios from "axios"
 
 export interface OrderState {
-    handle_request(context: OrderContext, bikes:{road: string, dirt:string}): Promise<void>;
+    handle_request(context: OrderContext, bikes:{road: string, dirt:string}, hotel: {from: Date, to: Date }): Promise<void>;
 }
-
-
 
 export class OrderContext {
     private state: OrderState;
     private bikes: {road: string, dirt: string};
+    private hotel: {from: Date, to: Date }
     //private card: string;
-    //private hotel: {from: string, to: string};
     
-    constructor(bikes: {road: string, dirt: string}) {
+    constructor(bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date }) {
         this.bikes = bikes;
+        this.hotel = hotel;
         this.state = new WaitingState()
     }
 
@@ -27,8 +26,8 @@ export class OrderContext {
         this.state = state;
     }
 
-    async processOrder(bikes:{road: string, dirt:string}) {
-        await this.state.handle_request(this, bikes)
+    async processOrder(bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date }) {
+        await this.state.handle_request(this, bikes, hotel)
     }
 
     async sendRequestToBikeShop(bikes: {road: string, dirt: string}): Promise<string> {
@@ -39,13 +38,24 @@ export class OrderContext {
             return response.data; 
         } catch (error) {
             console.error("Error sending request:", error);
+            throw error;
+        } 
+    }
+
+    async sendRequestToHotel(hotel: {from: Date, to: Date }): Promise<string> {
+        /*TODO implement POST request to bike */
+        console.log("sending request to hotel service!")
+        try {
+            const response = await axios.post("http://localhost:3001/hotel_booking/send_data", { hotel });
+            return response.data; 
+        } catch (error) {
+            console.error("Error sending request:", error);
             throw error; 
         }
     }
 
-
-    /**TODO implement the different requests to Money and hotel */
-    /**TODO implement the response to UI */
+    /*TODO implement the different requests to Money*/
+    /*TODO implement the response to UI */
 
 }
 

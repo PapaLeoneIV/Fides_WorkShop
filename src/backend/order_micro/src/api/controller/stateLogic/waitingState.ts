@@ -4,20 +4,22 @@ import { CompletedState } from "./completedState";
 import { FailedState } from "./failedState"; 
 
 export class WaitingState implements OrderState {
-    async handle_request(context: OrderContext, bikes: { road: string, dirt: string }): Promise<void> {
+    async handle_request(context: OrderContext, bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date }): Promise<void> {
         console.log('Order is in pending state, processing...');
         try {
-            const [bike_response] = await Promise.all([
-                await context.sendRequestToBikeShop(bikes)
+            const [bike_response, hotel_response] = await Promise.all([
+                await context.sendRequestToBikeShop(bikes),
+                await context.sendRequestToHotel(hotel)
             ]);
-            if (bike_response === "BIKEAPPROVED") {
+            if (bike_response === "BIKEAPPROVED" && hotel_response === "HOTELAPPROVED") {
                 console.log("approved")
                 context.setState(new CompletedState());
-                context.processOrder(bikes)
+                context.processOrder(bikes, hotel)
             } else {
-                console.log("denied") 
+                console.log("denied")
+                /*TODO prob will need to differentiate between various FailedStates */
                 context.setState(new FailedState());
-                context.processOrder(bikes)
+                context.processOrder(bikes, hotel)
             }
         } catch (error) {
             logger.error("Error in sending order!");
