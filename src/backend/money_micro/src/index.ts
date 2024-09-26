@@ -11,7 +11,7 @@ function main() {
     app.use("/money_confirmation/", MoneyRouter);
 
     app.listen(port, () => {
-       logger.info("[INFO] Server running on http://localhost:3002");
+       console.log("[INFO] Server running on http://localhost:3002");
     });
 }
 

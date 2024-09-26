@@ -23,7 +23,7 @@ function main() {
     app.use("/bike_renting/", BikeRouter);
 
     app.listen(port, () => {
-        logger.info("[INFO] Server running on http://localhost:3000");
+        console.log("[INFO] Server running on http://localhost:3000");
     });
 }
 

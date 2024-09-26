@@ -11,7 +11,7 @@ function main() {
     app.use("/order/", OrderRouter);
 
     app.listen(port, () => {
-       logger.info("[INFO] Server running on http://localhost:3003");
+       console.log("[INFO] Server running on http://localhost:3003");
     });
 }
 

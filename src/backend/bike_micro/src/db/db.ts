@@ -16,10 +16,10 @@ export const db = new Pool({
 });
 
 export async function connectToDatabase() {
-    logger.info("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
+    console.log("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
     try {
         await db.connect();
-        logger.info('[INFO] Postgres connected on port', process.env.POSTGRES_PORT);
+        console.log('[INFO] Postgres connected on port', process.env.POSTGRES_PORT);
     } catch (error) {
         logger.error('[ERROR] Error connecting to Postgres', error);
         exit(1);

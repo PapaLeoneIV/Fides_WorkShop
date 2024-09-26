@@ -10,7 +10,7 @@ function main() {
     app.use("/hotel_booking/", HotelRouter);
 
     app.listen(port, () => {
-        logger.info("[INFO] Server running on http://localhost:3001");
+        console.log("[INFO] Server running on http://localhost:3001");
     });
 }
 
