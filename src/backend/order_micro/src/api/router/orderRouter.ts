@@ -8,7 +8,7 @@ app.use(express.json())
 
 const OrderRouter = Router();
 
-/**TODO these function can be implemented using RABBITMQ and not GET and POST */
+/*TODO these function can be implemented using RABBITMQ and not GET and POST */
 OrderRouter.post("/book_vacation", handler_book_vacation);
 console.log("[INFO] Set up handler_book_vacation...")
 OrderRouter.post("/payment_update", handler_payment_update );

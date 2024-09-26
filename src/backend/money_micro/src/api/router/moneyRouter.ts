@@ -8,7 +8,7 @@ app.use(express.json())
 
 
 const MoneyRouter = Router();
-/**TODO these function can be implemented using RABBITMQ and not GET and POST */
+/*TODO these function can be implemented using RABBITMQ and not GET and POST */
 MoneyRouter.get("/confirm_request", handler_confirm_request);
 console.log("[INFO] Set up confirm_request route...");
 MoneyRouter.post("/send_data", receive_order);

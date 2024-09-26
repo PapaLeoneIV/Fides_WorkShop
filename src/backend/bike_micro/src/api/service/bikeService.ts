@@ -46,9 +46,9 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
         }
 
         logger.warn("Not enough bikes available.");
-        return false; // Not enough bikes available
+        return false; 
     } catch (error) {
         logger.error("Error checking bike availability:", error);
-        return false; // Error occurred, handle accordingly
+        return false; 
     }
 };

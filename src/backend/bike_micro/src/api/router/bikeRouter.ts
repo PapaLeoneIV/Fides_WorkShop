@@ -9,7 +9,7 @@ app.use(express.json())
 
 const BikeRouter = Router();
 
-/**TODO these function can be implemented using RABBITMQ and not GET and POST */
+/*TODO these function can be implemented using RABBITMQ and not GET and POST */
 BikeRouter.get("/confirm_request", handler_confirm_request);
 console.log("[INFO] Set up confirm_request route...");
 BikeRouter.post("/send_data", receive_order);

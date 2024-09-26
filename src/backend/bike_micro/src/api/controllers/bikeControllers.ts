@@ -35,7 +35,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   //CHECK DB
   console.log("Making request to BikeShop DB!")
   const db_response = await check_bikes_availability(bike_requested);
-  //RESPOND TO OOM
+  //RESPOND TO Order management
   if (db_response) { res.send("BIKEAPPROVED"); }
   else { res.send("BIKEDENIED");}
 };
@@ -48,7 +48,7 @@ export const handler_confirm_request = async (
   res: Response
 ): Promise<void> => {
   try {
-    /**TODO implemt the response back to OOM(order management service) to update it about the state of the request */
+    /*TODO implemt the response back to OOM(order management service) to update it about the state of the request */
     const data = {
       message: "Request taken in consideration, will answear back shortly!",
     };
@@ -66,7 +66,7 @@ export const handler_bike_shop_update = async (
   res: Response
 ): Promise<void> => {
   try {
-    /**TODO implemt the response back to OOM(order management service) to update it about the state of the request */
+    /*TODO implemt the response back to OOM(order management service) to update it about the state of the request */
     const data = {
       message: "Request taken in consideration, will answear back shortly!",
     };
