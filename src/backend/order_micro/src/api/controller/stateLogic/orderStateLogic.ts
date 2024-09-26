@@ -1,8 +1,9 @@
 import { logger } from "../../../../../logger/logger"
-import { WaitingState } from "waitingState"
+import { WaitingState } from './waitingState'
+import axios from "axios"
 
 export interface OrderState {
-    handle_request(context: OrderContext): Promise<void>;
+    handle_request(context: OrderContext, bikes:{road: string, dirt:string}): Promise<void>;
 }
 
 
@@ -26,13 +27,20 @@ export class OrderContext {
         this.state = state;
     }
 
-    async processOrder() {
-        await this.state.handle_request(this)
+    async processOrder(bikes:{road: string, dirt:string}) {
+        await this.state.handle_request(this, bikes)
     }
 
     async sendRequestToBikeShop(bikes: {road: string, dirt: string}): Promise<string> {
         /*TODO implement POST request to bike */
-        return new Promise(resolve => setTimeout(() => resolve('BIKEAPPROVED'), 1000));
+        console.log("sending request to bikeShop!")
+        try {
+            const response = await axios.post("http://localhost:3000/bike_renting/send_data", { bikes });
+            return response.data; 
+        } catch (error) {
+            console.error("Error sending request:", error);
+            throw error; 
+        }
     }
 
 

@@ -23,4 +23,6 @@ model Bikes {
   id       String  @id @default(uuid())
   road     Int
   dirt     Int
+
+  @@map("Bikes") // Maps the model to the "Bikes" table in your database
 }

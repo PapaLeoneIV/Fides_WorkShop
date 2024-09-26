@@ -7,4 +7,4 @@ CREATE TABLE "Bikes" (
 
 -- Insert sample data
 INSERT INTO "Bikes" ("id", "road", "dirt") VALUES
-('1', 50, 69);
+('1', 5000, 690);

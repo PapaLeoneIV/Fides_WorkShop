@@ -5,6 +5,7 @@ import { OrderContext } from './stateLogic/orderStateLogic';
 
 let order = {
     "order": {
+        "UUID" : "abc-213-sadsa-4df-ad3-sda",
         "card": "1234-4321-5678-8765",
         "bikes": {
             "road": "2",
@@ -19,17 +20,17 @@ let order = {
 
 
 export const handler_book_vacation = async (req: Request, res: Response): Promise<void> => {
+    console.log("Order received")
     try {
-        /**TODO implemt the logic to handle the different state of the booking*/
-        /*RICEVO UNA RICHIESTA DA PARTE DI UI/SECURITY */
+        /* TODO RICEVO UNA RICHIESTA DA PARTE DI UI/SECURITY */
         /*FACCIO IL PARSING DELLA RICHIESTA
-        
         genero i 3 oggetti che rappresentano i 3 diversi ordini*/
-        const bikes = req.body.order.bikes;
+        const bikes = req.body.order.bikes
 
-        /** INIZIO A CONTATTARE I VARI SERVIZI PER CONFERME*/
         const order = new OrderContext(bikes);
-        order.processOrder();
+        console.log("Processing the order...")
+        order.processOrder(bikes);
+        res.send("Order is being processed OK?\n")
     } catch (error) {
         logger.error('Error sending data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -63,7 +64,7 @@ export const handler_hotel_update = async (req: Request, res: Response): Promise
 
 export const handler_bike_update = async (req: Request, res: Response): Promise<void> => {
     try {
-
+        console.log("received response from bike shop")
     } catch (error) {
         logger.error('Error sending data:', error);
         res.status(500).json({ error: 'Internal Server Error' });

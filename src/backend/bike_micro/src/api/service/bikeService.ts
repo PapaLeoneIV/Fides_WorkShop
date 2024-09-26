@@ -1,27 +1,54 @@
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient()
+import { logger } from "../../../../logger/logger"
+const prisma = new PrismaClient();
 
 interface BikeRequested {
-    road: number;
-    dirt: number;
+    road: string;
+    dirt: string;
 }
 
-export const check_bikes_availability = async (req : BikeRequested) => {
-    const road_bikes_count = await prisma.bikes.aggregate({
-        _sum: {
-           road: true,
-        },
-    });
-    const dirt_bikes_count = await prisma.bikes.aggregate({
-        _sum: {
-           dirt: true,
-        },
-    });
+export const check_bikes_availability = async (req: BikeRequested): Promise<boolean> => {
+    try {
+        logger.info("Looking into database for bike availability:", req);
+        const road_bikes_count = await prisma.bikes.aggregate({
+            _sum: {
+                road: true,
+            },
+        });
 
-    if(req.road < (road_bikes_count._sum.road ?? 0)
-            && req.dirt < (dirt_bikes_count._sum.dirt ?? 0)){
-        /*TODO bisogna aggiornare il database */
-        return true;
+        const dirt_bikes_count = await prisma.bikes.aggregate({
+            _sum: {
+                dirt: true,
+            },
+        });
+
+        const available_road_bikes = road_bikes_count._sum.road ?? 0;
+        const available_dirt_bikes = dirt_bikes_count._sum.dirt ?? 0;
+
+        const requested_road_bikes = parseInt(req.road, 10);
+        const requested_dirt_bikes = parseInt(req.dirt, 10);
+        console.log(available_road_bikes, available_dirt_bikes, requested_road_bikes, requested_dirt_bikes)
+        if (requested_road_bikes <= available_road_bikes && requested_dirt_bikes <= available_dirt_bikes) {
+            logger.info("Bikes are available, updating database...");
+            await prisma.bikes.updateMany({
+                data: {
+                    road: {
+                        decrement: requested_road_bikes,
+                    },
+                    dirt: {
+                        decrement: requested_dirt_bikes,
+                    },
+                },
+            });
+
+            logger.info("Database successfully updated.");
+            return true;
+        }
+
+        logger.warn("Not enough bikes available.");
+        return false; // Not enough bikes available
+    } catch (error) {
+        logger.error("Error checking bike availability:", error);
+        return false; // Error occurred, handle accordingly
     }
-   return false;
-}
+};
