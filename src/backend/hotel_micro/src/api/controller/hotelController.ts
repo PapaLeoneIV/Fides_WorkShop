@@ -8,11 +8,13 @@ const URL_order_management = "http://localhost:3003/order/hotel_update";
 const order_schema = z.object({
   to: z.string(),
   from: z.string(),
+  room: z.string(),
 });
 
 interface hotelRequested {
   to: string;
   from: string;
+  room: string;
 }
 let hotel_booking: hotelRequested;
 
@@ -22,6 +24,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
       hotel_booking = {
         to: parsedBody.to,
         from: parsedBody.from,
+        room: parsedBody.room,
       };
     } catch (error) {
       logger.error("Error parsing data: request body not valid!", error);

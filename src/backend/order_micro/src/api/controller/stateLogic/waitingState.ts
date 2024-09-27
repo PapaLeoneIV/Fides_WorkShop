@@ -4,7 +4,7 @@ import { CompletedState } from "./completedState";
 import { FailedState } from "./failedState"; 
 
 export class WaitingState implements OrderState {
-    async handle_request(context: OrderContext, bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date }): Promise<void> {
+    async handle_request(context: OrderContext, bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date, room: number }): Promise<void> {
         console.log('Order is in pending state, processing...');
         try {
             const [bike_response, hotel_response] = await Promise.all([
