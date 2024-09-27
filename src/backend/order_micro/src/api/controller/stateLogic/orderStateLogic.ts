@@ -43,7 +43,6 @@ export class OrderContext {
     }
 
     async sendRequestToHotel(hotel: {from: Date, to: Date }): Promise<string> {
-        /*TODO implement POST request to bike */
         console.log("sending request to hotel service!")
         try {
             const response = await axios.post("http://localhost:3001/hotel_booking/send_data", { hotel });

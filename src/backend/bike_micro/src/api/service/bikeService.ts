@@ -9,7 +9,6 @@ interface BikeRequested {
 
 export const check_bikes_availability = async (req: BikeRequested): Promise<boolean> => {
     try {
-        logger.info("Looking into database for bike availability:", req);
         const road_bikes_count = await prisma.bikes.aggregate({
             _sum: {
                 road: true,
@@ -24,12 +23,13 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
 
         const available_road_bikes = road_bikes_count._sum.road ?? 0;
         const available_dirt_bikes = dirt_bikes_count._sum.dirt ?? 0;
-
+        
         const requested_road_bikes = parseInt(req.road, 10);
         const requested_dirt_bikes = parseInt(req.dirt, 10);
-        console.log(available_road_bikes, available_dirt_bikes, requested_road_bikes, requested_dirt_bikes)
-        if (requested_road_bikes <= available_road_bikes && requested_dirt_bikes <= available_dirt_bikes) {
-            logger.info("Bikes are available, updating database...");
+
+        if (requested_road_bikes <= available_road_bikes 
+            && requested_dirt_bikes <= available_dirt_bikes) {
+            console.log("Bikes are available, updating database...");
             await prisma.bikes.updateMany({
                 data: {
                     road: {
@@ -40,8 +40,7 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
                     },
                 },
             });
-
-            logger.info("Database successfully updated.");
+            console.log("Database successfully updated.");
             return true;
         }
 

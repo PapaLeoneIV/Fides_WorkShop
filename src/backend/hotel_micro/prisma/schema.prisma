@@ -12,3 +12,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Date {
+  id           Int         @id @default(autoincrement())
+  bookingDate  DateTime    @unique
+  
+  rooms        Room[] 
+}
+
+model Room {
+  id           Int         @id @default(autoincrement())
+  roomNumber   String      @unique
+  isAvailable  Boolean
+  
+  dateId       Int
+  date         Date        @relation(fields: [dateId], references: [id], onDelete: Cascade)
+}
+
+
+
