@@ -19,22 +19,29 @@ interface hotelRequested {
 let hotel_booking: hotelRequested;
 
 export const receive_order = async (req: Request, res: Response): Promise<void> => {
+  let parsedBody: any;  
+  try {
+      parsedBody = order_schema.parse(req.body.hotel);
+    } catch (error) {
+      logger.error("Error parsing data: request body not valid!", error);
+      res.status(400).json({ error: "Bad Request" });
+      return;
+    }
     try {
-      const parsedBody = order_schema.parse(req.body.hotel);
       hotel_booking = {
         to: parsedBody.to,
         from: parsedBody.from,
         room: parsedBody.room,
       };
+      const db_response = await check_hotel_availability(hotel_booking);
+      //RESPOND TO Order management
+      if (db_response) { res.send("HOTELAPPROVED"); }
+      else { res.send("HOTELDENIED");}  
     } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
       logger.error("Error parsing data: request body not valid!", error);
-      res.status(400).json({ error: "Bad Request" });
+      return;
     }
-    //CHECK DB
-    const db_response = await check_hotel_availability(hotel_booking);
-    //RESPOND TO Order management
-    if (db_response) { res.send("HOTELAPPROVED"); }
-    else { res.send("HOTELDENIED");}
   };
 
 export const handler_confirm_request = async (req: Request, res: Response): Promise<void> => {

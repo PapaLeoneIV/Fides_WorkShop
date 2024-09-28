@@ -12,7 +12,9 @@ export class OrderContext {
     private hotel: {from: Date, to: Date, room: number }
     //private card: string;
     
-    constructor(bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date, room: number }) {
+    constructor(bikes: { road: string, dirt: string}, 
+                        hotel: {from: Date, to: Date, room: number }) 
+    {
         this.bikes = bikes;
         this.hotel = hotel;
         this.state = new WaitingState()
@@ -34,7 +36,7 @@ export class OrderContext {
         /*TODO implement POST request to bike */
         console.log("sending request to bikeShop!")
         try {
-            const response = await axios.post("http://localhost:3000/bike_renting/send_data", { bikes });
+            const response : any = await axios.post("http://localhost:3000/bike_renting/send_data", { bikes });
             return response.data; 
         } catch (error) {
             console.error("Error sending request:", error);
@@ -45,13 +47,14 @@ export class OrderContext {
     async sendRequestToHotel(hotel: {from: Date, to: Date, room: number }): Promise<string> {
         console.log("sending request to hotel service!")
         try {
-            const response = await axios.post("http://localhost:3001/hotel_booking/send_data", { hotel });
+            const response : any = await axios.post("http://localhost:3001/hotel_booking/send_data", { hotel });
             return response.data; 
         } catch (error) {
             console.error("Error sending request:", error);
             throw error; 
         }
     }
+
 
     /*TODO implement the different requests to Money*/
     /*TODO implement the response to UI */

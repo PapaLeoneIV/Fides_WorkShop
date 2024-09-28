@@ -1,31 +1,35 @@
 import { Request, Response } from 'express';
 import { logger } from "../../../../logger/logger"
 import { OrderContext } from './stateLogic/orderStateLogic';
+import { z } from 'zod';
 
-
-let order = {
-    "order": {
-        "UUID" : "abc-213-sadsa-4df-ad3-sda",
-        "card": "1234-4321-5678-8765",
-        "bikes": {
-            "road": "2",
-                "dirt": "3"
-        },
-        "hotel": {
-            "from": "12/12/12",
-                "to": "01/2/16",
-                "room": "104"
-        }
-    }
-}
+const order_schema = z.object({
+    order: z.object({
+        UUID: z.string(),
+        card: z.string(),
+        bikes: z.object({
+            road: z.string(),
+            dirt: z.string()
+        }),
+        hotel: z.object({
+            from: z.string(),
+            to: z.string(),
+            room: z.string()
+        })
+    })
+});
 
 
 export const handler_book_vacation = async (req: Request, res: Response): Promise<void> => {
-    console.log("Order received")
+    let parsedBody: any;
     try {
-        /* TODO RICEVO UNA RICHIESTA DA PARTE DI UI/SECURITY */
-        /*FACCIO IL PARSING DELLA RICHIESTA
-        genero i 3 oggetti che rappresentano i 3 diversi ordini*/
+        parsedBody = order_schema.parse(req.body);
+    } catch (error) {
+        logger.error("Error parsing data: request body not valid!", error);
+        res.status(400).json({ error: "Bad Request" });
+        return;
+    }
+    try {
         const bikes = req.body.order.bikes
         const hotel = req.body.order.hotel
 
@@ -37,6 +41,7 @@ export const handler_book_vacation = async (req: Request, res: Response): Promis
     } catch (error) {
         logger.error('Error sending data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
+        return;
     }
 }
 

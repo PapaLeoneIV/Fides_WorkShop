@@ -18,26 +18,38 @@ interface BikeRequested {
 }
 let bike_requested: BikeRequested;
 
-export const receive_order = async (req: Request, res: Response): Promise<void> => {
+export const receive_order = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   //PARSE DATA
+  let parsedBody: any;
   try {
-    const parsedBody = order_schema.parse(req.body.bikes);
+    parsedBody = order_schema.parse(req.body.bikes);
+  } catch (error) {
+    res.status(400).json({ error: "Bad Request" });
+    logger.info("Error parsing data: request body not valid!", error);
+    return;
+  }
+  try {
     console.log("Data received:", parsedBody);
     bike_requested = {
       road: parsedBody.road,
       dirt: parsedBody.dirt,
     };
+    const db_response = await check_bikes_availability(bike_requested);
+    //RESPOND TO Order Management
+    if (db_response) {
+      res.send("BIKEAPPROVED");
+    } else {
+      res.send("BIKEDENIED");
+    }
   } catch (error) {
     logger.error("Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
+    return;
   }
-  //CHECK DB
-  const db_response = await check_bikes_availability(bike_requested);
-  //RESPOND TO Order Management
-  if (db_response) { res.send("BIKEAPPROVED"); }
-  else { res.send("BIKEDENIED");}
 };
-
 
 export const handler_confirm_request = async (
   req: Request,
