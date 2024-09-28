@@ -50,35 +50,3 @@ export const receive_order = async (
     return;
   }
 };
-
-export const handler_confirm_request = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    /*TODO implemt the response back to OOM(order management service) to update it about the state of the request */
-    const data = {
-      message: "Request taken in consideration, will answear back shortly!",
-    };
-    res.status(200).json(data);
-  } catch (error) {
-    logger.error("Error sending data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-export const handler_bike_shop_update = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    /*TODO implemt the response back to OOM(order management service) to update it about the state of the request */
-    const data = {
-      message: "Request taken in consideration, will answear back shortly!",
-    };
-    res.status(200).json(data);
-  } catch (error) {
-    logger.error("Error sending data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
