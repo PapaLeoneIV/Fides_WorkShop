@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
-import { logger } from "../../../../logger/logger";
 import { z } from "zod";
-import axios from "axios";
 import { check_bikes_availability } from "../service/bikeService";
-import { parse } from "dotenv";
 
 const URL_order_management = "http://localhost:3003/order/bike_update";
 
@@ -28,7 +25,7 @@ export const receive_order = async (
     parsedBody = order_schema.parse(req.body.bikes);
   } catch (error) {
     res.status(400).json({ error: "Bad Request" });
-    logger.info("Error parsing data: request body not valid!", error);
+    console.log("Error parsing data: request body not valid!", error);
     return;
   }
   try {
@@ -45,7 +42,7 @@ export const receive_order = async (
       res.send("BIKEDENIED");
     }
   } catch (error) {
-    logger.error("Error parsing data: request body not valid!", error);
+    console.log("Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
     return;
   }

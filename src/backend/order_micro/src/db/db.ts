@@ -1,7 +1,6 @@
 import pkg from 'pg';
 import dotenv from 'dotenv';
 import { exit } from 'process';
-import { logger } from "../../../logger/logger";
 
 
 const { Pool } = pkg;
@@ -22,7 +21,7 @@ export async function connectToDatabase() {
         await db.connect();
         console.log('[INFO] Postgres connected on port : ' + process.env.POSTGRES_PORT);
     } catch (error) {
-        logger.error('[ERROR] Error connecting to Postgres', error);
+        console.log('[ERROR] Error connecting to Postgres', error);
         exit(1);
     }
 }

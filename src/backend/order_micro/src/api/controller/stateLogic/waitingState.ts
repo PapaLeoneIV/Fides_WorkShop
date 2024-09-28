@@ -1,5 +1,4 @@
-import { logger } from "../../../../../logger/logger";
-import { OrderState, OrderContext } from "./orderStateLogic";
+import { OrderState, order_context } from "./orderStateLogic";
 import { CompletedState } from "./completedState";
 import { FailedState } from "./failedState";
 
@@ -8,7 +7,7 @@ entrambi confermato la disponibilità */
 
 export class WaitingState implements OrderState {
   async handle_request(
-    context: OrderContext,
+    context: order_context,
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number }
   ): Promise<void> {
@@ -29,15 +28,15 @@ export class WaitingState implements OrderState {
       ) {
         console.log("approved");
         context.setState(new CompletedState());
-        context.processOrder(bikes, hotel);
+        context.process_order(bikes, hotel);
       } else {
         console.log("denied");
         /*TODO prob will need to differentiate between various FailedStates */
         context.setState(new FailedState());
-        context.processOrder(bikes, hotel);
+        context.process_order(bikes, hotel);
       }
     } catch (error) {
-      logger.error("Error in sending order!");
+      console.log("Error in sending order!");
       context.setState(new FailedState());
     }
   }

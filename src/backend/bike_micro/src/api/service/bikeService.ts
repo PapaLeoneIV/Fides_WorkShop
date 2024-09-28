@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { logger } from "../../../../logger/logger"
 const prisma = new PrismaClient();
 
 interface BikeRequested {
@@ -44,10 +43,10 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
             return true;
         }
 
-        logger.warn("Not enough bikes available.");
+        console.log("Not enough bikes available.");
         return false; 
     } catch (error) {
-        logger.error("Error checking bike availability:", error);
+        console.log("Error checking bike availability:", error);
         return false; 
     }
 };

@@ -1,12 +1,11 @@
-import { logger } from "../../../../../logger/logger"
 import { WaitingState } from './waitingState'
 import axios from "axios"
 
 export interface OrderState {
-    handle_request(context: OrderContext, bikes:{road: string, dirt:string}, hotel: {from: Date, to: Date, room: number }): Promise<void>;
+    handle_request(context: order_context, bikes:{road: string, dirt:string}, hotel: {from: Date, to: Date, room: number }): Promise<void>;
 }
 
-export class OrderContext {
+export class order_context {
     private state: OrderState;
     private bikes: {road: string, dirt: string};
     private hotel: {from: Date, to: Date, room: number }
@@ -28,7 +27,7 @@ export class OrderContext {
         this.state = state;
     }
 
-    async processOrder(bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date, room: number }) {
+    async process_order(bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date, room: number }) {
         await this.state.handle_request(this, bikes, hotel)
     }
 

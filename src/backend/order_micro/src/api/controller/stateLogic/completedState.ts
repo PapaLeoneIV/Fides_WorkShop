@@ -1,8 +1,7 @@
-import { logger } from "../../../../../logger/logger"
-import {OrderState, OrderContext} from "orderStateLogic"
+import {OrderState, order_context} from "orderStateLogic"
 
 export class CompletedState implements OrderState {
-    async handle_request(context: OrderContext): Promise<void> {
+    async handle_request(context: order_context): Promise<void> {
         console.log('Order is completed!');
         /*TODO send response to UI */
     }
