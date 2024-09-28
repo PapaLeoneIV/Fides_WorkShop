@@ -12,16 +12,16 @@ start_docker_compose:
 
 # Microservices targets
 start_bike_micro:
-	cd $(BIKE_MICRO_DIR) && npx tsx src/index.ts
+	cd $(BIKE_MICRO_DIR)  npm install && npx tsx src/index.ts
 
 start_hotel_micro:
-	cd $(HOTEL_MICRO_DIR) && npx tsx src/index.ts
+	cd $(HOTEL_MICRO_DIR) && npm install && npx tsx src/index.ts
 
 start_money_micro:
-	cd $(MONEY_MICRO_DIR) && npx tsx src/index.ts
+	cd $(MONEY_MICRO_DIR) && npm install && npx tsx src/index.ts
 
 start_order_micro:
-	cd $(ORDER_MICRO_DIR) && npx tsx src/index.ts
+	cd $(ORDER_MICRO_DIR) && npm install && npx tsx src/index.ts
 
 start_all:
 	$(MAKE) -j 4 start_bike_micro start_hotel_micro start_money_micro start_order_micro
