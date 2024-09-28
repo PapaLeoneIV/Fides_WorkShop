@@ -13,7 +13,8 @@ let order = {
         },
         "hotel": {
             "from": "12/12/12",
-                "to": "01/2/16"
+                "to": "01/2/16",
+                "room": "104"
         }
     }
 }
@@ -31,7 +32,8 @@ export const handler_book_vacation = async (req: Request, res: Response): Promis
         const order = new OrderContext(bikes, hotel);
         console.log("Processing the order...")
         order.processOrder(bikes, hotel);
-        res.send("Order is being processed OK?\n")
+        //FIRST RESPONSE TO CLIENT I SUPPOSE INNIT
+        res.send("Order is being processed\n")
     } catch (error) {
         logger.error('Error sending data:', error);
         res.status(500).json({ error: 'Internal Server Error' });

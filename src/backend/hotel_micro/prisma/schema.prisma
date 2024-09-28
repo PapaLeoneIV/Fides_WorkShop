@@ -13,20 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Date {
+model date {
   id           Int         @id @default(autoincrement())
-  bookingDate  DateTime    @unique
+  booking_date  DateTime    @unique
   
-  rooms        Room[] 
+  rooms        room[] 
 }
 
-model Room {
+model room {
   id           Int         @id @default(autoincrement())
-  roomNumber   String      @unique
-  isAvailable  Boolean
+  room_number   String      @unique
+  is_available  Boolean
   
-  dateId       Int
-  date         Date        @relation(fields: [dateId], references: [id], onDelete: Cascade)
+  date_id       Int
+  date         date        @relation(fields: [date_id], references: [id], onDelete: Cascade)
 }
 
 
