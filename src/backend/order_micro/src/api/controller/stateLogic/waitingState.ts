@@ -3,6 +3,11 @@ import { OrderState, OrderContext } from "./orderStateLogic";
 import { CompletedState } from "./completedState"; 
 import { FailedState } from "./failedState"; 
 
+
+
+/*TODO implementare la chiamata verso al servizio dei soldi solo quando bike and hotel hanno
+entrambi confermato la disponibilità */
+
 export class WaitingState implements OrderState {
     async handle_request(context: OrderContext, bikes: { road: string, dirt: string}, hotel: {from: Date, to: Date, room: number }): Promise<void> {
         console.log('Order is in pending state, processing...');
