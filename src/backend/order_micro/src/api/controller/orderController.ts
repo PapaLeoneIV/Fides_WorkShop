@@ -2,28 +2,29 @@ import { Request, Response } from 'express';
 import { order_context } from '../service/orderService';
 import { z } from 'zod';
 
-const orderSchema = z.object({
-  order: z.object({
-    payment_info: z.object({
-      orderID: z.string(),
-      card: z.string(),
-      cvc: z.string(),
-      expire_date: z.string(),
-      amount: z.string()
-    }),
-    bikes: z.object({
-      road: z.string(),
-      dirt: z.string()
-    }),
-    hotel: z.object({
-      from: z.string(),
-      to: z.string(),
-      room: z.string()
-    })
-  })
-});
+
 
 const parse_request = (body: any) => {
+  const orderSchema = z.object({
+    order: z.object({
+      payment_info: z.object({
+        orderID: z.string(),
+        card: z.string(),
+        cvc: z.string(),
+        expire_date: z.string(),
+        amount: z.string()
+      }),
+      bikes: z.object({
+        road: z.string(),
+        dirt: z.string()
+      }),
+      hotel: z.object({
+        from: z.string(),
+        to: z.string(),
+        room: z.string()
+      })
+    })
+  });
   try {
     return orderSchema.parse(body);
   } catch (error) {
