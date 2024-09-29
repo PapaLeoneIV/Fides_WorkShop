@@ -82,10 +82,43 @@ export const check_hotel_availability = async (
     console.log(`Room ${roomNumber} has been successfully booked.`);
     return true;
   } catch (error) {
-    console.log(
-      "An error occurred while checking hotel availability: ",
-      error
-    );
+    console.log("An error occurred while checking hotel availability: ", error);
+    return false;
+  }
+};
+
+export const revert_hotel_order = async (
+  req: HotelRequest
+): Promise<boolean> => {
+  try {
+    const startDate = new Date(req.from);
+    const endDate = new Date(req.to);
+    const roomNumber = req.room;
+
+    const dateRecords = await getDateIdsForRange(startDate, endDate);
+    const dateIds = dateRecords.map((date) => date.id);
+
+    if (dateIds.length === 0) {
+      console.log("No dates found for the requested range.");
+      return false;
+    }
+
+    await prisma.room.updateMany({
+      where: {
+        date_id: {
+          in: dateIds,
+        },
+        room_number: roomNumber,
+      },
+      data: {
+        is_available: true,
+      },
+    });
+
+    console.log(`Room ${roomNumber} has been successfully reverted.`);
+    return true;
+  } catch (error) {
+    console.log("An error occurred while reverting hotel order: ", error);
     return false;
   }
 };

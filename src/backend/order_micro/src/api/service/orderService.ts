@@ -108,6 +108,44 @@ export class order_context {
     }
   }
 
+  async revertBikeOrder(bikes: {
+    road: string;
+    dirt: string;
+  }): Promise<string> {
+    console.log("reverting bike order!");
+    try {
+      const response: any = await axios.post(
+        "http://localhost:3000/bike_renting/revert_order",
+        {
+          bikes,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error sending request:", error);
+      throw error;
+    }
+  }
+  async revertHotelOrder(hotel: {
+    from: Date;
+    to: Date;
+    room: number;
+  }): Promise<string> {
+    console.log("reverting bike order!");
+    try {
+      const response: any = await axios.post(
+        "http://localhost:3001/hotel_booking/revert_order",
+        {
+          hotel,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error sending request:", error);
+      throw error;
+    }
+  }
+
   /*TODO implement the different requests to Money*/
   /*TODO implement the response to UI */
 }
@@ -217,16 +255,18 @@ class ItemsDeniedState implements OrderState {
     }
   ): Promise<void> {
     if (!this.failureInfo.bikeFailed) {
-      /**REVERT TRANSACTION HOTEL*/
-      /*TODO roll back database */
-  
+      const response: string = await context.revertHotelOrder(hotel);
+      if (response === "HOTELORDERREVERTED") {
+        console.log("Reverted hotel order!");
+      }
     }
     if (!this.failureInfo.hotelFailed) {
-      /**REVERT TRANSACTION BIKE*/
-      /*TODO roll back database */
-  
+      const response: string = await context.revertBikeOrder(bikes);
+      if (response === "BIKEORDERREVERTED") {
+        console.log("Reverted bike order!");
+      }
+      /*TODO respond to UI */
     }
-    /*TODO respond to UI */
   }
 }
 
@@ -261,7 +301,9 @@ class PaymentDeniedState implements OrderState {
       amount: string;
     }
   ): Promise<void> {
-    context.setState(new ItemsDeniedState({ bikeFailed: true, hotelFailed: true }));
+    context.setState(
+      new ItemsDeniedState({ bikeFailed: true, hotelFailed: true })
+    );
     context.process_order(bikes, hotel, payment_info);
     /*TODO respond to UI */
   }

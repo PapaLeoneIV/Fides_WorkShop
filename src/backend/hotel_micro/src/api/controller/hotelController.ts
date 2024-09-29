@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { check_hotel_availability } from "../service/hotelService";
+import { check_hotel_availability, revert_hotel_order } from "../service/hotelService";
 
 const URL_order_management = "http://localhost:3003/order/hotel_update";
 
@@ -42,3 +42,32 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
       return;
     }
   };
+
+export const revert_order = async (req: Request, res: Response): Promise<void> => {
+  let parsedBody: any;  
+  try {
+      parsedBody = order_schema.parse(req.body.hotel);
+    } catch (error) {
+      console.log("Error parsing data: request body not valid!", error);
+      res.status(400).json({ error: "Bad Request" });
+      return;
+    }
+    try {
+      hotel_booking = {
+        to: parsedBody.to,
+        from: parsedBody.from,
+        room: parsedBody.room,
+      };
+      const db_response = await revert_hotel_order(hotel_booking);
+
+      if (db_response) {
+        res.send("HOTELORDERREVERTED");
+      } else {
+        res.send("HOTELORDERNOTREVERTED");
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+      console.log("Error parsing data: request body not valid!", error);
+      return;
+    }
+  }

@@ -52,3 +52,23 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
         return false; 
     }
 };
+
+export const revert_bike_order = async (req: BikeRequested): Promise<boolean> => {
+    try {
+        await prisma.bikes.updateMany({
+            data: {
+                road: {
+                    increment: parseInt(req.road, 10),
+                },
+                dirt: {
+                    increment: parseInt(req.dirt, 10),
+                },
+            },
+        });
+        console.log("Database successfully updated.");
+        return true;
+    } catch (error) {
+        console.log("Error reverting bike order:", error);
+        return false;
+    }
+}
