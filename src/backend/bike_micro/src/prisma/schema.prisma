@@ -14,15 +14,17 @@ datasource db {
 }
 
 model Order {
-  id       String  @id @default(uuid())
-  road     String
-  dirt     String
+  id                  String   @id @default(uuid())
+  road_bike_requested String
+  dirt_bike_requested String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 }
 
 model Bikes {
-  id       String  @id @default(uuid())
-  road     Int
-  dirt     Int
+  id   String @id @default(uuid())
+  road Int
+  dirt Int
 
   @@map("Bikes") // Maps the model to the "Bikes" table in your database
 }
