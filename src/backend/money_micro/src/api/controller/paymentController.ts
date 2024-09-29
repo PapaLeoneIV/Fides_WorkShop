@@ -3,16 +3,17 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 const payment_schema = z.object({
-  orderID: z.string(),
-  card: z.string(),
-  cvc: z.string(),
-  expire_date: z.string(),
-  amount: z.string(),
+  payment_info: z.object({
+    orderID: z.string(),
+    card: z.string(),
+    cvc: z.string(),
+    expire_date: z.string(),
+    amount: z.string(),
+  }),
 });
 
-const send_payment = async (parsedBody: any): Promise<string> => {
-  let res = Math.random() < 0.5 ? "PAYMENTAPPROVED" : "PAYMENTDENIED";
-  console.log("Payment sent:", parsedBody);
+const send_payment = async (parsedBody: any): Promise<boolean> => {
+  let res = Math.random() < 0.5 ? true : false;
   return res;
 };
 
@@ -29,10 +30,13 @@ export const receive_order = async (
     return;
   }
   try {
-    let tmpResponse = await send_payment(parsedBody);
-    if (tmpResponse === "PAYMENTAPPROVED") {
+    console.log("Sending payment...");
+    let bank_response = await send_payment(parsedBody);
+    if (bank_response) {
+      console.log("Payment was succesfull!");
       res.send("PAYMENTAPPROVED");
     } else {
+      console.log("Payment was denied!");
       res.send("PAYMENTDENIED");
     }
   } catch (error) {
