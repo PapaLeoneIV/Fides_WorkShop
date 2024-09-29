@@ -6,6 +6,18 @@ interface BikeRequested {
     dirt: string;
 }
 
+interface bike_order{
+    id : number;
+    road: number;
+    dirt: number;
+    renting_status: string;
+    created_at: Date;
+    updated_at: Date;
+}
+
+
+
+
 export const check_bikes_availability = async (req: BikeRequested): Promise<boolean> => {
     try {
         const road_bikes_count = await prisma.bikes.aggregate({
