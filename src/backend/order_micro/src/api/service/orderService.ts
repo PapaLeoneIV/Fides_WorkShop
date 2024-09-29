@@ -1,5 +1,11 @@
 import axios from "axios";
-//MAIN CLASS---------------------------------------------------------------------
+//BASE CLASS--------------------------------------------------------------
+
+/**I develop this class following the STATE PATTERN DESIGN, where each state has
+ * a set of different behaviours. The main idea is to have a context that will
+ * change its state depending on the response of the different services. The context
+ * will handle the request and will call the different services to process the order.
+ */
 export class order_context {
   private state: OrderState;
   private bikes: { road: string; dirt: string };
@@ -11,7 +17,6 @@ export class order_context {
     expire_date: string;
     amount: string;
   };
-  //private card: string;
 
   constructor(
     bikes: { road: string; dirt: string },
@@ -38,6 +43,9 @@ export class order_context {
     this.state = state;
   }
 
+  /**Each one of the different state will behave differently but all of them
+   * will call this method to process the order
+   */
   async process_order(
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
@@ -51,6 +59,7 @@ export class order_context {
   ) {
     await this.state.handle_request(this, bikes, hotel, payment_info);
   }
+
 
   async sendRequestToBikeShop(bikes: {
     road: string;
@@ -126,6 +135,7 @@ export class order_context {
       throw error;
     }
   }
+
   async revertHotelOrder(hotel: {
     from: Date;
     to: Date;
@@ -146,7 +156,6 @@ export class order_context {
     }
   }
 
-  /*TODO implement the different requests to Money*/
   /*TODO implement the response to UI */
 }
 
@@ -165,6 +174,10 @@ interface OrderState {
   ): Promise<void>;
 }
 //DIFFERENT STATES with different behaviours--------------------------------------
+/**This is the inital state of the order, it will forward the request to the dedicated service.
+ * If the response is positive, it will change the state to ItemsConfirmedState, otherwise
+ * it will change the state to ItemsDeniedState.
+ */
 class StartOrderState implements OrderState {
   async handle_request(
     context: order_context,
@@ -205,6 +218,10 @@ class StartOrderState implements OrderState {
   }
 }
 
+/**We reach this stage when, all the requested items were fulfilled, and we only need to
+ * contact the payment service to process the payment. If the payment is approved, we will
+ * change the state to PaymentAcceptedState, otherwise we will change the state to PaymentDeniedState.
+ */
 class ItemsConfirmedState implements OrderState {
   async handle_request(
     context: order_context,
@@ -235,6 +252,10 @@ class ItemsConfirmedState implements OrderState {
   }
 }
 
+/**We reach this state, when one of the items requested were not available. Once we know this, we can perform
+ * the necessary actions to revert the order that was already processed. We will change the state to ItemsDeniedState
+ * and we will process the order again.
+ */
 class ItemsDeniedState implements OrderState {
   private failureInfo: { bikeFailed: boolean; hotelFailed: boolean };
 
@@ -272,6 +293,9 @@ class ItemsDeniedState implements OrderState {
   }
 }
 
+/**We reach this stage when everything down the pipeline went well, the only thing left is
+ * to send the response to the UI.
+ */
 class PaymentAcceptedState implements OrderState {
   async handle_request(
     context: order_context,
@@ -290,6 +314,8 @@ class PaymentAcceptedState implements OrderState {
   }
 }
 
+/**We reach this stage when the payment was denied. We will revert the order and send the response to the UI.
+ */
 class PaymentDeniedState implements OrderState {
   async handle_request(
     context: order_context,
