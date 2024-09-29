@@ -4,18 +4,30 @@ export class order_context {
   private state: OrderState;
   private bikes: { road: string; dirt: string };
   private hotel: { from: Date; to: Date; room: number };
-  private payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;};
+  private payment_info: {
+    orderID: string;
+    card: string;
+    cvc: string;
+    expire_date: string;
+    amount: string;
+  };
   //private card: string;
 
   constructor(
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
-    payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;}
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
   ) {
     this.bikes = bikes;
     this.hotel = hotel;
     this.payment_info = payment_info;
-    this.state = new WaitingState();
+    this.state = new StartOrderState();
   }
 
   getState() {
@@ -29,7 +41,13 @@ export class order_context {
   async process_order(
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
-    payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;}
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
   ) {
     await this.state.handle_request(this, bikes, hotel, payment_info);
   }
@@ -99,16 +117,28 @@ interface OrderState {
     context: order_context,
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
-    payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;}
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
   ): Promise<void>;
 }
 //DIFFERENT STATES with different behaviours--------------------------------------
-class WaitingState implements OrderState {
+class StartOrderState implements OrderState {
   async handle_request(
     context: order_context,
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
-    payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;}
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
   ): Promise<void> {
     console.log("Order is in pending state, processing...");
     try {
@@ -123,21 +153,17 @@ class WaitingState implements OrderState {
         context.setState(new ItemsConfirmedState());
         context.process_order(bikes, hotel, payment_info);
       } else {
-        /*TODO prob will need to differentiate between various FailedStates (BIG MAYBE) */
-        context.setState(new FailedState());
+        const failureInfo = {
+          bikeFailed: bike_response !== "BIKEAPPROVED",
+          hotelFailed: hotel_response !== "HOTELAPPROVED",
+        };
+        context.setState(new ItemsDeniedState(failureInfo));
         context.process_order(bikes, hotel, payment_info);
       }
     } catch (error) {
       console.log("Error in sending order!");
-      context.setState(new FailedState());
+      context.setState(new ErrorState());
     }
-  }
-}
-
-class CompletedState implements OrderState {
-  async handle_request(context: order_context): Promise<void> {
-    console.log("Order is completed!");
-    /*TODO send response to UI */
   }
 }
 
@@ -146,29 +172,102 @@ class ItemsConfirmedState implements OrderState {
     context: order_context,
     bikes: { road: string; dirt: string },
     hotel: { from: Date; to: Date; room: number },
-    payment_info: { orderID: string, card: string, cvc: string, expire_date: string, amount: string;}
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
   ): Promise<void> {
     console.log("Items are confirmed, waiting for payment...");
     try {
       const response = await context.sendRequestToMoney(payment_info);
       if (response === "PAYMENTAPPROVED") {
-        context.setState(new CompletedState());
+        context.setState(new PaymentAcceptedState());
         context.process_order(bikes, hotel, payment_info);
       } else {
-        context.setState(new FailedState());
+        context.setState(new PaymentDeniedState());
         context.process_order(bikes, hotel, payment_info);
       }
     } catch (error) {
       console.log("Error in sending order!");
-      context.setState(new FailedState());
+      context.setState(new ErrorState());
     }
   }
 }
 
-/*TODO I need to understand if it will be better to split the failedState in various organs
- * so that each failed state will have its routine to rollback the changes
- */
-class FailedState implements OrderState {
+class ItemsDeniedState implements OrderState {
+  private failureInfo: { bikeFailed: boolean; hotelFailed: boolean };
+
+  constructor(failureInfo: { bikeFailed: boolean; hotelFailed: boolean }) {
+    this.failureInfo = failureInfo;
+  }
+
+  async handle_request(
+    context: order_context,
+    bikes: { road: string; dirt: string },
+    hotel: { from: Date; to: Date; room: number },
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
+  ): Promise<void> {
+    if (!this.failureInfo.bikeFailed) {
+      /**REVERT TRANSACTION HOTEL*/
+      /*TODO roll back database */
+  
+    }
+    if (!this.failureInfo.hotelFailed) {
+      /**REVERT TRANSACTION BIKE*/
+      /*TODO roll back database */
+  
+    }
+    /*TODO respond to UI */
+  }
+}
+
+class PaymentAcceptedState implements OrderState {
+  async handle_request(
+    context: order_context,
+    bikes: { road: string; dirt: string },
+    hotel: { from: Date; to: Date; room: number },
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
+  ): Promise<void> {
+    console.log("Payment was succesfull!");
+    /*TODO send response to UI */
+  }
+}
+
+class PaymentDeniedState implements OrderState {
+  async handle_request(
+    context: order_context,
+    bikes: { road: string; dirt: string },
+    hotel: { from: Date; to: Date; room: number },
+    payment_info: {
+      orderID: string;
+      card: string;
+      cvc: string;
+      expire_date: string;
+      amount: string;
+    }
+  ): Promise<void> {
+    context.setState(new ItemsDeniedState({ bikeFailed: true, hotelFailed: true }));
+    context.process_order(bikes, hotel, payment_info);
+    /*TODO respond to UI */
+  }
+}
+
+class ErrorState implements OrderState {
   async handle_request(context: order_context): Promise<void> {
     console.log("Order was not succesfull!");
     /*TODO roll back database */
