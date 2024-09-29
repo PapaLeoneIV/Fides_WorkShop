@@ -4,8 +4,13 @@ import { z } from 'zod';
 
 const orderSchema = z.object({
   order: z.object({
-    UUID: z.string(),
-    card: z.string(),
+    payment_info: z.object({
+      orderID: z.string(),
+      card: z.string(),
+      cvc: z.string(),
+      expire_date: z.string(),
+      amount: z.string()
+    }),
     bikes: z.object({
       road: z.string(),
       dirt: z.string()
@@ -31,11 +36,11 @@ export const handler_book_vacation = async (req: Request, res: Response): Promis
   try {
     const parsedBody = parse_request(req.body);
 
-    const { bikes, hotel } = parsedBody.order;
+    const { bikes, hotel, payment_info } = parsedBody.order;
 
-    const order = new order_context(bikes, hotel);
+    const order = new order_context(bikes, hotel, payment_info);
     console.log("Processing the order...");
-    order.process_order(bikes, hotel);
+    order.process_order(bikes, hotel, payment_info);
 
     res.status(202).send("Order is being processed");
 

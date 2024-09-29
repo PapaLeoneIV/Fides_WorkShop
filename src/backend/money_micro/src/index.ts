@@ -7,7 +7,7 @@ const port = 3002;
 
 function main() {
     connectToDatabase();
-    app.use("/money_confirmation/", MoneyRouter);
+    app.use("/payment/", MoneyRouter);
 
     app.listen(port, () => {
        console.log("[INFO] Server running on http://localhost:3002");

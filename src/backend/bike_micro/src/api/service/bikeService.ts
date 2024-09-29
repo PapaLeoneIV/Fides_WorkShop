@@ -25,6 +25,8 @@ export const check_bikes_availability = async (req: BikeRequested): Promise<bool
         
         const requested_road_bikes = parseInt(req.road, 10);
         const requested_dirt_bikes = parseInt(req.dirt, 10);
+        console.log("Requested road bikes:", requested_road_bikes);
+        console.log("Requested dirt bikes:", requested_dirt_bikes);
 
         if (requested_road_bikes <= available_road_bikes 
             && requested_dirt_bikes <= available_dirt_bikes) {
