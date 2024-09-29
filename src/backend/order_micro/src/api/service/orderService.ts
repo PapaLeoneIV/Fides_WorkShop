@@ -131,7 +131,7 @@ export class order_context {
     to: Date;
     room: number;
   }): Promise<string> {
-    console.log("reverting bike order!");
+    console.log("reverting hotel order!");
     try {
       const response: any = await axios.post(
         "http://localhost:3001/hotel_booking/revert_order",
@@ -254,13 +254,15 @@ class ItemsDeniedState implements OrderState {
       amount: string;
     }
   ): Promise<void> {
-    if (!this.failureInfo.bikeFailed) {
+    if (this.failureInfo.bikeFailed) {
+      console.log("Bike failed, reverting hotel order...");
       const response: string = await context.revertHotelOrder(hotel);
       if (response === "HOTELORDERREVERTED") {
         console.log("Reverted hotel order!");
       }
     }
-    if (!this.failureInfo.hotelFailed) {
+    if (this.failureInfo.hotelFailed) {
+      console.log("Hotel failed, reverting bike order...");
       const response: string = await context.revertBikeOrder(bikes);
       if (response === "BIKEORDERREVERTED") {
         console.log("Reverted bike order!");
