@@ -4,7 +4,10 @@ import axios from "axios";
 /**I develop this class following the STATE PATTERN DESIGN, where each state has
  * a set of different behaviours. The main idea is to have a context that will
  * change its state depending on the response of the different services. The context
- * will handle the request and will call the different services to process the order.
+ * will handle the request and will call the different services to process the order. 
+ * In doing so i tried to mix this STATE pattern with the SAGA PATTERN , where we have
+ * a pipeline of services that will be called one after the other. If one of the services
+ * fails, we will revert the order and send the response to the UI.
  */
 export class order_context {
   private state: OrderState;
