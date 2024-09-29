@@ -98,7 +98,7 @@ export class order_context {
     console.log("sending request to money service!");
     try {
       const response: any = await axios.post(
-        "http://localhost:3002/payment/send_payment",
+        "http://localhost:3002/payment/send_data",
         { payment_info }
       );
       return response.data;
