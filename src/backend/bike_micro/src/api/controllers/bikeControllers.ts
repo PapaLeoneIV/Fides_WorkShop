@@ -33,25 +33,24 @@ export const receive_order = async (
   request_body.updated_at = new Date();
 
 
-  if (await manager_ordini.getBikeOrderInfoById(request_body.order_id)) {
+  if (await manager_ordini.check_existance(request_body.order_id)) {
     res.status(409).json({ error: "Bike order already exists" });
     return;
   }
 
-
-  let new_bike_order = await manager_ordini.createBikeOrder(request_body);
+  let new_bike_order = await manager_ordini.create_order(request_body);
   let available_dirt_bikes = await manager_db.getNumberOfDirtBikes();
   let available_road_bikes = await manager_db.getNumberOfRoadBikes();
   if (
     available_dirt_bikes >= new_bike_order.dirt_bike_requested &&
     available_road_bikes >= new_bike_order.road_bike_requested
   ) {
-  manager_ordini.updateBikeOrderStatus(
+  manager_ordini.update_status(
       new_bike_order,
       "APPROVED"
     );
   } else {
-  manager_ordini.updateBikeOrderStatus(
+  manager_ordini.update_status(
       new_bike_order,
       "DENIED"
     );
@@ -78,7 +77,7 @@ export const revert_order = async (
     console.log("Error parsing data: request body not valid!", error);
     return;
   }
-  if (!await manager_ordini.getBikeOrderInfoById(request_body.order_id)) {
+  if (!await manager_ordini.check_existance(request_body.order_id)) {
     res.status(409).json({ error: "Bike order does not exists" });
     return;
   }
@@ -87,10 +86,10 @@ export const revert_order = async (
   request_body.created_at = new Date();
   request_body.updated_at = new Date();
 
-  let order = await manager_ordini.createBikeOrder(request_body);
+  let order = await manager_ordini.create_order(request_body);
 
   manager_db.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
-  manager_ordini.updateBikeOrderStatus(order, "REVERTED");
+  manager_ordini.update_status(order, "REVERTED");
   
   res.send("BIKEORDERREVERTED");
 };
