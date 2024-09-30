@@ -13,16 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Order {
-  id       String  @id @default(uuid())
-  road     String
-  dirt     String
+model order {
+  id                  String   @id @default(uuid())
+  order_id            String
+  road_bike_requested String
+  dirt_bike_requested String
+  renting_status      String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 }
 
-model Bikes {
-  id       String  @id @default(uuid())
-  road     Int
-  dirt     Int
+model bikes {
+  id   String @id @default(uuid())
+  road Int
+  dirt Int
 
-  @@map("Bikes") // Maps the model to the "Bikes" table in your database
+  @@map("bikes") // Maps the model to the "bikes" table in your database
 }
