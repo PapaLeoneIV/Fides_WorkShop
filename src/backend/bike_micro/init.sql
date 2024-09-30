@@ -1,10 +1,10 @@
-CREATE TABLE "Bikes" (
+CREATE TABLE "bikes" (
     "id" TEXT NOT NULL,
     "road" INTEGER NOT NULL,
     "dirt" INTEGER NOT NULL,
-    CONSTRAINT "Bikes_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "bikes_pkey" PRIMARY KEY ("id")
 );
 
 -- Insert sample data
-INSERT INTO "Bikes" ("id", "road", "dirt") VALUES
+INSERT INTO "bikes" ("id", "road", "dirt") VALUES
 ('1', 5000, 6969);
