@@ -7,7 +7,6 @@ import {
 } from "../service/bikeService";
 
 const order_schema = z.object({
-  bikes: z.object({
     order_id: z.string(),
     road_bike_requested: z.string().refine((value) => !isNaN(Number(value)) && Number(value) >= 0, {
       message: "Must be a string representing a number greater than or equal to 0",
@@ -15,11 +14,10 @@ const order_schema = z.object({
     dirt_bike_requested: z.string().refine((value) => !isNaN(Number(value)) && Number(value) >= 0, {
       message: "Must be a string representing a number greater than or equal to 0",
     }),
-  }),
-});
+  });
 
 const parseOrderWithDefaults = (data: any) => {
-  const parsedData = order_schema.parse(data).bikes;
+  const parsedData = order_schema.parse(data);
   return {
     ...parsedData,
     renting_status: "PENDING",
@@ -34,6 +32,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   let request_body: bike_order;
 
   try {
+    console.log(req.body);
     request_body = parseOrderWithDefaults(req.body);
   } catch (error) {
     res.status(400).json({ error: "Bad Request" });
