@@ -9,9 +9,10 @@ import {
 
 const order_schema = z.object({
   hotel: z.object({
+    order_id : z.string(),
+    from: z.string(),
     to: z.string(),
-  from: z.string(),
-  room: z.string(),
+    room: z.string(),
   })
   
 });
@@ -38,9 +39,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
       return;
     }
     
-    request_body.renting_status = "PENDING";
-    request_body.created_at = new Date();
-    request_body.updated_at = new Date();
+
 
     if (await manager_ordini.check_existance(request_body.order_id)) {
       console.log(request_body.order_id);

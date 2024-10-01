@@ -84,6 +84,7 @@ export class HotelOrdersManager {
         created_at: hotel_order.created_at,
         updated_at: hotel_order.updated_at,
       },
+      
     });
     return new HotelOrder(hotel);
   }
@@ -164,6 +165,7 @@ export class HotelDBManager {
     
     return availableRooms.length === dateIds.length;
   };
+
 
   async updateRoomAvailability ( dateIds: number[], roomNumber: string): Promise<void> {
     let res = await prisma.room.updateMany({

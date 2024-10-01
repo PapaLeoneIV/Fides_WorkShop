@@ -1,6 +1,17 @@
 import axios from "axios";
 //BASE CLASS--------------------------------------------------------------
+interface order_info {
+  bikes: { road: string; dirt: string },
+  hotel: { from: Date; to: Date; room: number },
+  payment_info: { amount: string }
+}
 
+interface OrderState {
+  handle_request(
+    context: order_context,
+    info: order_info
+  ): Promise<void>;
+}
 /**I develop this class following the STATE PATTERN DESIGN, where each state has
  * a set of different behaviours. The main idea is to have a context that will
  * change its state depending on the response of the different services. The context
@@ -11,30 +22,12 @@ import axios from "axios";
  */
 export class order_context {
   private state: OrderState;
-  private bikes: { road: string; dirt: string };
-  private hotel: { from: Date; to: Date; room: number };
-  private payment_info: {
-    orderID: string;
-    card: string;
-    cvc: string;
-    expire_date: string;
-    amount: string;
-  };
+  private info: order_info;
 
   constructor(
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
   ) {
-    this.bikes = bikes;
-    this.hotel = hotel;
-    this.payment_info = payment_info;
+    this.info = info;
     this.state = new StartOrderState();
   }
 
@@ -50,17 +43,9 @@ export class order_context {
    * will call this method to process the order
    */
   async process_order(
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
   ) {
-    await this.state.handle_request(this, bikes, hotel, payment_info);
+    await this.state.handle_request(this, info);
   }
 
 
@@ -101,10 +86,6 @@ export class order_context {
   }
 
   async sendRequestToMoney(payment_info: {
-    orderID: string;
-    card: string;
-    cvc: string;
-    expire_date: string;
     amount: string;
   }): Promise<string> {
     console.log("sending request to money service!");
@@ -162,20 +143,7 @@ export class order_context {
   /*TODO implement the response to UI */
 }
 
-interface OrderState {
-  handle_request(
-    context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
-  ): Promise<void>;
-}
+
 //DIFFERENT STATES with different behaviours--------------------------------------
 /**This is the inital state of the order, it will forward the request to the dedicated service.
  * If the response is positive, it will change the state to ItemsConfirmedState, otherwise
@@ -184,35 +152,27 @@ interface OrderState {
 class StartOrderState implements OrderState {
   async handle_request(
     context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
   ): Promise<void> {
     console.log("Order is in pending state, processing...");
     try {
       const [bike_response, hotel_response] = await Promise.all([
-        await context.sendRequestToBikeShop(bikes),
-        await context.sendRequestToHotel(hotel),
+        await context.sendRequestToBikeShop(info.bikes),
+        await context.sendRequestToHotel(info.hotel),
       ]);
       if (
         bike_response === "BIKEAPPROVED" &&
         hotel_response === "HOTELAPPROVED"
       ) {
         context.setState(new ItemsConfirmedState());
-        context.process_order(bikes, hotel, payment_info);
+        context.process_order(info);
       } else {
         const failureInfo = {
           bikeFailed: bike_response !== "BIKEAPPROVED",
           hotelFailed: hotel_response !== "HOTELAPPROVED",
         };
         context.setState(new ItemsDeniedState(failureInfo));
-        context.process_order(bikes, hotel, payment_info);
+        context.process_order(info);
       }
     } catch (error) {
       console.log("Error in sending order!");
@@ -228,25 +188,17 @@ class StartOrderState implements OrderState {
 class ItemsConfirmedState implements OrderState {
   async handle_request(
     context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
   ): Promise<void> {
     console.log("Items are confirmed, waiting for payment...");
     try {
-      const response = await context.sendRequestToMoney(payment_info);
+      const response = await context.sendRequestToMoney(info.payment_info);
       if (response === "PAYMENTAPPROVED") {
         context.setState(new PaymentAcceptedState());
-        context.process_order(bikes, hotel, payment_info);
+        context.process_order(info);
       } else {
         context.setState(new PaymentDeniedState());
-        context.process_order(bikes, hotel, payment_info);
+        context.process_order(info);
       }
     } catch (error) {
       console.log("Error in sending order!");
@@ -268,26 +220,19 @@ class ItemsDeniedState implements OrderState {
 
   async handle_request(
     context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
+
   ): Promise<void> {
     if (this.failureInfo.bikeFailed) {
       console.log("Bike failed, reverting hotel order...");
-      const response: string = await context.revertHotelOrder(hotel);
+      const response: string = await context.revertHotelOrder(info.hotel);
       if (response === "HOTELORDERREVERTED") {
         console.log("Reverted hotel order!");
       }
     }
     if (this.failureInfo.hotelFailed) {
       console.log("Hotel failed, reverting bike order...");
-      const response: string = await context.revertBikeOrder(bikes);
+      const response: string = await context.revertBikeOrder(info.bikes);
       if (response === "BIKEORDERREVERTED") {
         console.log("Reverted bike order!");
       }
@@ -302,15 +247,8 @@ class ItemsDeniedState implements OrderState {
 class PaymentAcceptedState implements OrderState {
   async handle_request(
     context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
+
   ): Promise<void> {
     console.log("Payment was succesfull!");
     /*TODO send response to UI */
@@ -322,20 +260,12 @@ class PaymentAcceptedState implements OrderState {
 class PaymentDeniedState implements OrderState {
   async handle_request(
     context: order_context,
-    bikes: { road: string; dirt: string },
-    hotel: { from: Date; to: Date; room: number },
-    payment_info: {
-      orderID: string;
-      card: string;
-      cvc: string;
-      expire_date: string;
-      amount: string;
-    }
+    info: order_info
   ): Promise<void> {
     context.setState(
       new ItemsDeniedState({ bikeFailed: true, hotelFailed: true })
     );
-    context.process_order(bikes, hotel, payment_info);
+    context.process_order(info);
     /*TODO respond to UI */
   }
 }

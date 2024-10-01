@@ -2,16 +2,16 @@ import { Request, Response } from 'express';
 import { order_context } from '../service/orderService';
 import { z } from 'zod';
 
-
+interface order_info {
+  bikes: { road: string; dirt: string },
+  hotel: { from: Date; to: Date; room: number },
+  payment_info: { amount: string }
+}
 
 const parse_request = (body: any) => {
   const orderSchema = z.object({
     order: z.object({
       payment_info: z.object({
-        orderID: z.string(),
-        card: z.string(),
-        cvc: z.string(),
-        expire_date: z.string(),
         amount: z.string()
       }),
       bikes: z.object({
@@ -19,8 +19,8 @@ const parse_request = (body: any) => {
         dirt: z.string()
       }),
       hotel: z.object({
-        from: z.string(),
         to: z.string(),
+        from: z.string(),
         room: z.string()
       })
     })
@@ -35,16 +35,18 @@ const parse_request = (body: any) => {
 
 export const handler_book_vacation = async (req: Request, res: Response): Promise<void> => {
   try {
-    const parsedBody = parse_request(req.body);
+    const parsedBody = parse_request(req.body) as order_info;
 
-    const { bikes, hotel, payment_info } = parsedBody.order;
+    let { bikes, hotel, payment_info } = parsedBody;
+    
+    /*TODO qui devo creare il nuovo ordine con tutte le info e poi passare quello a order_context */
+
+
 
     const order = new order_context(bikes, hotel, payment_info);
-    console.log("Processing the order...");
     order.process_order(bikes, hotel, payment_info);
 
     res.status(202).send("Order is being processed");
-
   } catch (error: any) {
     if (error.message === "Bad Request") {
       res.status(400).json({ error: "Bad Request" });

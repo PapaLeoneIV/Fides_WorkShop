@@ -4,10 +4,7 @@ import { z } from "zod";
 
 const payment_schema = z.object({
   payment_info: z.object({
-    orderID: z.string(),
-    card: z.string(),
-    cvc: z.string(),
-    expire_date: z.string(),
+    order_id: z.string(),
     amount: z.string(),
   }),
 });
