@@ -14,20 +14,28 @@ datasource db {
 }
 
 model date {
-  id           Int         @id @default(autoincrement())
-  booking_date  DateTime    @unique
-  
-  rooms        room[] 
+  id           Int      @id @default(autoincrement())
+  booking_date DateTime @unique
+
+  rooms room[]
 }
 
 model room {
-  id           Int         @id @default(autoincrement())
-  room_number   String      @unique
-  is_available  Boolean
-  
-  date_id       Int
-  date         date        @relation(fields: [date_id], references: [id], onDelete: Cascade)
+  id           Int     @id @default(autoincrement())
+  room_number  String  @unique
+  is_available Boolean
+
+  date_id Int
+  date    date @relation(fields: [date_id], references: [id], onDelete: Cascade)
 }
 
-
-
+model order {
+  id             String   @id @default(uuid())
+  order_id       String
+  from           String
+  to             String
+  room           String
+  renting_status String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
