@@ -56,6 +56,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
     if (dateIds.length === 0) {
       manager_ordini.update_status(new_hotel_order, "DENIED");
       console.log("No dates found for the requested range.");
+      res.send("HOTELORDERDENIED");
       return;
     }
     const roomsAvailable = await manager_db.areRoomsAvailable(dateIds, new_hotel_order.room);
@@ -63,13 +64,14 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
     if (!roomsAvailable) {
       manager_ordini.update_status(new_hotel_order, "DENIED");
       console.log("Room is not available for the entire date range.");
+      res.send("HOTELORDERDENIED");
       return;
     }
 
     await manager_db.updateRoomAvailability(dateIds,  new_hotel_order.room);
     console.log(`Room ${ new_hotel_order.room} has been successfully booked.`);
     manager_ordini.update_status(new_hotel_order, "APPROVED");
-
+    res.send(`HOTELAPPROVED`);
     return ;
   };
 
