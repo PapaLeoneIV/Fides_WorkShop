@@ -49,8 +49,7 @@ export class BikeOrder {
 }
 
 export class BikeOrdersManager {
-
-  async getBikeOrderInfoById(order_id: string): Promise<boolean> {
+  async check_existance(order_id: string): Promise<boolean> {
     const order =
       (await prisma.order.findFirst({
         where: {
@@ -64,7 +63,7 @@ export class BikeOrdersManager {
     return true;
   }
 
-  async createBikeOrder(bike_order: bike_order): Promise<BikeOrder> {
+  async create_order(bike_order: bike_order): Promise<BikeOrder> {
     console.log(
       "Creating new bike order in the DB with id: ",
       bike_order.order_id
@@ -82,7 +81,7 @@ export class BikeOrdersManager {
     return new BikeOrder(new_bike_order);
   }
 
-  async updateBikeOrder(bike_order: BikeOrder): Promise<BikeOrder> {
+  async update_order(bike_order: BikeOrder) {
     console.log("Updating bike order with id: ", bike_order.order_id);
     const updated_bike_order = await prisma.order.update({
       where: {
@@ -98,13 +97,9 @@ export class BikeOrdersManager {
       },
     });
     bike_order.info = updated_bike_order;
-    return bike_order;
   }
 
-  async updateBikeOrderStatus(
-    bike_order: BikeOrder,
-    status: string
-  ): Promise<BikeOrder> {
+  async update_status(bike_order: BikeOrder, status: string) {
     console.log("Updating bike order status with id: ", bike_order.order_id);
     const updated_bike_order = await prisma.order.update({
       where: {
@@ -115,10 +110,9 @@ export class BikeOrdersManager {
       },
     });
     bike_order.info = updated_bike_order;
-    return bike_order;
   }
 
-  async deleteBikeOrder(bike_order: BikeOrder): Promise<void> {
+  async delete_order(bike_order: BikeOrder) {
     console.log("Deleting bike order with id: ", bike_order.order_id);
     await prisma.order.delete({
       where: {
@@ -149,10 +143,7 @@ export class BikeDBManager {
     return dirt_bikes_count._sum.dirt ?? 0;
   }
 
-  async incrementBikeCount(
-    road_bikes: number,
-    dirt_bikes: number
-  ): Promise<void> {
+  async incrementBikeCount(road_bikes: number, dirt_bikes: number) {
     console.log("Incrementing bike count");
     await prisma.bikes.updateMany({
       data: {
@@ -166,10 +157,7 @@ export class BikeDBManager {
     });
   }
 
-  async decrementBikeCount(
-    road_bikes: number,
-    dirt_bikes: number
-  ): Promise<void> {
+  async decrementBikeCount(road_bikes: number, dirt_bikes: number) {
     console.log("Decrementing bike count");
     await prisma.bikes.updateMany({
       data: {
