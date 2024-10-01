@@ -8,8 +8,12 @@ import {
 
 const order_schema = z.object({
   order_id: z.string(),
-  road_bike_requested: z.string(),
-  dirt_bike_requested: z.string(),
+  road_bike_requested: z.string().refine((value) => !isNaN(Number(value)) && Number(value) >= 0, {
+    message: "Must be a string representing a number greater than or equal to 0",
+  }),
+  dirt_bike_requested: z.string().refine((value) => !isNaN(Number(value)) && Number(value) >= 0, {
+    message: "Must be a string representing a number greater than or equal to 0",
+  }),
 });
 
 export const receive_order = async (
@@ -34,13 +38,17 @@ export const receive_order = async (
 
 
   if (await manager_ordini.check_existance(request_body.order_id)) {
+    console.log(request_body.order_id);
     res.status(409).json({ error: "Bike order already exists" });
     return;
   }
 
-  let new_bike_order = await manager_ordini.create_order(request_body);
-  let available_dirt_bikes = await manager_db.getNumberOfDirtBikes();
-  let available_road_bikes = await manager_db.getNumberOfRoadBikes();
+  let [new_bike_order, available_dirt_bikes, available_road_bikes] = await Promise.all([
+    await manager_ordini.create_order(request_body),
+    await manager_db.getNumberOfDirtBikes(),
+    await manager_db.getNumberOfRoadBikes()
+  ])
+
   if (
     available_dirt_bikes >= new_bike_order.dirt_bike_requested &&
     available_road_bikes >= new_bike_order.road_bike_requested
