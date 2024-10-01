@@ -55,6 +55,7 @@ services:
       - "5436:5432"
     volumes:
       - db_order_management:/var/lib/postgresql/data
+      - ./src/backend/order_micro/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - express_network
   
