@@ -16,7 +16,7 @@ export class BikeOrder {
 
   constructor(info: bike_order) {
     this.info = info;
-    console.log("Creating new bike order object with id: ", info.order_id);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Creating new bike order object with id: ", info.order_id);
   }
 
   public get id(): string {
@@ -49,23 +49,10 @@ export class BikeOrder {
 }
 
 export class BikeOrdersManager {
-  async check_existance(order_id: string): Promise<boolean> {
-    const order =
-      (await prisma.order.findFirst({
-        where: {
-          order_id: order_id,
-        },
-      })) || null;
-    if (!order) {
-      console.log(`Bike order with id ${order_id} not found`);
-      return false;
-    }
-    return true;
-  }
 
   async create_order(bike_order: bike_order): Promise<BikeOrder> {
     console.log(
-      "Creating new bike order in the DB with id: ",
+      '\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Creating new bike order in the DB with id: ",
       bike_order.order_id
     );
     const new_bike_order = await prisma.order.create({
@@ -82,7 +69,7 @@ export class BikeOrdersManager {
   }
 
   async update_order(bike_order: BikeOrder) {
-    console.log("Updating bike order with id: ", bike_order.order_id);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Updating bike ORDER with id: ", bike_order.order_id);
     const updated_bike_order = await prisma.order.update({
       where: {
         id: bike_order.id,
@@ -99,8 +86,8 @@ export class BikeOrdersManager {
     bike_order.info = updated_bike_order;
   }
 
-  async update_status(bike_order: BikeOrder, status: string) {
-    console.log("Updating bike order status with id: ", bike_order.order_id);
+  async update_status(bike_order: bike_order, status: string) {
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Updating order STATUS to", status);
     const updated_bike_order = await prisma.order.update({
       where: {
         id: bike_order.id,
@@ -109,11 +96,41 @@ export class BikeOrdersManager {
         renting_status: status,
       },
     });
-    bike_order.info = updated_bike_order;
+    bike_order = updated_bike_order;
+  }
+
+  async check_existance(order_id: string): Promise<boolean> {
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Checking if bike order exists with id: ", order_id);
+    const order =
+      (await prisma.order.findFirst({
+        where: {
+          order_id: order_id,
+        },
+      })) || null;
+    if (!order) {
+      console.log(`[BIKE SERVICE]Bike order with id ${order_id} not found`);
+      return false;
+    }
+    return true;
+  }
+
+  async get_order_info(order_id: string): Promise<bike_order | null> {
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requsting order info : ", order_id);
+    const order =
+      (await prisma.order.findFirst({
+        where: {
+          order_id: order_id,
+        },
+      })) || null;
+    if (!order) {
+      console.log(`[BIKE SERVICE]Bike order with id ${order_id} not found`);
+      return null;
+    }
+    return order;
   }
 
   async delete_order(bike_order: BikeOrder) {
-    console.log("Deleting bike order with id: ", bike_order.order_id);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Deleting bike order with id: ", bike_order.order_id);
     await prisma.order.delete({
       where: {
         id: bike_order.id,
@@ -123,8 +140,10 @@ export class BikeOrdersManager {
 }
 
 export class BikeDBManager {
+
+
   async getNumberOfRoadBikes(): Promise<number> {
-    console.log("Requesting road bikes from database");
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requesting number of road bikes from DB");
     const road_bikes_count = await prisma.bikes.aggregate({
       _sum: {
         road: true,
@@ -134,7 +153,7 @@ export class BikeDBManager {
   }
 
   async getNumberOfDirtBikes(): Promise<number> {
-    console.log("Requesting dirt bikes from database");
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requesting number of dirt bikes from database");
     const dirt_bikes_count = await prisma.bikes.aggregate({
       _sum: {
         dirt: true,
@@ -144,7 +163,7 @@ export class BikeDBManager {
   }
 
   async incrementBikeCount(road_bikes: number, dirt_bikes: number) {
-    console.log("Incrementing bike count");
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Incrementing the bike count in the DB");
     await prisma.bikes.updateMany({
       data: {
         road: {
@@ -158,7 +177,7 @@ export class BikeDBManager {
   }
 
   async decrementBikeCount(road_bikes: number, dirt_bikes: number) {
-    console.log("Decrementing bike count");
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Decrementing bike count in the DB");
     await prisma.bikes.updateMany({
       data: {
         road: {

@@ -1,73 +1,119 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { check_hotel_availability, revert_hotel_order } from "../service/hotelService";
+import { parse_and_set_default_values } from "../parser/hotelParser";
+import {
+  HotelOrdersManager, 
+  HotelDBManager,
+  hotel_order,
+} from "../service/hotelService"
 
-const URL_order_management = "http://localhost:3003/order/hotel_update";
 
-const order_schema = z.object({
-  to: z.string(),
-  from: z.string(),
-  room: z.string(),
+const send_data_schema = z.object({
+    order_id : z.string(),
+    from: z.string(),
+    to: z.string(),
+    room: z.string(),
+  
 });
 
-interface hotelRequested {
-  to: string;
-  from: string;
-  room: string;
-}
-let hotel_booking: hotelRequested;
+const revert_data_schema = z.object({
+    order_id: z.string(),
+  });
+
 
 export const receive_order = async (req: Request, res: Response): Promise<void> => {
-  let parsedBody: any;  
+  const manager_ordini = new HotelOrdersManager;
+  const manager_db = new HotelDBManager;
+  let request_body: hotel_order;  
   try {
-      parsedBody = order_schema.parse(req.body.hotel);
+    request_body = parse_and_set_default_values(req.body, send_data_schema);
     } catch (error) {
-      console.log("Error parsing data: request body not valid!", error);
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
-    try {
-      hotel_booking = {
-        to: parsedBody.to,
-        from: parsedBody.from,
-        room: parsedBody.room,
-      };
-      const db_response = await check_hotel_availability(hotel_booking);
-      //RESPOND TO Order management
-      if (db_response) { res.send("HOTELAPPROVED"); }
-      else { res.send("HOTELDENIED");}  
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-      console.log("Error parsing data: request body not valid!", error);
+    
+
+
+    if (await manager_ordini.check_existance(request_body.order_id)) {
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Hotel order already exist", request_body.order_id);
+      res.status(409).json({ error: "Hotel order already exists" });
       return;
     }
+    let [order, dateRecords] = await Promise.all([
+      manager_ordini.create_order(request_body),
+      manager_db.getDateIdsForRange(new Date(request_body.from), new Date(request_body.to))
+    ])
+
+    const dateIds = dateRecords.map((date : any) => date.id);
+
+    if (dateIds.length === 0) {
+      manager_ordini.update_status(order, "DENIED");
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
+      res.send("HOTELORDERDENIED");
+      return;
+    }
+    const roomsAvailable = await manager_db.areRoomsAvailable(dateIds, order.room);
+
+    if (!roomsAvailable) {
+      manager_ordini.update_status(order, "DENIED");
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Room is not available for the entire date range.");
+      res.send("HOTELORDERDENIED");
+      return;
+    }
+
+    await manager_db.updateRoomAvailability(dateIds,  order.room);
+    console.log(`[HOTEL SERVICE]Room ${ order.room} has been successfully booked.`);
+    manager_ordini.update_status(order, "APPROVED");
+    res.send(`HOTELAPPROVED`);
+    return ;
   };
 
 export const revert_order = async (req: Request, res: Response): Promise<void> => {
-  let parsedBody: any;  
+  const manager_ordini = new HotelOrdersManager;
+  const manager_db = new HotelDBManager;
+  let request_body: hotel_order;  
   try {
-      parsedBody = order_schema.parse(req.body.hotel);
+    request_body = parse_and_set_default_values(req.body, revert_data_schema);
     } catch (error) {
-      console.log("Error parsing data: request body not valid!", error);
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
-    try {
-      hotel_booking = {
-        to: parsedBody.to,
-        from: parsedBody.from,
-        room: parsedBody.room,
-      };
-      const db_response = await revert_hotel_order(hotel_booking);
 
-      if (db_response) {
-        res.send("HOTELORDERREVERTED");
-      } else {
-        res.send("HOTELORDERNOTREVERTED");
-      }
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-      console.log("Error parsing data: request body not valid!", error);
+    if (!await manager_ordini.check_existance(request_body.order_id)) {
+      res.status(409).json({ error: "Bike order does not exists" });
       return;
     }
+
+    let info = await manager_ordini.get_order_info(request_body.order_id);
+    if (!info){
+      res.status(409).json({ error: "Bike order does not exist" });
+      return;
+    }
+    let order = await manager_ordini.create_order(info);
+
+
+    let dateRecords = await manager_db.getDateIdsForRange(new Date(request_body.from), new Date(request_body.to))
+    const dateIds = dateRecords.map((date : any) => date.id);
+
+    if (dateIds.length === 0) {
+      manager_ordini.update_status(order, "DENIED")
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
+      return;
+    }
+
+    if (await manager_db.restoreRoomAvailability(dateIds, order.room))
+    {
+      manager_ordini.update_status(order, "REVERTED")
+      res.send("HOTELORDERREVERTED")
+    }
+    else
+    {
+      manager_ordini.update_status(order, "DENIED")
+      res.send("NOTHOTELORDERREVERTED")
+    }
+
+
+  
   }

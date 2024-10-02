@@ -12,3 +12,16 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model order {
+  id                  String   @id @default(uuid())
+  to                  String
+  from                String
+  room                String
+  road_bike_requested String
+  dirt_bike_requested String
+  amount              String
+  order_status        String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+}

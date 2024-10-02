@@ -1,57 +1,41 @@
-import { Request, Response } from 'express';
-import { order_context } from '../service/orderService';
-import { z } from 'zod';
+import { Request, Response } from "express";
+import { order_context, order_info } from "../service/orderService";
+import { z } from "zod";
 
 
+  const order_schema = z.object({
+    amount: z.string(),
+    road_bike_requested: z.string(),
+    dirt_bike_requested: z.string(),
+    to: z.string(),
+    from: z.string(),
+    room: z.string(),
 
-const parse_request = (body: any) => {
-  const orderSchema = z.object({
-    order: z.object({
-      payment_info: z.object({
-        orderID: z.string(),
-        card: z.string(),
-        cvc: z.string(),
-        expire_date: z.string(),
-        amount: z.string()
-      }),
-      bikes: z.object({
-        road: z.string(),
-        dirt: z.string()
-      }),
-      hotel: z.object({
-        from: z.string(),
-        to: z.string(),
-        room: z.string()
-      })
-    })
   });
+  const parse_and_set_default_values = (data: any) => {
+    const parsedData = order_schema.parse(data);
+    return {
+      ...parsedData,
+      order_status: "PENDING",
+      created_at: new Date(),
+      updated_at: new Date(),
+    } as order_info;
+  };
+
+export const handler_book_vacation = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  let request_body: order_info;
   try {
-    return orderSchema.parse(body);
+    request_body = parse_and_set_default_values(req.body);
   } catch (error) {
-    console.log("Error parsing data: request body not valid!", error);
-    throw new Error("Bad Request");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Error parsing data: request body not valid!", error);
+    res.status(400).json({ error: "Bad Request" });
+    return;
   }
+  const order = new order_context(request_body);
+  order.order = await order.manager_db.create_order(order.order);
+  order.process_order(order.order);
+  res.status(202).send("Order is being processed");
 };
-
-export const handler_book_vacation = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const parsedBody = parse_request(req.body);
-
-    const { bikes, hotel, payment_info } = parsedBody.order;
-
-    const order = new order_context(bikes, hotel, payment_info);
-    console.log("Processing the order...");
-    order.process_order(bikes, hotel, payment_info);
-
-    res.status(202).send("Order is being processed");
-
-  } catch (error: any) {
-    if (error.message === "Bad Request") {
-      res.status(400).json({ error: "Bad Request" });
-    } else {
-      console.log('Error processing order:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  }
-};
-
