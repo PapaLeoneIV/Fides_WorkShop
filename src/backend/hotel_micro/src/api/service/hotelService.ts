@@ -17,7 +17,7 @@ export class HotelOrder {
 
   constructor(info: hotel_order) {
     this.info = info;
-    console.log("Creating new hotel order object with id: ", info.order_id);
+    console.log("[HOTEL SERVICE]Creating new hotel order object with id: ", info.order_id);
   }
 
   public get id(): string {
@@ -56,6 +56,7 @@ export class HotelOrder {
 
 export class HotelOrdersManager {
   async check_existance(order_id: string): Promise<boolean> {
+    console.log("[HOTEL SERVICE]Checking if hotel order exists with id: ", order_id);
     const order =
       (await prisma.order.findFirst({
         where: {
@@ -63,17 +64,14 @@ export class HotelOrdersManager {
         },
       })) || null;
     if (!order) {
-      console.log(`Hotel order with id ${order_id} not found`);
+      console.log(`[HOTEL SERVICE]Hotel order with id ${order_id} not found`);
       return false;
     }
     return true;
   }
 
   async create_order(hotel_order: hotel_order): Promise<HotelOrder> {
-    console.log(
-      "Creating new hotel order in the DB with id: ",
-      hotel_order.order_id
-    );
+    console.log("[HOTEL SERVICE]Creating new hotel order with id: ", hotel_order.order_id);
     const hotel = await prisma.order.create({
       data: {
         to: hotel_order.to,
@@ -89,8 +87,23 @@ export class HotelOrdersManager {
     return new HotelOrder(hotel);
   }
 
+  async get_order_info(order_id: string): Promise<hotel_order | null> {
+    console.log("[HOTEL SERVICE]Getting hotel order info with id: ", order_id);
+    const order =
+      (await prisma.order.findFirst({
+        where: {
+          order_id: order_id,
+        },
+      })) || null;
+    if (!order) {
+      console.log(`[HOTEL SERVICE]Hotel order with id ${order_id} not found`);
+      return null;
+    }
+    return order;
+  }
+
   async update_order(hotel_order: HotelOrder) {
-    console.log("Updating hotel order with id: ", hotel_order.order_id);
+    console.log("[HOTEL SERVICE]Updating hotel order with id: ", hotel_order.order_id);
     const updated_bike_order = await prisma.order.update({
       where: {
         id: hotel_order.id,
@@ -109,7 +122,7 @@ export class HotelOrdersManager {
   }
 
   async update_status(hotel_order: HotelOrder, status: string) {
-    console.log("Updating hotel order status with status: ", status);
+    console.log("[HOTEL SERVICE]Updating hotel order status with status: ", status);
     const updated_hotel_order = await prisma.order.update({
       where: {
         id: hotel_order.id,
@@ -122,7 +135,7 @@ export class HotelOrdersManager {
   }
 
   async delete_order(hotel_order: HotelOrder) {
-    console.log("Deleting hotel order with id: ", hotel_order.order_id);
+    console.log("[HOTEL SERVICE]Deleting hotel order with id: ", hotel_order.order_id);
     await prisma.order.delete({
       where: {
         id: hotel_order.id,
@@ -134,21 +147,10 @@ export class HotelOrdersManager {
 
 export class HotelDBManager {
 
-  async get_order_info(order_id: string): Promise<hotel_order | null> {
-    const order =
-      (await prisma.order.findFirst({
-        where: {
-          order_id: order_id,
-        },
-      })) || null;
-    if (!order) {
-      console.log(`Hotel order with id ${order_id} not found`);
-      return null;
-    }
-    return order;
-  }
+
 
   async getDateIdsForRange (from: Date, to: Date): Promise<any> {
+    console.log("[HOTEL SERVICE]Getting date ids for range: ", from, to);
     let result  = await prisma.date.findMany({
       where: {
         booking_date: {
@@ -164,6 +166,7 @@ export class HotelDBManager {
   };
   
   async areRoomsAvailable (dateIds: number[], roomNumber: string): Promise<boolean> {
+    console.log("[HOTEL SERVICE]Checking if", roomNumber,"is available for the selected dates");
     const availableRooms = await prisma.room.findMany({
       where: {
         date_id: {
@@ -182,6 +185,7 @@ export class HotelDBManager {
 
 
   async updateRoomAvailability ( dateIds: number[], roomNumber: string): Promise<void> {
+    console.log("[HOTEL SERVICE]Updating room availability for room ", roomNumber);
     let res = await prisma.room.updateMany({
       where: {
         date_id: {
@@ -194,12 +198,13 @@ export class HotelDBManager {
       },
     });
     if (res)
-      console.log("Room updated successfully!")
+      console.log("[HOTEL SERVICE]Room updated successfully!")
     else
-      console.log("Room did not update sucessfully!")
+      console.log("[HOTEL SERVICE]Room did not update sucessfully!")
   };
 
   async restoreRoomAvailability ( dateIds: number[], roomNumber: string): Promise<boolean> {
+    console.log("[HOTEL SERVICE]Restoring room availability for room ", roomNumber);
     let res : any = await prisma.room.updateMany({
       where: {
         date_id: {

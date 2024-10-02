@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
+import { parse_and_set_default_values } from "../parser/hotelParser";
 import {
   HotelOrdersManager, 
   HotelDBManager,
@@ -19,16 +20,6 @@ const revert_data_schema = z.object({
     order_id: z.string(),
   });
 
-const parse_and_set_default_values = (data: any, schema : any) => {
-  console.log("HOTEL DATA: ", data);
-  const parsedData = schema.parse(data);
-  return {
-    ...parsedData,
-    renting_status: "PENDING",
-    created_at: new Date(),
-    updated_at: new Date(),
-  } as hotel_order;
-};
 
 export const receive_order = async (req: Request, res: Response): Promise<void> => {
   const manager_ordini = new HotelOrdersManager;
@@ -37,7 +28,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   try {
     request_body = parse_and_set_default_values(req.body, send_data_schema);
     } catch (error) {
-      console.log("Error parsing data: request body not valid!", error);
+      console.log("[HOTEL SERVICE]Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
@@ -45,35 +36,35 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
 
     if (await manager_ordini.check_existance(request_body.order_id)) {
-      console.log(request_body.order_id);
+      console.log("[HOTEL SERVICE]Hotel order already exist", request_body.order_id);
       res.status(409).json({ error: "Hotel order already exists" });
       return;
     }
-    let [new_hotel_order, dateRecords] = await Promise.all([
-      await manager_ordini.create_order(request_body),
-      await manager_db.getDateIdsForRange(new Date(request_body.from), new Date(request_body.to))
+    let [order, dateRecords] = await Promise.all([
+      manager_ordini.create_order(request_body),
+      manager_db.getDateIdsForRange(new Date(request_body.from), new Date(request_body.to))
     ])
 
     const dateIds = dateRecords.map((date : any) => date.id);
 
     if (dateIds.length === 0) {
-      manager_ordini.update_status(new_hotel_order, "DENIED");
-      console.log("No dates found for the requested range.");
+      manager_ordini.update_status(order, "DENIED");
+      console.log("[HOTEL SERVICE]No dates found for the requested range.");
       res.send("HOTELORDERDENIED");
       return;
     }
-    const roomsAvailable = await manager_db.areRoomsAvailable(dateIds, new_hotel_order.room);
+    const roomsAvailable = await manager_db.areRoomsAvailable(dateIds, order.room);
 
     if (!roomsAvailable) {
-      manager_ordini.update_status(new_hotel_order, "DENIED");
-      console.log("Room is not available for the entire date range.");
+      manager_ordini.update_status(order, "DENIED");
+      console.log("[HOTEL SERVICE]Room is not available for the entire date range.");
       res.send("HOTELORDERDENIED");
       return;
     }
 
-    await manager_db.updateRoomAvailability(dateIds,  new_hotel_order.room);
-    console.log(`Room ${ new_hotel_order.room} has been successfully booked.`);
-    manager_ordini.update_status(new_hotel_order, "APPROVED");
+    await manager_db.updateRoomAvailability(dateIds,  order.room);
+    console.log(`[HOTEL SERVICE]Room ${ order.room} has been successfully booked.`);
+    manager_ordini.update_status(order, "APPROVED");
     res.send(`HOTELAPPROVED`);
     return ;
   };
@@ -85,7 +76,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   try {
     request_body = parse_and_set_default_values(req.body, revert_data_schema);
     } catch (error) {
-      console.log("Error parsing data: request body not valid!", error);
+      console.log("[HOTEL SERVICE]Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
@@ -95,7 +86,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    let info = await manager_db.get_order_info(request_body.order_id);
+    let info = await manager_ordini.get_order_info(request_body.order_id);
     if (!info){
       res.status(409).json({ error: "Bike order does not exist" });
       return;
@@ -108,7 +99,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
 
     if (dateIds.length === 0) {
       manager_ordini.update_status(order, "DENIED")
-      console.log("No dates found for the requested range.");
+      console.log("[HOTEL SERVICE]No dates found for the requested range.");
       return;
     }
 

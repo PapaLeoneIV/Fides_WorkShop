@@ -41,9 +41,9 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   }
 
   let [order, available_dirt_bikes, available_road_bikes] = await Promise.all([
-    await manager_DB_ordini.create_order(request_body),
-    await manager_db.getNumberOfDirtBikes(),
-    await manager_db.getNumberOfRoadBikes()
+    manager_DB_ordini.create_order(request_body),
+    manager_db.getNumberOfDirtBikes(),
+    manager_db.getNumberOfRoadBikes()
   ]);
 
   if (
