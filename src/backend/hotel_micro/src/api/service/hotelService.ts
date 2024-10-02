@@ -71,7 +71,7 @@ export class HotelOrdersManager {
 
   async create_order(hotel_order: hotel_order): Promise<HotelOrder> {
     console.log(
-      "Creating new bike order in the DB with id: ",
+      "Creating new hotel order in the DB with id: ",
       hotel_order.order_id
     );
     const hotel = await prisma.order.create({
@@ -109,7 +109,7 @@ export class HotelOrdersManager {
   }
 
   async update_status(hotel_order: HotelOrder, status: string) {
-    console.log("Updating hotel order status with id: ", hotel_order.order_id);
+    console.log("Updating hotel order status with status: ", status);
     const updated_hotel_order = await prisma.order.update({
       where: {
         id: hotel_order.id,
@@ -134,8 +134,22 @@ export class HotelOrdersManager {
 
 export class HotelDBManager {
 
+  async get_order_info(order_id: string): Promise<hotel_order | null> {
+    const order =
+      (await prisma.order.findFirst({
+        where: {
+          order_id: order_id,
+        },
+      })) || null;
+    if (!order) {
+      console.log(`Hotel order with id ${order_id} not found`);
+      return null;
+    }
+    return order;
+  }
+
   async getDateIdsForRange (from: Date, to: Date): Promise<any> {
-    let result : any = await prisma.date.findMany({
+    let result  = await prisma.date.findMany({
       where: {
         booking_date: {
           gte: from, // greater then or equal to

@@ -7,18 +7,21 @@ import {
 } from "../service/hotelService"
 
 
-const order_schema = z.object({
-  hotel: z.object({
+const send_data_schema = z.object({
     order_id : z.string(),
     from: z.string(),
     to: z.string(),
     room: z.string(),
-  })
   
 });
 
-const parseOrderWithDefaults = (data: any) => {
-  const parsedData = order_schema.parse(data).hotel;
+const revert_data_schema = z.object({
+    order_id: z.string(),
+  });
+
+const parseOrderWithDefaults = (data: any, schema : any) => {
+  console.log("HOTEL DATA: ", data);
+  const parsedData = schema.parse(data);
   return {
     ...parsedData,
     renting_status: "PENDING",
@@ -32,7 +35,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   const manager_db = new HotelDBManager;
   let request_body: hotel_order;  
   try {
-    request_body = parseOrderWithDefaults(req.body);
+    request_body = parseOrderWithDefaults(req.body, send_data_schema);
     } catch (error) {
       console.log("Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
@@ -80,7 +83,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   const manager_db = new HotelDBManager;
   let request_body: hotel_order;  
   try {
-    request_body = parseOrderWithDefaults(req.body);
+    request_body = parseOrderWithDefaults(req.body, revert_data_schema);
     } catch (error) {
       console.log("Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
@@ -92,11 +95,13 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    request_body.renting_status = "PENDING";
-    request_body.created_at = new Date();
-    request_body.updated_at = new Date();
+    let info = await manager_db.get_order_info(request_body.order_id);
+    if (!info){
+      res.status(409).json({ error: "Bike order does not exist" });
+      return;
+    }
+    let order = await manager_ordini.create_order(info);
 
-    let order = await manager_ordini.create_order(request_body);
 
     let dateRecords = await manager_db.getDateIdsForRange(new Date(request_body.from), new Date(request_body.to))
     const dateIds = dateRecords.map((date : any) => date.id);

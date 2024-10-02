@@ -6,7 +6,7 @@ import {
   bike_order,
 } from "../service/bikeService";
 
-const order_schema = z.object({
+const receive_data_schema = z.object({
     order_id: z.string(),
     road_bike_requested: z.string().refine((value) => !isNaN(Number(value)) && Number(value) >= 0, {
       message: "Must be a string representing a number greater than or equal to 0",
@@ -16,8 +16,12 @@ const order_schema = z.object({
     }),
   });
 
-const parseOrderWithDefaults = (data: any) => {
-  const parsedData = order_schema.parse(data);
+const revert_data_schema = z.object({
+    order_id: z.string(),
+  });
+
+const parseOrderWithDefaults = (data: any, schema : any) => {
+  const parsedData = schema.parse(data);
   return {
     ...parsedData,
     renting_status: "PENDING",
@@ -33,7 +37,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
   try {
     console.log(req.body);
-    request_body = parseOrderWithDefaults(req.body);
+    request_body = parseOrderWithDefaults(req.body, receive_data_schema);
   } catch (error) {
     res.status(400).json({ error: "Bad Request" });
     console.log("Error parsing data: request body not valid!", error);
@@ -61,7 +65,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
     manager_ordini.update_status(new_bike_order, "DENIED");
   }
 
-  res.send(`BIKEORDER '${new_bike_order.order_id}' RECEIVED`);
+  res.send(`BIKEAPPROVED`);
 };
 
 export const revert_order = async (req: Request, res: Response): Promise<void> => {
@@ -72,7 +76,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   let request_body: bike_order;
 
   try {
-    request_body = parseOrderWithDefaults(req.body);
+    request_body = parseOrderWithDefaults(req.body, revert_data_schema);
   } catch (error) {
     res.status(400).json({ error: "Bad Request" });
     console.log("Error parsing data: request body not valid!", error);
@@ -83,10 +87,15 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
     res.status(409).json({ error: "Bike order does not exist" });
     return;
   }
-
-  let order = await manager_ordini.create_order(request_body);
+  
+  let info = await manager_db.get_order_info(request_body.order_id);
+  if (!info){
+    res.status(409).json({ error: "Bike order does not exist" });
+    return;
+  }
+  let order = await manager_ordini.create_order(info);
   manager_db.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
   manager_ordini.update_status(order, "REVERTED");
 
-  res.send("BIKEORDER REVERTED");
+  res.send("BIKEORDERREVERTED");
 };

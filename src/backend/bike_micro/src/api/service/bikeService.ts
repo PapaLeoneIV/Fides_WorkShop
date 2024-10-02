@@ -49,6 +49,7 @@ export class BikeOrder {
 }
 
 export class BikeOrdersManager {
+
   async check_existance(order_id: string): Promise<boolean> {
     const order =
       (await prisma.order.findFirst({
@@ -100,7 +101,7 @@ export class BikeOrdersManager {
   }
 
   async update_status(bike_order: BikeOrder, status: string) {
-    console.log("Updating bike order status with id: ", bike_order.order_id);
+    console.log("Updating bike order status with status: ", status);
     const updated_bike_order = await prisma.order.update({
       where: {
         id: bike_order.id,
@@ -123,6 +124,20 @@ export class BikeOrdersManager {
 }
 
 export class BikeDBManager {
+  async get_order_info(order_id: string): Promise<bike_order | null> {
+    const order =
+      (await prisma.order.findFirst({
+        where: {
+          order_id: order_id,
+        },
+      })) || null;
+    if (!order) {
+      console.log(`Bike order with id ${order_id} not found`);
+      return null;
+    }
+    return order;
+  }
+
   async getNumberOfRoadBikes(): Promise<number> {
     console.log("Requesting road bikes from database");
     const road_bikes_count = await prisma.bikes.aggregate({

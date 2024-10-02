@@ -20,6 +20,7 @@ interface OrderState {
   handle_request(context: order_context, info: order_info): Promise<void>;
 }
 class OrderManagerDB {
+  
   async create_order(info: order_info): Promise<order_info> {
     const x  =  await prisma.order.create({
       data: {
@@ -34,6 +35,7 @@ class OrderManagerDB {
         updated_at: new Date(),
       },
     });
+    console.log("Order created with id : ", x.id);
     return x;
   }
 
@@ -51,6 +53,7 @@ class OrderManagerDB {
   }
 
   async update_status(id: string, status: string): Promise<void> {
+    console.log("Updating order status with status: ", status);
     await prisma.order.update({
       where: {
         id: id,
@@ -155,7 +158,7 @@ export class order_context {
       };
       const response: any = await axios.post(
         "http://localhost:3001/hotel_booking/send_data",
-        { hotel }
+        hotel
       );
       return response.data;
     } catch (error) {
@@ -168,11 +171,12 @@ export class order_context {
     console.log("sending request to money service!");
     try {
       const payment_info = {
+        order_id: order.id,
         amount: order.amount,
       };
       const response: any = await axios.post(
         "http://localhost:3002/payment/send_data",
-        { payment_info }
+        payment_info
       );
       return response.data;
     } catch (error) {
@@ -184,20 +188,16 @@ export class order_context {
 
   /*TODO modify it so that revert endpoint will only accept the orderid */
   async revertBikeOrder(
-    road_bike_requested: string,
-    dirt_bike_requested: string,
+    order_id: string,
   ): Promise<string> {
     console.log("reverting bike order!");
     try {
       const bikes = {
-        road: road_bike_requested,
-        dirt: dirt_bike_requested,
+      order_id: order_id,
       };
       const response: any = await axios.post(
         "http://localhost:3000/bike_renting/revert_order",
-        {
           bikes,
-        }
       );
       return response.data;
     } catch (error) {
@@ -207,22 +207,16 @@ export class order_context {
   }
 
   async revertHotelOrder(
-    from: string,
-    to: string,
-    room: string,
-  ): Promise<string> {
+    order_id: string,
+    ): Promise<string> {
     console.log("reverting hotel order!");
     try {
       const hotel = {
-        from: from,
-        to: to,
-        room: room,
+        order_id: order_id,
       };
       const response: any = await axios.post(
         "http://localhost:3001/hotel_booking/revert_order",
-        {
           hotel,
-        }
       );
       return response.data;
     } catch (error) {
@@ -245,7 +239,6 @@ class StartOrderState implements OrderState {
     context: order_context,
   ): Promise<void> {
     console.log("Order is in pending state, processing...");
-    context.manager_db.create_order(context.order);
     try {
       const [bike_response, hotel_response] = await Promise.all([
         await context.sendRequestToBikeShop(context.order),
@@ -255,17 +248,17 @@ class StartOrderState implements OrderState {
         bike_response === "BIKEAPPROVED" &&
         hotel_response === "HOTELAPPROVED"
       ) {
+        context.manager_db.update_status(context.order.id, "ITEMS_CONFIRMED");
         context.setState(new ItemsConfirmedState());
         context.process_order(context.order);
-        context.manager_db.update_status(context.order.id, "ITEMS_CONFIRMED");
       } else {
         const failureInfo = {
           bikeFailed: bike_response !== "BIKEAPPROVED",
           hotelFailed: hotel_response !== "HOTELAPPROVED",
         };
+        context.manager_db.update_status(context.order.id, "ITEMS_DENIED");
         context.setState(new ItemsDeniedState(failureInfo));
         context.process_order(context.order);
-        context.manager_db.update_status(context.order.id, "ITEMS_DENIED");
       }
     } catch (error) {
       console.log("Error in sending order!");
@@ -287,13 +280,13 @@ class ItemsConfirmedState implements OrderState {
     try {
       const response = await context.sendRequestToMoney(context.order);
       if (response === "PAYMENTAPPROVED") {
+        context.manager_db.update_status(order.id, "APPROVED");
         context.setState(new PaymentAcceptedState());
         context.process_order(context.order);
-        context.manager_db.update_status(order.id, "APPROVED");
       } else {
+        context.manager_db.update_status(order.id, "PAYMENT_DENIED");
         context.setState(new PaymentDeniedState());
         context.process_order(context.order);
-        context.manager_db.update_status(order.id, "PAYMENT_DENIED");
       }
     } catch (error) {
       console.log("Error in sending order!");
@@ -319,15 +312,16 @@ class ItemsDeniedState implements OrderState {
   ): Promise<void> {
     if (this.failureInfo.bikeFailed) {
       console.log("Bike failed, reverting hotel order...");
-      const response: string = await context.revertHotelOrder(order.from, order.to, order.room);
+      const response: string = await context.revertHotelOrder(order.id);
       if (response === "HOTELORDERREVERTED") {
         console.log("Reverted hotel order!");
       }
     }
     if (this.failureInfo.hotelFailed) {
       console.log("Hotel failed, reverting bike order...");
-      const response: string = await context.revertBikeOrder(order.road_bike_requested, order.dirt_bike_requested);
+      const response: string = await context.revertBikeOrder(order.id);
       if (response === "BIKEORDERREVERTED") {
+        context.manager_db.update_status(order.id, "REVERTED");
         console.log("Reverted bike order!");
       }
       /*TODO respond to UI */

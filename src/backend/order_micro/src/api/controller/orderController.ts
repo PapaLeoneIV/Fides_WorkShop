@@ -38,6 +38,7 @@ export const handler_book_vacation = async (
   /*TODO qui devo creare il nuovo ordine con tutte le info e poi passare quello a order_context */
 
   const order = new order_context(request_body);
+  console.log("Order created: ", order.order);
   order.order = await order.manager_db.create_order(order.order);
   order.process_order(order.order);
 
