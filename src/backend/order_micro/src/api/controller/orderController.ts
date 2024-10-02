@@ -28,19 +28,14 @@ export const handler_book_vacation = async (
 ): Promise<void> => {
   let request_body: order_info;
   try {
-    console.log(req.body);
     request_body = parse_and_set_default_values(req.body);
   } catch (error) {
+    console.log("[ORDER MANAGER]Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
-    console.log("Error parsing data: request body not valid!", error);
     return;
   }
-  /*TODO qui devo creare il nuovo ordine con tutte le info e poi passare quello a order_context */
-
   const order = new order_context(request_body);
-  console.log("Order created: ", order.order);
   order.order = await order.manager_db.create_order(order.order);
   order.process_order(order.order);
-
   res.status(202).send("Order is being processed");
 };

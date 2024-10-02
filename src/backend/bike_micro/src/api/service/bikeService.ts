@@ -16,7 +16,7 @@ export class BikeOrder {
 
   constructor(info: bike_order) {
     this.info = info;
-    console.log("Creating new bike order object with id: ", info.order_id);
+    console.log("[BIKE SERVICE]Creating new bike order object with id: ", info.order_id);
   }
 
   public get id(): string {
