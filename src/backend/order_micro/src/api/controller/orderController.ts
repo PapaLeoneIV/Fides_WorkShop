@@ -12,7 +12,7 @@ import { z } from "zod";
     room: z.string(),
 
   });
-  const parseOrderWithDefaults = (data: any) => {
+  const parse_and_set_default_values = (data: any) => {
     const parsedData = order_schema.parse(data);
     return {
       ...parsedData,
@@ -29,7 +29,7 @@ export const handler_book_vacation = async (
   let request_body: order_info;
   try {
     console.log(req.body);
-    request_body = parseOrderWithDefaults(req.body);
+    request_body = parse_and_set_default_values(req.body);
   } catch (error) {
     res.status(400).json({ error: "Bad Request" });
     console.log("Error parsing data: request body not valid!", error);

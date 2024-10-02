@@ -97,8 +97,6 @@ class OrderManagerDB {
  * fails, we will revert the order and send the response to the UI.
  */
 
-
-
 export class order_context {
   private state: OrderState;
   public manager_db: OrderManagerDB;

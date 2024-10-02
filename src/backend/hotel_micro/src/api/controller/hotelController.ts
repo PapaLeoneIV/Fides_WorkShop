@@ -19,7 +19,7 @@ const revert_data_schema = z.object({
     order_id: z.string(),
   });
 
-const parseOrderWithDefaults = (data: any, schema : any) => {
+const parse_and_set_default_values = (data: any, schema : any) => {
   console.log("HOTEL DATA: ", data);
   const parsedData = schema.parse(data);
   return {
@@ -35,7 +35,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   const manager_db = new HotelDBManager;
   let request_body: hotel_order;  
   try {
-    request_body = parseOrderWithDefaults(req.body, send_data_schema);
+    request_body = parse_and_set_default_values(req.body, send_data_schema);
     } catch (error) {
       console.log("Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
@@ -83,7 +83,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   const manager_db = new HotelDBManager;
   let request_body: hotel_order;  
   try {
-    request_body = parseOrderWithDefaults(req.body, revert_data_schema);
+    request_body = parse_and_set_default_values(req.body, revert_data_schema);
     } catch (error) {
       console.log("Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
