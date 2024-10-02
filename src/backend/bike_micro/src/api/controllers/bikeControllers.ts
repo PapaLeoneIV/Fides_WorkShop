@@ -29,21 +29,21 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   try {
     request_body = parse_and_set_default_values(req.body, receive_data_schema);
   } catch (error) {
-    console.log("[BIKE SERVICE]Error parsing data: request body not valid!", error);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
     return;
   }
 
   if (await manager_DB_ordini.check_existance(request_body.order_id)) {
-    console.log("[BIKE SERVICE]Bike order already exist", request_body.order_id);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Bike order already exist", request_body.order_id);
     res.status(409).json({ error: "Bike order already exists" });
     return;
   }
 
   let [order, available_dirt_bikes, available_road_bikes] = await Promise.all([
-    manager_DB_ordini.create_order(request_body),
-    manager_db.getNumberOfDirtBikes(),
-    manager_db.getNumberOfRoadBikes()
+     manager_DB_ordini.create_order(request_body),
+     manager_db.getNumberOfDirtBikes(),
+     manager_db.getNumberOfRoadBikes()
   ]);
 
   if (
@@ -54,12 +54,12 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   } else {
     manager_DB_ordini.update_status(order.info, "DENIED");
   }
-  console.log("[BIKE SERVICE]Sending response to client BIKEAPPROVED");
+  console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Sending response to client BIKEAPPROVED");
   res.send(`BIKEAPPROVED`);
 };
 
 export const revert_order = async (req: Request, res: Response): Promise<void> => {
-  console.log("[BIKE SERVICE]Reverting order...");
+  console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Reverting order...");
 
   const manager_DB_ordini = new BikeOrdersManager();
   const manager_db = new BikeDBManager();
@@ -68,7 +68,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   try {
     request_body = parse_and_set_default_values(req.body, revert_data_schema);
   } catch (error) {
-    console.log("[BIKE SERVICE]Error parsing data: request body not valid!", error);
+    console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
     return;
   }

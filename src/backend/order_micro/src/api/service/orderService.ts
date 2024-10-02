@@ -35,12 +35,12 @@ class OrderManagerDB {
         updated_at: new Date(),
       },
     });
-    console.log("[ORDER MANAGER]Order created with id : ", x.id);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Order created with id : ", x.id);
     return x;
   }
 
   async check_existance(id: string): Promise<boolean> {
-    console.log("[ORDER MANAGER]Checking if order exists with id: ", id);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Checking if order exists with id: ", id);
     const order = await prisma.order.findFirst({
       where: {
         id: id,
@@ -54,7 +54,7 @@ class OrderManagerDB {
   }
 
   async update_status(id: string, status: string): Promise<void> {
-    console.log("[ORDER MANAGER]Updating order status with status: ", status);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order status with status: ", status);
     await prisma.order.update({
       where: {
         id: id,
@@ -67,7 +67,7 @@ class OrderManagerDB {
   }
 
   async update_order(info: order_info): Promise<void> {
-    console.log("[ORDER MANAGER]Updating order with id: ", info.id);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order with id: ", info.id);
     await prisma.order.update({
       where: {
         id: info.id,
@@ -126,7 +126,7 @@ export class order_context {
     order: order_info,
   ): Promise<string> {
     /*TODO implement POST request to bike */
-    console.log("[ORDER MANAGER]Sending request to bikeShop!");
+    console.log('\x1b[33m%s\x1b[0m',"[ORDER MANAGER]", "Sending request to bikeShop!");
     try {
       const bikes = {
         order_id: order.id,
@@ -139,7 +139,7 @@ export class order_context {
       );
       return response.data;
     } catch (error) {
-      console.error("[ORDER MANAGER]Error sending request:", error);
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
       throw error;
     }
   }
@@ -147,7 +147,7 @@ export class order_context {
   async sendRequestToHotel(
   order: order_info,
   ): Promise<string> {
-    console.log("[ORDER MANAGER]Sending request to hotel service!");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to hotel service!");
     try {
       const hotel = {
         order_id: order.id,
@@ -161,13 +161,13 @@ export class order_context {
       );
       return response.data;
     } catch (error) {
-      console.error("[ORDER MANAGER]Error sending request:", error);
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
       throw error;
     }
   }
 
   async sendRequestToMoney(order: order_info ): Promise<string> {
-    console.log("[ORDER MANAGER]Sending request to money service!");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to money service!");
     try {
       const payment_info = {
         order_id: order.id,
@@ -179,7 +179,7 @@ export class order_context {
       );
       return response.data;
     } catch (error) {
-      console.error("[ORDER MANAGER]Error sending request:", error);
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
       throw error;
     }
   }
@@ -189,7 +189,7 @@ export class order_context {
   async revertBikeOrder(
     order_id: string,
   ): Promise<string> {
-    console.log("[ORDER MANAGER]Reverting bike order");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting bike order");
     try {
       const bikes = {
       order_id: order_id,
@@ -200,7 +200,7 @@ export class order_context {
       );
       return response.data;
     } catch (error) {
-      console.error("[ORDER MANAGER]Error sending request:", error);
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
       throw error;
     }
   }
@@ -208,7 +208,7 @@ export class order_context {
   async revertHotelOrder(
     order_id: string,
     ): Promise<string> {
-    console.log("[ORDER MANAGER]Reverting hotel order!");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting hotel order!");
     try {
       const hotel = {
         order_id: order_id,
@@ -219,7 +219,7 @@ export class order_context {
       );
       return response.data;
     } catch (error) {
-      console.error("[ORDER MANAGER]Error sending request:", error);
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
       throw error;
     }
   }
@@ -237,7 +237,7 @@ class StartOrderState implements OrderState {
   async handle_request(
     context: order_context,
   ): Promise<void> {
-    console.log("[ORDER MANAGER]Starting to process the order with id ", context.order.id);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Starting to process the order with id ", context.order.id);
     try {
       const [bike_response, hotel_response] = await Promise.all([
         context.sendRequestToBikeShop(context.order),
@@ -260,7 +260,7 @@ class StartOrderState implements OrderState {
         context.process_order(context.order);
       }
     } catch (error) {
-      console.log("[ORDER MANAGER]Error in sending order!");
+      console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error in sending order!");
       context.setState(new ErrorState());
     }
   }
@@ -275,7 +275,7 @@ class ItemsConfirmedState implements OrderState {
     context: order_context,
     order: order_info
   ): Promise<void> {
-    console.log("[ORDER MANAGER]Items are confirmed, waiting for payment...");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Items are confirmed, waiting for payment...");
     try {
       const response = await context.sendRequestToMoney(context.order);
       if (response === "PAYMENTAPPROVED") {
@@ -288,7 +288,7 @@ class ItemsConfirmedState implements OrderState {
         context.process_order(context.order);
       }
     } catch (error) {
-      console.log("[ORDER MANAGER]Error in sending order!");
+      console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error in sending order!");
       context.setState(new ErrorState());
     }
   }
@@ -312,14 +312,14 @@ class ItemsDeniedState implements OrderState {
     if (this.failureInfo.bikeFailed) {
       const response: string = await context.revertHotelOrder(order.id);
       if (response === "HOTELORDERREVERTED") {
-        console.log("[ORDER MANAGER]Hotel order with id ", order.id, "reverted!");
+        console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Hotel order with id ", order.id, "reverted!");
       }
     }
     if (this.failureInfo.hotelFailed) {
       const response: string = await context.revertBikeOrder(order.id);
       if (response === "BIKEORDERREVERTED") {
         context.manager_db.update_status(order.id, "REVERTED");
-        console.log("[ORDER MANAGER]Hotel order with id ", order.id, "reverted!");
+        console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Hotel order with id ", order.id, "reverted!");
       }
       /*TODO respond to UI */
     }
@@ -335,7 +335,7 @@ class PaymentAcceptedState implements OrderState {
     context: order_context,
     info: order_info
   ): Promise<void> {
-    console.log("[ORDER MANAGER]Payment was succesfull!");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Payment was succesfull!");
     /*TODO send response to UI */
   }
 }

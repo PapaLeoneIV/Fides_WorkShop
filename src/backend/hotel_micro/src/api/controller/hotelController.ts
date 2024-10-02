@@ -28,7 +28,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
   try {
     request_body = parse_and_set_default_values(req.body, send_data_schema);
     } catch (error) {
-      console.log("[HOTEL SERVICE]Error parsing data: request body not valid!", error);
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
@@ -36,7 +36,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
 
     if (await manager_ordini.check_existance(request_body.order_id)) {
-      console.log("[HOTEL SERVICE]Hotel order already exist", request_body.order_id);
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Hotel order already exist", request_body.order_id);
       res.status(409).json({ error: "Hotel order already exists" });
       return;
     }
@@ -49,7 +49,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
     if (dateIds.length === 0) {
       manager_ordini.update_status(order, "DENIED");
-      console.log("[HOTEL SERVICE]No dates found for the requested range.");
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
       res.send("HOTELORDERDENIED");
       return;
     }
@@ -57,7 +57,7 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
     if (!roomsAvailable) {
       manager_ordini.update_status(order, "DENIED");
-      console.log("[HOTEL SERVICE]Room is not available for the entire date range.");
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Room is not available for the entire date range.");
       res.send("HOTELORDERDENIED");
       return;
     }
@@ -76,7 +76,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   try {
     request_body = parse_and_set_default_values(req.body, revert_data_schema);
     } catch (error) {
-      console.log("[HOTEL SERVICE]Error parsing data: request body not valid!", error);
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Error parsing data: request body not valid!", error);
       res.status(400).json({ error: "Bad Request" });
       return;
     }
@@ -99,7 +99,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
 
     if (dateIds.length === 0) {
       manager_ordini.update_status(order, "DENIED")
-      console.log("[HOTEL SERVICE]No dates found for the requested range.");
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
       return;
     }
 

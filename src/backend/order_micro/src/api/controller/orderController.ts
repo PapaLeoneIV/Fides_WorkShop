@@ -30,7 +30,7 @@ export const handler_book_vacation = async (
   try {
     request_body = parse_and_set_default_values(req.body);
   } catch (error) {
-    console.log("[ORDER MANAGER]Error parsing data: request body not valid!", error);
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Error parsing data: request body not valid!", error);
     res.status(400).json({ error: "Bad Request" });
     return;
   }
