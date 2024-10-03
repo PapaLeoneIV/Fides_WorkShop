@@ -2,7 +2,6 @@ import pkg from 'pg';
 import dotenv from 'dotenv';
 import { exit } from 'process';
 
-
 const { Pool } = pkg;
 
 dotenv.config();
@@ -10,8 +9,8 @@ dotenv.config();
 export const db = new Pool({
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    host: 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
+    host: 'db_bike_rental',
+    port: parseInt(process.env.POSTGRES_PORT || '5432'),
     database: process.env.POSTGRES_DB,
 });
 
@@ -25,4 +24,5 @@ export async function connectToDatabase() {
         exit(1);
     }
 }
+
 

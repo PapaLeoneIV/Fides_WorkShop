@@ -1,5 +1,5 @@
 {
-  "name": "money_micro",
+  "name": "payment-confirmation",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
