@@ -1,27 +1,70 @@
-.PHONY: start_bike_micro start_hotel_micro start_money_micro start_order_micro start_docker_compose start_all
+.PHONY: all build up down build-bike-rental-service up-bike-rental-service build-hotel-booking-service up-hotel-booking-service build-payment-confirmation-service up-payment-confirmation-service build-order-service up-order-service start_docker_compose start_bike-rental start_hotel-booking
 
-# Define paths to each microservice
-BIKE_MICRO_DIR=./src/backend/bike_micro
-HOTEL_MICRO_DIR=./src/backend/hotel_micro
-MONEY_MICRO_DIR=./src/backend/money_micro
-ORDER_MICRO_DIR=./src/backend/order_micro
+NAME=tra-gency
 
-# Docker Compose target
-start_docker_compose:
+#---FULL APPLICATION MANAGEMENT---#
+all: clean build up
+
+no-volume: clean clean-volumes build up
+
+build:
+	docker compose build
+
+clean:
+	docker compose down --remove-orphans --volumes
+	docker system prune -f
+
+clean-volumes:
+	docker volume prune -f
+
+up: clean
 	docker compose up
 
-# Microservices targets
-start_bike_micro:
-	cd $(BIKE_MICRO_DIR)  npm install && npx tsx src/index.ts
 
-start_hotel_micro:
-	cd $(HOTEL_MICRO_DIR) && npm install && npx tsx src/index.ts
+#---BIKE MICROSERVICE MANAGEMENT---#
+build-bike-rental:
+	docker compose build bike-rental-service
 
-start_money_micro:
-	cd $(MONEY_MICRO_DIR) && npm install && npx tsx src/index.ts
+up-bike-rental: clean-bike-rental
+	docker compose up -d db_bike_rental --remove-orphans
+	docker compose up bike-rental-service --remove-orphans
 
-start_order_micro:
-	cd $(ORDER_MICRO_DIR) && npm install && npx tsx src/index.ts
+clean-bike-rental:
+	docker compose down db_bike_rental bike-rental-service --remove-orphans --volumes
 
-start_all:
-	$(MAKE) -j 4 start_bike_micro start_hotel_micro start_money_micro start_order_micro
+#---HOTEL MICROSERVICE MANAGEMENT---#
+build-hotel-booking:
+	docker compose build hotel-booking-service
+
+up-hotel-booking: clean-hotel-booking
+	docker compose up -d db_hotel_booking --remove-orphans
+	docker compose up hotel-booking-service --remove-orphans
+
+clean-hotel-booking:
+	docker compose down db_hotel_booking hotel-booking-service --remove-orphans --volumes
+
+#---MONEY MICROSERVICE MANAGEMENT---#
+build-payment:
+	docker compose build payment-confirmation-service
+
+up-payment: clean-payment
+	docker compose up -d db_payment_confirmation --remove-orphans
+	docker compose up payment-confirmation-service --remove-orphans
+
+clean-payment:
+	docker compose down db_payment_confirmation payment-confirmation-service --remove-orphans --volumes
+
+#---ORDER MICROSERVICE MANAGEMENT---#
+build-order:
+	docker compose build order-management-service
+
+up-order: clean-order
+	docker compose up -d db_order_management --remove-orphans
+	docker compose up order-management-service --remove-orphans
+
+clean-order:
+	docker compose down db_order_management order-management-service --remove-orphans --volumes
+
+#---RabbitMQ MANAGEMENT---#
+start_rabbitmq:
+	docker compose up rabbitmq
