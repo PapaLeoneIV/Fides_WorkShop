@@ -23,7 +23,8 @@ services:
     container_name: bike-rental-service
     build: ./src/backend/bike-rental
     depends_on:
-      - db_bike_rental
+      db_bike_rental:
+        condition: service_healthy
     #TODO_PROD: remove in production we'll rely on the npm build in the Dockerfile
     command: >
       sh -c "npm install \
@@ -130,6 +131,11 @@ services:
   #--------------------------bike rental
   db_bike_rental:
     image: postgres:13
+    healthcheck:
+      test: /usr/bin/pg_isready
+      interval: 3s
+      timeout: 5s
+      retries: 10
     volumes:
      #TODO_PROD: update to let docker manage the volume
       - db_bike_rental:/var/lib/postgresql/data
@@ -164,6 +170,7 @@ services:
     image: postgres:13
     volumes:
       - db_payment_confirmation:/var/lib/postgresql/data
+       - ./src/backend/payment-confirmation/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
