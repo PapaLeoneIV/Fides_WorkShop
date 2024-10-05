@@ -24,7 +24,7 @@ services:
     build: ./src/backend/bike-rental
     depends_on:
       db_bike_rental:
-        condition: service_healthy
+        condition: service_healthy # ensures that the database is completely running
     #TODO_PROD: remove in production we'll rely on the npm build in the Dockerfile
     command: >
       sh -c "npm install \
@@ -55,7 +55,8 @@ services:
     container_name: hotel-booking-service
     build: ./src/backend/hotel-booking
     depends_on:
-      - db_hotel_booking
+      db_hotel_booking:
+        condition: service_healthy # ensures that the database is completely running
     command: >
       sh -c "npm install \
       && npx prisma generate --schema ./prisma/schema.prisma \
@@ -81,7 +82,8 @@ services:
     container_name: payment-confirmation-service
     build: ./src/backend/payment-confirmation
     depends_on:
-      - db_payment_confirmation
+      db_payment_confirmation:
+        condition: service_healthy # ensures that the database is completely running
     command: >
       sh -c "npm install \
       && npx tsx src/index.ts"
@@ -106,7 +108,8 @@ services:
     container_name: order-management-service
     build: ./src/backend/order-management
     depends_on:
-      - db_order_management
+      db_order_management: # ensures that the database is completely running
+        condition: service_healthy
     command: >
       sh -c "npm install \
       && npx prisma generate --schema ./prisma/schema.prisma \
@@ -132,7 +135,7 @@ services:
   db_bike_rental:
     image: postgres:13
     healthcheck:
-      test: /usr/bin/pg_isready
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB_BIKE} -U ${POSTGRES_USER}"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -154,6 +157,11 @@ services:
   #--------------------------hotel booking
   db_hotel_booking:
     image: postgres:13
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB_HOTEL} -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
     volumes:
       - db_hotel_booking:/var/lib/postgresql/data
       - ./src/backend/hotel-booking/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -168,6 +176,11 @@ services:
   #--------------------------payment confirmation
   db_payment_confirmation:
     image: postgres:13
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB_PAYMENT} -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
     volumes:
       - db_payment_confirmation:/var/lib/postgresql/data
        - ./src/backend/payment-confirmation/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -182,6 +195,11 @@ services:
   #--------------------------order management
   db_order_management:
     image: postgres:13
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB_ORDER} -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
     volumes:
       - db_order_management:/var/lib/postgresql/data
       - ./src/backend/order-management/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -197,18 +215,18 @@ services:
 #--------------------------MESSAGE BROKER
 #------------------------- -  - --  -  --
   #--------------------------RabbitMQ
-  rabbitmq:
-    image: rabbitmq:3-management
-    env_file:
-      - .env
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    networks:
-      - app_network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+  #rabbitmq:
+  #  image: rabbitmq:3-management
+  #  env_file:
+  #    - .env
+  #  environment:
+  #    RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+  #    RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+  #  networks:
+  #    - app_network
+  #  ports:
+  #    - "5672:5672"
+  #    - "15672:15672"
   #LOGGING AND MONITORING
 
   #grafana:
