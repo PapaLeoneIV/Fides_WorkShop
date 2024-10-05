@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   BikeOrdersManager,
   BikeDBManager,
-  bike_order,
+  bikeDO,
 } from "../service/bikeService";
 
 const receive_data_schema = z.object({
@@ -24,7 +24,7 @@ const revert_data_schema = z.object({
 export const receive_order = async (req: Request, res: Response): Promise<void> => {
   const manager_DB_ordini = new BikeOrdersManager();
   const manager_db = new BikeDBManager();
-  let request_body: bike_order;
+  let request_body: bikeDO;
 
   try {
     request_body = parse_and_set_default_values(req.body, receive_data_schema);
@@ -50,9 +50,9 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
     available_dirt_bikes >= order.dirt_bike_requested &&
     available_road_bikes >= order.road_bike_requested
   ) {
-    manager_DB_ordini.update_status(order.info, "APPROVED");
+    manager_DB_ordini.update_status(order, "APPROVED");
   } else {
-    manager_DB_ordini.update_status(order.info, "DENIED");
+    manager_DB_ordini.update_status(order, "DENIED");
   }
   console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Sending response to client BIKEAPPROVED");
   res.send(`BIKEAPPROVED`);
@@ -63,7 +63,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
 
   const manager_DB_ordini = new BikeOrdersManager();
   const manager_db = new BikeDBManager();
-  let request_body: bike_order;
+  let request_body: bikeDO;
 
   try {
     request_body = parse_and_set_default_values(req.body, revert_data_schema);
@@ -72,18 +72,13 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
     res.status(400).json({ error: "Bad Request" });
     return;
   }
-
-  if (!(await manager_DB_ordini.check_existance(request_body.order_id))) {
-    res.status(409).json({ error: "Bike order does not exist" });
-    return;
-  }
   
   let info = await manager_DB_ordini.get_order_info(request_body.order_id);
   if (!info){
     res.status(409).json({ error: "Bike order does not exist" });
     return;
   }
-  manager_db.incrementBikeCount(parseInt(info.road_bike_requested, 10), parseInt(info.dirt_bike_requested, 10));
+  manager_db.incrementBikeCount(info.road_bike_requested, info.dirt_bike_requested);
   manager_DB_ordini.update_status(info, "REVERTED");
   res.send("BIKEORDERREVERTED");
 };
