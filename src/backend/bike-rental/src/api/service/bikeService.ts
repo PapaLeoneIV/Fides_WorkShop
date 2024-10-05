@@ -11,7 +11,7 @@ export interface bikeDO {
   updated_at: Date;
 }
 
-export class BikeOrdersManager {
+export class BikeOrderRepository {
 
   async create_order(bike_order: bikeDO): Promise<bikeDO> {
     console.log(
