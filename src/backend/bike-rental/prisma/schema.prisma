@@ -16,8 +16,8 @@ datasource db {
 model order {
   id                  String   @id @default(uuid())
   order_id            String
-  road_bike_requested String
-  dirt_bike_requested String
+  road_bike_requested Int
+  dirt_bike_requested Int
   renting_status      String
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
