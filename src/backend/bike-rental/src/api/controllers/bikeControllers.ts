@@ -50,8 +50,8 @@ export const receive_order = async (req: Request, res: Response): Promise<void> 
 
   let [order , available_dirt_bikes, available_road_bikes] = await Promise.all([
      order_repository.create_order(request),
-     storage_repository.getNumberOfDirtBikes(),
-     storage_repository.getNumberOfRoadBikes()
+     storage_repository.get_number_dirt_bikes(),
+     storage_repository.get_number_road_bikes()
   ]);
 
   if (
@@ -86,7 +86,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
     res.status(409).json({ error: "Bike order does not exist" });
     return;
   }
-  storage_repository.incrementBikeCount(info.road_bike_requested, info.dirt_bike_requested);
+  storage_repository.increment_bike_count(info.road_bike_requested, info.dirt_bike_requested);
   order_repository.update_status(info, ORDER_REVERTED);
   res.send(BIKE_REQUEST_REVERTED);
 };

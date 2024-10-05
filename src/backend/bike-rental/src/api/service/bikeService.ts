@@ -105,7 +105,7 @@ export class BikeOrderRepository {
 export class BikeDBManager {
 
 
-  async getNumberOfRoadBikes(): Promise<number> {
+  async get_number_road_bikes(): Promise<number> {
     console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requesting number of road bikes from DB");
     const road_bikes_count = await prisma.bikes.aggregate({
       _sum: {
@@ -115,7 +115,7 @@ export class BikeDBManager {
     return road_bikes_count._sum.road ?? 0;
   }
 
-  async getNumberOfDirtBikes(): Promise<number> {
+  async get_number_dirt_bikes(): Promise<number> {
     console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requesting number of dirt bikes from database");
     const dirt_bikes_count = await prisma.bikes.aggregate({
       _sum: {
@@ -125,7 +125,7 @@ export class BikeDBManager {
     return dirt_bikes_count._sum.dirt ?? 0;
   }
 
-  async incrementBikeCount(road_bikes: number, dirt_bikes: number) {
+  async increment_bike_count(road_bikes: number, dirt_bikes: number) {
     console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Incrementing the bike count in the DB");
     await prisma.bikes.updateMany({
       data: {
@@ -139,7 +139,7 @@ export class BikeDBManager {
     });
   }
 
-  async decrementBikeCount(road_bikes: number, dirt_bikes: number) {
+  async decrement_bike_count(road_bikes: number, dirt_bikes: number) {
     console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Decrementing bike count in the DB");
     await prisma.bikes.updateMany({
       data: {
