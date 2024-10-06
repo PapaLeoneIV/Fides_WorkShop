@@ -215,18 +215,19 @@ services:
 #--------------------------MESSAGE BROKER
 #------------------------- -  - --  -  --
   #--------------------------RabbitMQ
-  #rabbitmq:
-  #  image: rabbitmq:3-management
-  #  env_file:
-  #    - .env
-  #  environment:
-  #    RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-  #    RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-  #  networks:
-  #    - app_network
-  #  ports:
-  #    - "5672:5672"
-  #    - "15672:15672"
+  rabbitmq:
+    container_name: rabbitMQ
+    image: rabbitmq:3-management
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - app_network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   #LOGGING AND MONITORING
 
   #grafana:

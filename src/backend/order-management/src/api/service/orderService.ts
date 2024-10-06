@@ -1,7 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
 import axios from "axios";
+import { PrismaClient } from "@prisma/client";
+import  {channel}  from "../../messageBroker/sender/sender"
+
+const bikeQueue = "bike_request_queue"
+
+const prisma = new PrismaClient();
 //BASE CLASS--------------------------------------------------------------
 export interface order_info {
   id: string;
@@ -20,11 +23,11 @@ interface OrderState {
   handle_request(context: order_context, info: order_info): Promise<void>;
 }
 class OrderManagerDB {
-  
+
   async create_order(info: order_info): Promise<order_info> {
-    const x  =  await prisma.order.create({
+    const x = await prisma.order.create({
       data: {
-        from: info.from, 
+        from: info.from,
         to: info.to,
         room: info.room,
         road_bike_requested: info.road_bike_requested,
@@ -109,7 +112,7 @@ export class order_context {
     this.state = new StartOrderState();
     this.order = info;
   }
-  
+
   getState() {
     return this.state;
   }
@@ -126,7 +129,7 @@ export class order_context {
     order: order_info,
   ): Promise<string> {
     /*TODO implement POST request to bike */
-    console.log('\x1b[33m%s\x1b[0m',"[ORDER MANAGER]", "Sending request to bikeShop!");
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to bikeShop!");
     try {
       const bikes = {
         order_id: order.id,
@@ -145,7 +148,7 @@ export class order_context {
   }
 
   async sendRequestToHotel(
-  order: order_info,
+    order: order_info,
   ): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to hotel service!");
     try {
@@ -166,7 +169,7 @@ export class order_context {
     }
   }
 
-  async sendRequestToMoney(order: order_info ): Promise<string> {
+  async sendRequestToMoney(order: order_info): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to money service!");
     try {
       const payment_info = {
@@ -192,11 +195,11 @@ export class order_context {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting bike order");
     try {
       const bikes = {
-      order_id: order_id,
+        order_id: order_id,
       };
       const response: any = await axios.post(
         "http://localhost:3000/bike_renting/revert_order",
-          bikes,
+        bikes,
       );
       return response.data;
     } catch (error) {
@@ -207,7 +210,7 @@ export class order_context {
 
   async revertHotelOrder(
     order_id: string,
-    ): Promise<string> {
+  ): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting hotel order!");
     try {
       const hotel = {
@@ -215,7 +218,7 @@ export class order_context {
       };
       const response: any = await axios.post(
         "http://localhost:3001/hotel_booking/revert_order",
-          hotel,
+        hotel,
       );
       return response.data;
     } catch (error) {
@@ -238,6 +241,39 @@ class StartOrderState implements OrderState {
     context: order_context,
   ): Promise<void> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Starting to process the order with id ", context.order.id);
+
+    try {
+      const bikeMessage = Buffer.from(JSON.stringify({
+        order_id: context.order.id,
+        road_bike_requested: context.order.road_bike_requested,
+        dirt_bike_requested: context.order.dirt_bike_requested,
+      }))
+
+      const HotelMessage = Buffer.from(JSON.stringify({
+        order_id: context.order.id,
+        to: context.order.to,
+        from: context.order.from,
+        room: context.order.room
+      }))
+
+      await channel.sendToQueu();
+      console.log("[ORDER MANAGER] Sent order to bike service via RabbitMQ");
+
+
+
+
+    } catch (error) {
+      console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error processing order:", error);
+      context.setState(new ErrorState());
+    }
+
+
+
+
+
+
+
+
     try {
       const [bike_response, hotel_response] = await Promise.all([
         context.sendRequestToBikeShop(context.order),
