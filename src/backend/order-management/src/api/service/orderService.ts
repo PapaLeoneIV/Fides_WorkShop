@@ -1,6 +1,6 @@
 import axios from "axios";
+import { sendToBikeMessageBroker, sendToHotelMessageBroker, sendToPaymentMessageBroker } from "../../messageBroker";
 import { PrismaClient } from "@prisma/client";
-import  {channel}  from "../../messageBroker/sender/sender"
 
 const bikeQueue = "bike_request_queue"
 
@@ -125,7 +125,7 @@ export class order_context {
     await this.state.handle_request(this, order);
   }
 
-  async sendRequestToBikeShop(
+  async sendRequestToBikeShopHTTP(
     order: order_info,
   ): Promise<string> {
     /*TODO implement POST request to bike */
@@ -147,7 +147,7 @@ export class order_context {
     }
   }
 
-  async sendRequestToHotel(
+  async sendRequestToHotelHTTP(
     order: order_info,
   ): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to hotel service!");
@@ -169,7 +169,7 @@ export class order_context {
     }
   }
 
-  async sendRequestToMoney(order: order_info): Promise<string> {
+  async sendRequestToMoneyHTTP(order: order_info): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to money service!");
     try {
       const payment_info = {
@@ -189,7 +189,7 @@ export class order_context {
 
 
   /*TODO modify it so that revert endpoint will only accept the orderid */
-  async revertBikeOrder(
+  async revertBikeOrderHTTP(
     order_id: string,
   ): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting bike order");
@@ -208,7 +208,7 @@ export class order_context {
     }
   }
 
-  async revertHotelOrder(
+  async revertHotelOrderHTTP(
     order_id: string,
   ): Promise<string> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Reverting hotel order!");
@@ -227,6 +227,36 @@ export class order_context {
     }
   }
 
+
+
+  async sendRequestToBikeShopMessageBroker(
+    order: Buffer,
+  ): Promise<void> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to bikeShop through Message Broker!");
+    try {
+      sendToBikeMessageBroker(order)
+    } catch (error) {
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
+      throw error;
+    }
+  }
+
+  async sendRequestToHotelShopMessageBroker(
+    order: Buffer,
+  ): Promise<void> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to hotel through Message Broker!");
+    try {
+      sendToHotelMessageBroker(order)
+    } catch (error) {
+      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
+      throw error;
+    }
+  }
+
+  
+
+
+
   /*TODO implement the response to UI */
 }
 
@@ -236,6 +266,9 @@ export class order_context {
  * If the response is positive, it will change the state to ItemsConfirmedState, otherwise
  * it will change the state to ItemsDeniedState.
  */
+
+
+
 class StartOrderState implements OrderState {
   async handle_request(
     context: order_context,
@@ -256,12 +289,10 @@ class StartOrderState implements OrderState {
         room: context.order.room
       }))
 
-      await channel.sendToQueu();
+      context.sendRequestToBikeShopMessageBroker(bikeMessage)
       console.log("[ORDER MANAGER] Sent order to bike service via RabbitMQ");
-
-
-
-
+      context.sendRequestToHotelShopMessageBroker(HotelMessage)
+      console.log("[ORDER MANAGER] Sent order to hotel service via RabbitMQ")
     } catch (error) {
       console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error processing order:", error);
       context.setState(new ErrorState());
@@ -276,8 +307,8 @@ class StartOrderState implements OrderState {
 
     try {
       const [bike_response, hotel_response] = await Promise.all([
-        context.sendRequestToBikeShop(context.order),
-        context.sendRequestToHotel(context.order),
+        context.sendRequestToBikeShopHTTP(context.order),
+        context.sendRequestToHotelHTTP(context.order),
       ]);
       if (
         bike_response === "BIKEAPPROVED" &&
@@ -313,7 +344,7 @@ class ItemsConfirmedState implements OrderState {
   ): Promise<void> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Items are confirmed, waiting for payment...");
     try {
-      const response = await context.sendRequestToMoney(context.order);
+      const response = await context.sendRequestToMoneyHTTP(context.order);
       if (response === "PAYMENTAPPROVED") {
         context.manager_db.update_status(order.id, "PAYMENT_APPROVED");
         context.setState(new PaymentAcceptedState());
@@ -346,13 +377,13 @@ class ItemsDeniedState implements OrderState {
     order: order_info
   ): Promise<void> {
     if (this.failureInfo.bikeFailed) {
-      const response: string = await context.revertHotelOrder(order.id);
+      const response: string = await context.revertHotelOrderHTTP(order.id);
       if (response === "HOTELORDERREVERTED") {
         console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Hotel order with id ", order.id, "reverted!");
       }
     }
     if (this.failureInfo.hotelFailed) {
-      const response: string = await context.revertBikeOrder(order.id);
+      const response: string = await context.revertBikeOrderHTTP(order.id);
       if (response === "BIKEORDERREVERTED") {
         context.manager_db.update_status(order.id, "REVERTED");
         console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Hotel order with id ", order.id, "reverted!");

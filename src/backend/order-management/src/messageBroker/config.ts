@@ -1,18 +1,15 @@
-// Established connection to the RabbitMQ
+import dotenv from "dotenv"
 
-import amqp from 'amqplib';
-import {CONNECTION_STRING} from "./constants.js";
+dotenv.config()
 
-const connectToRabbitMQ = async () => {
-    try {
-        const connection = await amqp.connect(CONNECTION_STRING);
-        const channel = await connection.createChannel();
 
-        return {connection, channel}
-    } catch (error) {
-        console.error('Error connecting to RabbitMQ:', error);
-        throw new Error('Failed to connect to RabbitMQ');
-    }
-}
+const rmqUser = process.env.RABBITMQ_USER
+const rmqPass = process.env.RABBITMQ_PASSWORD
+const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
+const BIKE_QUEUE = "bike_order"
+const HOTEL_QUEUE = "hotel_order"
+const PAYMENT_QUEUE = "payment_order"
 
-export default connectToRabbitMQ
+
+
+export { rmqUser, rmqPass, rmqhost, BIKE_QUEUE, HOTEL_QUEUE, PAYMENT_QUEUE}
