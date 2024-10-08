@@ -15,6 +15,9 @@ export interface order_info {
   road_bike_requested: string;
   dirt_bike_requested: string;
   order_status: string;
+  bike_status: string;
+  hotel_status: string;
+  payment_status: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -22,7 +25,7 @@ export interface order_info {
 interface OrderState {
   handle_request(context: order_context, info: order_info): Promise<void>;
 }
-class OrderManagerDB {
+export class OrderManagerDB {
 
   async create_order(info: order_info): Promise<order_info> {
     const x = await prisma.order.create({
@@ -34,12 +37,24 @@ class OrderManagerDB {
         dirt_bike_requested: info.dirt_bike_requested,
         amount: info.amount,
         order_status: "PENDING",
+        bike_status: "PENDING",
+        hotel_status: "PENDING",
+        payment_status: "PENDING",
         created_at: new Date(),
         updated_at: new Date(),
       },
     });
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Order created with id : ", x.id);
     return x;
+  }
+
+  async get_order(id: string): Promise<order_info | null> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Getting order with id: ", id);
+    return prisma.order.findFirst({
+      where: {
+        id: id,
+      },
+    });
   }
 
   async check_existance(id: string): Promise<boolean> {
@@ -69,6 +84,45 @@ class OrderManagerDB {
     return;
   }
 
+  async update_bike_status(id: string, status: string): Promise<void> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order status with status: ", status);
+    await prisma.order.update({
+      where: {
+        id: id,
+      },
+      data: {
+        bike_status: status,
+      },
+    });
+    return;
+  }
+
+  async update_hotel_status(id: string, status: string): Promise<void> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order status with status: ", status);
+    await prisma.order.update({
+      where: {
+        id: id,
+      },
+      data: {
+        hotel_status: status,
+      },
+    });
+    return;
+  }
+
+  async update_payment_status(id: string, status: string): Promise<void> {
+    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order status with status: ", status);
+    await prisma.order.update({
+      where: {
+        id: id,
+      },
+      data: {
+        payment_status: status,
+      },
+    });
+    return;
+  }
+
   async update_order(info: order_info): Promise<void> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Updating order with id: ", info.id);
     await prisma.order.update({
@@ -85,8 +139,12 @@ class OrderManagerDB {
 
         amount: info.amount,
 
-        order_status: "PENDING",
-        created_at: new Date(),
+        order_status: info.order_status,
+        bike_status: info.bike_status,
+        hotel_status: info.hotel_status,
+        payment_status: info.payment_status,
+
+        created_at: info.created_at,
         updated_at: new Date(),
       },
     });
@@ -226,37 +284,6 @@ export class order_context {
       throw error;
     }
   }
-
-
-
-  async sendRequestToBikeShopMessageBroker(
-    order: Buffer,
-  ): Promise<void> {
-    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to bikeShop through Message Broker!");
-    try {
-      sendToBikeMessageBroker(order)
-    } catch (error) {
-      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
-      throw error;
-    }
-  }
-
-  async sendRequestToHotelShopMessageBroker(
-    order: Buffer,
-  ): Promise<void> {
-    console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Sending request to hotel through Message Broker!");
-    try {
-      sendToHotelMessageBroker(order)
-    } catch (error) {
-      console.error('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error sending request:", error);
-      throw error;
-    }
-  }
-
-  
-
-
-
   /*TODO implement the response to UI */
 }
 
@@ -274,37 +301,6 @@ class StartOrderState implements OrderState {
     context: order_context,
   ): Promise<void> {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Starting to process the order with id ", context.order.id);
-
-    try {
-      const bikeMessage = Buffer.from(JSON.stringify({
-        order_id: context.order.id,
-        road_bike_requested: context.order.road_bike_requested,
-        dirt_bike_requested: context.order.dirt_bike_requested,
-      }))
-
-      const HotelMessage = Buffer.from(JSON.stringify({
-        order_id: context.order.id,
-        to: context.order.to,
-        from: context.order.from,
-        room: context.order.room
-      }))
-
-      context.sendRequestToBikeShopMessageBroker(bikeMessage)
-      console.log("[ORDER MANAGER] Sent order to bike service via RabbitMQ");
-      context.sendRequestToHotelShopMessageBroker(HotelMessage)
-      console.log("[ORDER MANAGER] Sent order to hotel service via RabbitMQ")
-    } catch (error) {
-      console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]", "Error processing order:", error);
-      context.setState(new ErrorState());
-    }
-
-
-
-
-
-
-
-
     try {
       const [bike_response, hotel_response] = await Promise.all([
         context.sendRequestToBikeShopHTTP(context.order),

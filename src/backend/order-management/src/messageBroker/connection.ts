@@ -1,6 +1,7 @@
 import client, { Connection, Channel, ConsumeMessage } from "amqplib";
-
 import { rmqUser, rmqPass, rmqhost } from "./config"
+
+type HandlerCB = (msg: string) => any;
 
 class RabbitMQConnection {
   connection!: Connection;
@@ -12,34 +13,56 @@ class RabbitMQConnection {
     else this.connected = true;
 
     try {
-      console.log(`⌛️ Connecting to Rabbit-MQ Server`);
-      console.log("With env values: ", rmqUser, rmqPass, rmqhost)
-      this.connection = await client.connect(
+      console.log(`[ORDER SERVICE] Connecting to Rabbit-MQ Server`);
+            this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
-      console.log(`✅ Rabbit MQ Connection is ready`);
+      console.log(`[ORDER SERVICE] Rabbit MQ Connection is ready`);
 
       this.channel = await this.connection.createChannel();
 
-      console.log(`🛸 Created RabbitMQ Channel successfully`);
+      console.log(`[ORDER SERVICE] Created RabbitMQ Channel successfully`);
     } catch (error) {
       console.error(error);
-      console.error(`Not connected to MQ Server`);
+      console.error(`[ORDER SERVICE]Not connected to MQ Server`);
     }
   }
 
-  async sendToQueue(queue: string, message: any) {
+  async sendToQueue(queue: string, message: any) : Promise<boolean> {
     try {
       if (!this.channel) {
         await this.connect();
       }
 
-      this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+     return  this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     } catch (error) {
-      console.error(error);
+      console.error("[ORDER SERVICE]", error);
       throw error;
     }
+  }
+
+  async consume(queue: string, handle_req_from_frontend: HandlerCB) {
+
+    await this.channel.assertQueue(queue, {
+      durable: true,
+    });
+
+    this.channel.consume(
+      queue,
+      (msg) => {
+        {
+          if (!msg) {
+            return console.error(`Invalid incoming message`);
+          }
+          handle_req_from_frontend(msg?.content?.toString());
+          this.channel.ack(msg);
+        }
+      },
+      {
+        noAck: false,
+      }
+    );
   }
 }
 

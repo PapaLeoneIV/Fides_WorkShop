@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define an array of ports
-ports="3000 3001 3002 3003"
+ports="3000 3001 3002 3003 5672"
 
 # Iterate over each port
 for port in $ports; do

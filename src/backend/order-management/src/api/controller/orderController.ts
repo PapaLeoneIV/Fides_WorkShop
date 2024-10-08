@@ -12,7 +12,7 @@ import { z } from "zod";
     room: z.string(),
 
   });
-  const parse_and_set_default_values = (data: any) => {
+  const parse_and_set_default_values = (data: object) => {
     const parsedData = order_schema.parse(data);
     return {
       ...parsedData,
@@ -23,19 +23,21 @@ import { z } from "zod";
   };
 
 export const handler_book_vacation = async (
-  req: Request,
-  res: Response
+  req: object
 ): Promise<void> => {
   let request_body: order_info;
   try {
-    request_body = parse_and_set_default_values(req.body);
+    request_body = parse_and_set_default_values(req);
   } catch (error) {
     console.log('\x1b[33m%s\x1b[0m', "[ORDER MANAGER]Error parsing data: request body not valid!", error);
-    res.status(400).json({ error: "Bad Request" });
+    //res.status(400).json({ error: "Bad Request" });
+    //invece di rispondere con http devo rispondere con il message broker
+    
     return;
   }
   const order = new order_context(request_body);
   order.order = await order.manager_db.create_order(order.order);
   order.process_order(order.order);
-  res.status(202).send("Order is being processed");
+  //res.status(202).send("Order is being processed");
+  //invece di rispondere con http devo rispondere con il message broker 
 };

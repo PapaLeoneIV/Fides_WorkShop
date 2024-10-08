@@ -12,6 +12,11 @@ OrderRouter.post("/book_vacation", handler_book_vacation);
 console.log("[INFO] Set up handler_book_vacation...")
 
 
+/*qui dovrei usare il client di RABBIT per mettermi in ascolto di messaggi provenienti dal frontend */
+
+
+
+
 
 
 

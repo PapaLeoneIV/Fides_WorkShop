@@ -22,6 +22,9 @@ model order {
   dirt_bike_requested String
   amount              String
   order_status        String
+  bike_status         String
+  hotel_status        String
+  payment_status      String 
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 }

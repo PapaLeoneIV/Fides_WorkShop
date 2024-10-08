@@ -211,6 +211,7 @@ services:
       - app_network
     ports:
       - "5436:5432"
+
 #--------------------------------- -  -
 #--------------------------MESSAGE BROKER
 #------------------------- -  - --  -  --
@@ -218,6 +219,11 @@ services:
   rabbitmq:
     container_name: rabbitMQ
     image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", ""]
+      interval: 2s
+      timeout: 3s
+      retries: 5
     env_file:
       - .env
     environment:
