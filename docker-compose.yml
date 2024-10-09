@@ -5,14 +5,16 @@
 # Logging and monitoring: grafana, loki, promtail
 
 volumes:
+  #--databases
   db_bike_rental:
   db_hotel_booking:
   db_payment_confirmation:
   db_order_management:
+  #--logging and monitoring
+  esdata:
 
 networks:
   app_network:
-    driver: bridge
 
 services:
 #--------------------------------- -  -
@@ -23,6 +25,7 @@ services:
     container_name: bike-rental-service
     build: ./src/backend/bike-rental
     depends_on:
+      - elasticsearch
       - db_bike_rental
     #TODO_PROD: remove in production we'll rely on the npm build in the Dockerfile
     command: >
@@ -33,15 +36,17 @@ services:
     volumes:
       - ./src/backend/bike-rental:/app
       - ./src/backend/bike-rental/package.json:/app/package.json
+      # - ./config/winston-es-config.json:/app/logger/config/winston-es-config.json
     env_file:
       - .env
     environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_BIKE}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_BIKE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     networks:
       - app_network
     #TODO_PROD: update to serve only in the internal network
@@ -49,85 +54,6 @@ services:
       - "3000:3000"
     # expose:
     #   - "3000"
-  #--------------------------HOTEL BOOKING
-  hotel-booking-service:
-    container_name: hotel-booking-service
-    build: ./src/backend/hotel-booking
-    depends_on:
-      - db_hotel_booking
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/hotel-booking:/app
-      - ./src/backend/hotel-booking/package.json:/app/package.json
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_HOTEL}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}
-    networks:
-      - app_network
-    ports: 
-      - "3001:3000"
-  #--------------------------PAYMENT CONFIRMATION
-  payment-confirmation-service:
-    container_name: payment-confirmation-service
-    build: ./src/backend/payment-confirmation
-    depends_on:
-      - db_payment_confirmation
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/payment-confirmation:/app
-      - ./src/backend/payment-confirmation/package.json:/app/package.json
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}
-    networks:
-      - app_network
-    ports:
-      - "3002:3000"
-  #--------------------------ORDER MANAGEMENT
-  order-management-service:
-    container_name: order-management-service
-    build: ./src/backend/order-management
-    depends_on:
-      - db_order_management
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/order-management:/app
-      - ./src/backend/order-management/package.json:/app/package.json
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_ORDER}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}
-    networks:
-      - app_network
-    ports:
-      - "3003:3000"
-#--------------------------------- -  -
-#----------------------------DATABASES
-#------------------------- -  - --  -  --
   #--------------------------bike rental
   db_bike_rental:
     image: postgres:13
@@ -136,9 +62,9 @@ services:
       - db_bike_rental:/var/lib/postgresql/data
       - ./src/backend/bike-rental/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_USER: ${POSTGRES_USER} 
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB_BIKE}
+      - POSTGRES_USER=${POSTGRES_USER} 
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_BIKE}
     networks:
       - app_network
     #TODO_PROD: update to serve only in the internal network
@@ -146,64 +72,193 @@ services:
       - "5433:5432"
     # expose:
     #   - "5432"
-  #--------------------------hotel booking
-  db_hotel_booking:
-    image: postgres:13
-    volumes:
-      - db_hotel_booking:/var/lib/postgresql/data
-      - ./src/backend/hotel-booking/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #--------------------------Elasticsearch
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB_HOTEL}
-    networks:
-      - app_network
-    ports:
-      - "5434:5432"
-  #--------------------------payment confirmation
-  db_payment_confirmation:
-    image: postgres:13
+      - discovery.type=single-node
     volumes:
-      - db_payment_confirmation:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
-    networks:
-      - app_network
+      - esdata:/usr/share/elasticsearch/data
+    # uncomment if having issues with memory not being enough
+    # ulimits:
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
+    # networks:
+    #   - app_network
+    # network_mode: host
     ports:
-      - "5435:5432"
-  #--------------------------order management
-  db_order_management:
-    image: postgres:13
-    volumes:
-      - db_order_management:/var/lib/postgresql/data
-      - ./src/backend/order-management/init.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB_ORDER}
-    networks:
-      - app_network
-    ports:
-      - "5436:5432"
+      - "9200:9200"
+#   #--------------------------HOTEL BOOKING
+#   hotel-booking-service:
+#     container_name: hotel-booking-service
+#     build: ./src/backend/hotel-booking
+#     depends_on:
+#       - db_hotel_booking
+#     command: >
+#       sh -c "npm install \
+#       && npx prisma generate --schema ./prisma/schema.prisma \
+#       && npx tsx src/index.ts"
+#     volumes:
+#       - ./src/backend/hotel-booking:/app
+#       - ./src/backend/hotel-booking/package.json:/app/package.json
+#     env_file:
+#       - .env
+#     environment:
+#       - NODE_ENV=${NODE_ENV}
+#       - POSTGRES_DB=${POSTGRES_DB_HOTEL}
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_PORT=${POSTGRES_PORT}
+#       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}
+#     networks:
+#       - app_network
+#     ports: 
+#       - "3001:3000"
+#   #--------------------------PAYMENT CONFIRMATION
+#   payment-confirmation-service:
+#     container_name: payment-confirmation-service
+#     build: ./src/backend/payment-confirmation
+#     depends_on:
+#       - db_payment_confirmation
+#     command: >
+#       sh -c "npm install \
+#       && npx prisma generate --schema ./prisma/schema.prisma \
+#       && npx tsx src/index.ts"
+#     volumes:
+#       - ./src/backend/payment-confirmation:/app
+#       - ./src/backend/payment-confirmation/package.json:/app/package.json
+#     env_file:
+#       - .env
+#     environment:
+#       - NODE_ENV=${NODE_ENV}
+#       - POSTGRES_DB=${POSTGRES_DB_PAYMENT}
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_PORT=${POSTGRES_PORT}
+#       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}
+#     networks:
+#       - app_network
+#     ports:
+#       - "3002:3000"
+#   #--------------------------ORDER MANAGEMENT
+#   order-management-service:
+#     container_name: order-management-service
+#     build: ./src/backend/order-management
+#     depends_on:
+#       - db_order_management
+#     command: >
+#       sh -c "npm install \
+#       && npx prisma generate --schema ./prisma/schema.prisma \
+#       && npx tsx src/index.ts"
+#     volumes:
+#       - ./src/backend/order-management:/app
+#       - ./src/backend/order-management/package.json:/app/package.json
+#     environment:
+#       - NODE_ENV=${NODE_ENV}
+#       - POSTGRES_DB=${POSTGRES_DB_ORDER}
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_PORT=${POSTGRES_PORT}
+#       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}
+#     networks:
+#       - app_network
+#     ports:
+#       - "3003:3000"
+# #--------------------------------- -  -
+# #----------------------------DATABASES
+# #------------------------- -  - --  -  --
+#   #--------------------------hotel booking
+#   db_hotel_booking:
+#     image: postgres:13
+#     volumes:
+#       - db_hotel_booking:/var/lib/postgresql/data
+#       - ./src/backend/hotel-booking/init.sql:/docker-entrypoint-initdb.d/init.sql
+#     environment:
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_DB=${POSTGRES_DB_HOTEL}
+#     networks:
+#       - app_network
+#     ports:
+#       - "5434:5432"
+#   #--------------------------payment confirmation
+#   db_payment_confirmation:
+#     image: postgres:13
+#     volumes:
+#       - db_payment_confirmation:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_DB=${POSTGRES_DB_PAYMENT}
+#     networks:
+#       - app_network
+#     ports:
+#       - "5435:5432"
+#   #--------------------------order management
+#   db_order_management:
+#     image: postgres:13
+#     volumes:
+#       - db_order_management:/var/lib/postgresql/data
+#       - ./src/backend/order-management/init.sql:/docker-entrypoint-initdb.d/init.sql
+#     environment:
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_DB=${POSTGRES_DB_ORDER}
+#     networks:
+#       - app_network
+#     ports:
+#       - "5436:5432"
 #--------------------------------- -  -
 #--------------------------MESSAGE BROKER
 #------------------------- -  - --  -  --
-  #--------------------------RabbitMQ
-  rabbitmq:
-    image: rabbitmq:3-management
-    env_file:
-      - .env
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    networks:
-      - app_network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-  #LOGGING AND MONITORING
+  # #--------------------------RabbitMQ
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+  #     - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+  #   networks:
+  #     - app_network
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+
+#--------------------------------- -  -
+#--------------------------LOGGING AND MONITORING
+#------------------------- -  - --  -  --
+  
+  # #--------------------------Logstash
+  # logstash:
+  #   container_name: logstash
+  #   image: docker.elastic.co/logstash/logstash:7.10.2
+  #   depends_on:
+  #     - elasticsearch
+  #   volumes:
+  #     - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #   networks:
+  #     - app_network
+  #   ports:
+  #     - "5000:5000"
+
+  # #--------------------------Kibana
+  # kibana:
+  #   container_name: kibana
+  #   image: docker.elastic.co/kibana/kibana:7.10.2
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #     - ELASTICSEARCH_URL=http://elasticsearch:9200
+  #   networks:
+  #     - app_network
+  #   ports:
+  #     - "5601:5601"
+    
+  #--------------------------Grafana
+
 
   #grafana:
   #  image: grafana/grafana:latest

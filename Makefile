@@ -26,8 +26,14 @@ build-bike-rental:
 	docker compose build bike-rental-service
 
 up-bike-rental: clean-bike-rental
-	docker compose up -d db_bike_rental --remove-orphans
-	docker compose up bike-rental-service --remove-orphans
+	docker compose up -d db_bike_rental
+# docker compose up -d rabbitmq
+	docker compose up -d elasticsearch
+# docker compose up -d logstash
+# docker compose up -d kibana
+	docker compose up bike-rental-service
+
+bike: clean build-bike-rental up-bike-rental 
 
 clean-bike-rental:
 	docker compose down db_bike_rental bike-rental-service --remove-orphans --volumes
