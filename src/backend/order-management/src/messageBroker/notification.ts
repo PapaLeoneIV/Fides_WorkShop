@@ -1,4 +1,4 @@
-import mqConnection from "./connection";
+import {rabbitmqClient} from "./connection";
 
 export type INotification = {
   title: string;
@@ -8,7 +8,7 @@ export type INotification = {
 
 export const sendNotification = async (notification: INotification, queue: string): Promise<boolean> => {
  
-  let res = await mqConnection.sendToQueue(queue, notification);
+  let res = await rabbitmqClient.sendToQueue(queue, notification);
 
   console.log(`Sent the notification to consumer`);
   return res;

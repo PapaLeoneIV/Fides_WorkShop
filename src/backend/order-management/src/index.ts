@@ -1,16 +1,18 @@
 import express from 'express';
 import { db, connectToDatabase } from './db/db';
 import { app, OrderRouter } from "./api/router/orderRouter"
-import { consumeBookingOrder, consumeBikeResponse, consumeHotelResponse, consumePaymentResponse } from './messageBroker';
+import { rabbitmqClient } from "./messageBroker/connection";
 
 const port = 3003;
 
-function main() {
+async function main() {
 
-    connectToDatabase();
-    consumeBookingOrder();
-    /*consumeBikeResponse();
-    consumeHotelResponse();
+   connectToDatabase();
+   await rabbitmqClient.connect();
+
+   rabbitmqClient.consumeBookingOrder();
+   rabbitmqClient.consumeBikeResponse();
+    /*consumeHotelResponse();
     consumePaymentResponse();
  */
 

@@ -1,9 +1,11 @@
 import client, { Connection, Channel, ConsumeMessage } from "amqplib";
-import { rmqUser, rmqPass, rmqhost } from "./config"
+import { rmqUser, rmqPass, rmqhost, BIKE_QUEUE, BOOKING_QUEUE, HOTEL_QUEUE, PAYMENT_QUEUE } from "./config"
+import { sendNotification } from "./notification";
+import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "./handlers";
 
-type HandlerCB = (msg: string) => any;
+type HandlerCB = (msg: string, instance?: RabbitMQConnection) => any;
 
-class RabbitMQConnection {
+export class RabbitMQConnection {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -14,7 +16,7 @@ class RabbitMQConnection {
 
     try {
       console.log(`[ORDER SERVICE] Connecting to Rabbit-MQ Server`);
-            this.connection = await client.connect(
+      this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
@@ -29,21 +31,21 @@ class RabbitMQConnection {
     }
   }
 
-  async sendToQueue(queue: string, message: any) : Promise<boolean> {
+  async sendToQueue(queue: string, message: any): Promise<boolean> {
     try {
       if (!this.channel) {
         await this.connect();
       }
 
-     return  this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+      return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     } catch (error) {
       console.error("[ORDER SERVICE]", error);
       throw error;
     }
+
   }
 
-  async consume(queue: string, handle_req_from_frontend: HandlerCB) {
-
+  async consume(queue: string, handlerFunc: HandlerCB) {
     await this.channel.assertQueue(queue, {
       durable: true,
     });
@@ -55,7 +57,7 @@ class RabbitMQConnection {
           if (!msg) {
             return console.error(`Invalid incoming message`);
           }
-          handle_req_from_frontend(msg?.content?.toString());
+          handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);
         }
       },
@@ -64,8 +66,52 @@ class RabbitMQConnection {
       }
     );
   }
+
+  consumeBookingOrder = async () => {
+    console.log("[ORDER SERVICE] Listening for booking orders...");
+    await this.consume(BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
+  };
+  
+  consumeBikeResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for bike responses...");
+    this.consume(BIKE_QUEUE, (msg) => handle_res_from_bike(this, msg));
+  };
+  
+  consumeHotelResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for hotel responses...");
+    this.consume(HOTEL_QUEUE, (msg) => handle_res_from_hotel(this, msg));
+  };
+  
+  consumePaymentResponse = async () => {
+    this.consume(PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
+  };
+
+
+  sendToBikeMessageBroker = async (body: string): Promise<void> => {
+    const newNotification = {
+      title: "Bike order incoming",
+      description: body,
+    };
+    sendNotification(newNotification, BIKE_QUEUE);
+  };
+
+  sendToHotelMessageBroker = async (body: string): Promise<void> => {
+    const newNotification = {
+      title: "Hotel order incoming",
+      description: body,
+    };
+    sendNotification(newNotification, HOTEL_QUEUE)
+  };
+
+  sendToPaymentMessageBroker = async (body: string): Promise<void> => {
+    const newNotification = {
+      title: "Payment order incoming",
+      description: body,
+    };
+    sendNotification(newNotification, PAYMENT_QUEUE);
+  };
+
 }
 
-const mqConnection = new RabbitMQConnection();
+export const rabbitmqClient = new RabbitMQConnection();
 
-export default mqConnection;
