@@ -2,7 +2,7 @@
 
 import amqp from 'amqplib';
 
-const QUEUE = 'booking_order';
+const QUEUE = 'booking_request';
 
 async function publishMessage() {
     try {
