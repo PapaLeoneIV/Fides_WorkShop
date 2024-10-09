@@ -1,5 +1,5 @@
 import client, { Connection, Channel, ConsumeMessage } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, BIKE_QUEUE, BOOKING_QUEUE, HOTEL_QUEUE, PAYMENT_QUEUE } from "./config"
+import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE } from "./config"
 import { sendNotification } from "./notification";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "./handlers";
 
@@ -69,21 +69,21 @@ export class RabbitMQConnection {
 
   consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
-    await this.consume(BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
+    await this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
   };
-  
+
   consumeBikeResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike responses...");
-    this.consume(BIKE_QUEUE, (msg) => handle_res_from_bike(this, msg));
+    this.consume(REQ_BIKE_QUEUE, (msg) => handle_res_from_bike(this, msg));
   };
-  
+
   consumeHotelResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel responses...");
-    this.consume(HOTEL_QUEUE, (msg) => handle_res_from_hotel(this, msg));
+    this.consume(REQ_HOTEL_QUEUE, (msg) => handle_res_from_hotel(this, msg));
   };
-  
+
   consumePaymentResponse = async () => {
-    this.consume(PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
+    this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
   };
 
 
@@ -92,7 +92,7 @@ export class RabbitMQConnection {
       title: "Bike order incoming",
       description: body,
     };
-    sendNotification(newNotification, BIKE_QUEUE);
+    sendNotification(newNotification, RESP_BIKE_QUEUE);
   };
 
   sendToHotelMessageBroker = async (body: string): Promise<void> => {
@@ -100,7 +100,7 @@ export class RabbitMQConnection {
       title: "Hotel order incoming",
       description: body,
     };
-    sendNotification(newNotification, HOTEL_QUEUE)
+    sendNotification(newNotification, RESP_HOTEL_QUEUE)
   };
 
   sendToPaymentMessageBroker = async (body: string): Promise<void> => {
@@ -108,7 +108,7 @@ export class RabbitMQConnection {
       title: "Payment order incoming",
       description: body,
     };
-    sendNotification(newNotification, PAYMENT_QUEUE);
+    sendNotification(newNotification, RESP_PAYMENT_QUEUE);
   };
 
 }
