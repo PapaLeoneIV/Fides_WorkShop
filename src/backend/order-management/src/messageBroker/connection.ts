@@ -1,4 +1,4 @@
-import client, { Connection, Channel, ConsumeMessage } from "amqplib";
+import client, { Connection, Channel } from "amqplib";
 import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE } from "./config"
 import { sendNotification } from "./notification";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "./handlers";
@@ -69,7 +69,7 @@ export class RabbitMQConnection {
 
   consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
-    await this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
+    this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
   };
 
   consumeBikeResponse = async () => {
@@ -83,6 +83,7 @@ export class RabbitMQConnection {
   };
 
   consumePaymentResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for payment responses...");
     this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
   };
 

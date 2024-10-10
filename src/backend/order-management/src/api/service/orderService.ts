@@ -1,5 +1,4 @@
 import axios from "axios";
-import { sendToBikeMessageBroker, sendToHotelMessageBroker, sendToPaymentMessageBroker } from "../../messageBroker/handlers";
 import { PrismaClient } from "@prisma/client";
 
 const bikeQueue = "bike_request_queue"

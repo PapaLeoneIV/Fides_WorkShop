@@ -1,6 +1,4 @@
-import express from 'express';
-import { db, connectToDatabase } from './db/db';
-import { app, OrderRouter } from "./api/router/orderRouter"
+import { connectToDatabase } from './db/db';
 import { rabbitmqClient } from "./messageBroker/connection";
 
 const port = 3003;
