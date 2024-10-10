@@ -11,11 +11,35 @@ export async function handle_req_from_frontend(instance: RabbitMQConnection, msg
       const order_info: order_info = JSON.parse(msg);
       //TODO split the message to send bike and hotel service only needed data
       
-      const manager_db = new OrderManagerDB();
-      manager_db.create_order(order_info);
       
-      instance.sendToBikeMessageBroker(msg);
-      instance.sendToHotelMessageBroker(msg);
+
+      const manager_db = new OrderManagerDB();
+      const order = await manager_db.create_order(order_info);
+      
+      const bike_order = {
+        order_id: order.id,
+        road_bike_requested: order.road_bike_requested,
+        dirt_bike_requested: order.dirt_bike_requested,
+        renting_status: order.bike_status,
+        created_at : order.created_at,
+        updated_at : order.updated_at
+      };
+
+      const hotel_order = {
+        order_id: order.id,
+        to: order.to,
+        from: order.from,
+        room : order.room,
+        renting_status: order.hotel_status,
+        created_at : order.created_at,
+        updated_at : order.updated_at
+      };
+
+      console.log(`[DEBUG ORDER SERVICE ] Sending request to bike service:`, bike_order);
+      console.log(`[DEBUG ORDER SERVICE ] Sending request to hotel service:`, hotel_order);
+
+      instance.sendToBikeMessageBroker(JSON.stringify(bike_order));
+      instance.sendToHotelMessageBroker(JSON.stringify(hotel_order));
       
     } catch (error) {
       console.error(`[ORDER SERVICE] Error while handling frontend request:`, error);
