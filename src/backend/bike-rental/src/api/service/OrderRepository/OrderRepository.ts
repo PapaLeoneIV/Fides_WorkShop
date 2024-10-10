@@ -31,7 +31,7 @@ export class BikeOrderRepository {
         return new_bike_order
     }
 
-    async update_order(bike_order: OrderDO) {
+    async update_order(bike_order: OrderDO) : Promise<OrderDO> {
         console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Updating bike ORDER with id: ", bike_order.order_id);
         let updated_bike_order = await prisma.order.update({
             where: {
