@@ -16,9 +16,9 @@ async function publishMessage() {
         // Create a message to send
         const message = {
             order_id: '123456',
-            from: "",
-            to: "",
-            room: "",
+            from: "24/12/2024",
+            to: "25/12/2024",
+            room: "104",
             road_bike_requested: "1",
             dirt_bike_requested: "1",
             order_status: "PENDING",
