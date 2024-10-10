@@ -18,8 +18,8 @@ model order {
   to                  String
   from                String
   room                String
-  road_bike_requested String
-  dirt_bike_requested String
+  road_bike_requested Int
+  dirt_bike_requested Int
   amount              String
   order_status        String
   bike_status         String
