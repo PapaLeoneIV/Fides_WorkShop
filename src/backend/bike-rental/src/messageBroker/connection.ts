@@ -15,19 +15,19 @@ export class RabbitMQConnection {
     else this.connected = true;
 
     try {
-      console.log(`[ORDER SERVICE] Connecting to Rabbit-MQ Server`);
+      console.log(`[BIKE SERVICE] Connecting to Rabbit-MQ Server`);
       this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
-      console.log(`[ORDER SERVICE] Rabbit MQ Connection is ready`);
+      console.log(`[BIKE SERVICE] Rabbit MQ Connection is ready`);
 
       this.channel = await this.connection.createChannel();
 
-      console.log(`[ORDER SERVICE] Created RabbitMQ Channel successfully`);
+      console.log(`[BIKE SERVICE] Created RabbitMQ Channel successfully`);
     } catch (error) {
       console.error(error);
-      console.error(`[ORDER SERVICE]Not connected to MQ Server`);
+      console.error(`[BIKE SERVICE]Not connected to MQ Server`);
     }
   }
 
@@ -39,7 +39,7 @@ export class RabbitMQConnection {
 
       return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      console.error("[BIKE SERVICE]", error);
       throw error;
     }
 
@@ -55,7 +55,7 @@ export class RabbitMQConnection {
       (msg : any) => {
         {
           if (!msg) {
-            return console.error(`Invalid incoming message`);
+            return console.error(`[BIKE SERVICE]Invalid incoming message`);
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);
@@ -68,7 +68,7 @@ export class RabbitMQConnection {
   }
 
   consumeBikeOrder = async () => {
-    console.log("[ORDER SERVICE] Listening for bike orders...");
+    console.log("[BIKE SERVICE] Listening for bike orders...");
     this.consume(RESP_BIKE_QUEUE, (msg) => handle_req_from_order_management(this, msg));
   };
 
