@@ -1,7 +1,7 @@
 import { PrismaClient, order as OrderDO} from "@prisma/client";
 const prisma = new PrismaClient();
 
-interface OrderDTO {
+export interface OrderDTO {
     order_id: string,
     road_bike_requested: number,
     dirt_bike_requested: number,
