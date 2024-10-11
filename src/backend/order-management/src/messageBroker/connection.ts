@@ -1,5 +1,5 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE } from "./config"
+import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE, SAGA_RESP_BIKE_QUEUE,SAGA_RESP_HOTEL_QUEUE } from "./config"
 import { sendNotification } from "./notification";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "./handlers";
 
@@ -66,7 +66,7 @@ export class RabbitMQConnection {
       }
     );
   }
-
+//---------------------------CONSUME--------------------------
   consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
     this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(this, msg));
@@ -87,7 +87,7 @@ export class RabbitMQConnection {
     this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
   };
 
-
+//---------------------------SEND--------------------------------
   sendToBikeMessageBroker = async (body: string): Promise<void> => {
     const newNotification = {
       title: "Bike order incoming",
@@ -111,6 +111,24 @@ export class RabbitMQConnection {
     };
     sendNotification(newNotification, RESP_PAYMENT_QUEUE);
   };
+
+//---------------------------SAGA(REVERSE ORDER)------------------------
+
+  sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
+    const newNotification = {
+      title: "Cancel bike order",
+      description: body,
+    };
+    sendNotification(newNotification, SAGA_RESP_BIKE_QUEUE);
+  }
+
+  sendCanceltoHotelMessageBroker = async (body: string): Promise<void> => {
+    const newNotification = {
+      title: "Cancel hotel order",
+      description: body,
+    };
+    sendNotification(newNotification, SAGA_RESP_HOTEL_QUEUE);
+  }
 
 }
 

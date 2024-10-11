@@ -1,7 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, RESP_BIKE_QUEUE} from "./config"
+import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, RESP_BIKE_QUEUE, SAGA_RESP_BIKE_QUEUE} from "./config"
 import { sendNotification } from "./notification";
-import { handle_req_from_order_management} from "./handlers";
+import { handle_req_from_order_management, handle_cancel_request} from "./handlers";
 
 type HandlerCB = (msg: string, instance?: RabbitMQConnection) => any;
 
@@ -67,11 +67,14 @@ export class RabbitMQConnection {
     );
   }
 
+  //----------------------CONSUME-------------------------------
   consumeBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
     this.consume(RESP_BIKE_QUEUE, (msg) => handle_req_from_order_management(this, msg));
   };
 
+
+  //----------------------SEND----------------------------------
   sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
     const newNotification = {
       title: "Bike response incoming",
@@ -79,6 +82,17 @@ export class RabbitMQConnection {
     };
     sendNotification(newNotification, REQ_BIKE_QUEUE);
   };
+  //----------------------SAGA(CANCEL)--------------------------
+  consumecancelBikeOrder = async (id: string) => {
+    console.log(`[BIKE SERVICE] Canceling order with id: ${id}`);
+    const message = {
+      id: id,
+      status: "CANCELLED",
+    };
+    this.consume(SAGA_RESP_BIKE_QUEUE, (msg) => handle_cancel_request(this, msg)); 
+  }
+
+  
 
 }
 
