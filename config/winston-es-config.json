@@ -1,9 +1,0 @@
-{
-    "level": "info",
-    "clientOpts": {
-      "node": "http://elasticsearch:9200"
-    },
-    "indexPrefix": "logs",
-    "ensureMappingTemplate": true
-}
-  
