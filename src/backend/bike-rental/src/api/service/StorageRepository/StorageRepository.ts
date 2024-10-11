@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export class BikeStorageRepository {
+export class BikeDBRepository {
 
 
     async get_number_road_bikes(): Promise<number> {
