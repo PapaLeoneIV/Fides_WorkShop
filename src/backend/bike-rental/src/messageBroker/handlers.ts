@@ -32,7 +32,6 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
     return;
   }
 
-
   const manager_db = new BikeOrderRepository();
   const storage_db = new BikeStorageRepository();
 

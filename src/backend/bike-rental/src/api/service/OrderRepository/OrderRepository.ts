@@ -1,4 +1,4 @@
-import { PrismaClient, order as OrderDO} from "@prisma/client";
+import { PrismaClient, order as OrderDO } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export interface OrderDTO {
@@ -8,14 +8,14 @@ export interface OrderDTO {
     renting_status: string,
     created_at: Date,
     updated_at: Date
-  }
-  
+}
+
 
 export class BikeOrderRepository {
 
     async create_order(bike_order: OrderDTO): Promise<OrderDO> {
         console.log(
-            '\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Creating new bike order in the DB with id: ",
+            "[BIKE SERVICE]", "Creating new bike order in the DB with id: ",
             bike_order.order_id
         );
         let new_bike_order = await prisma.order.create({
@@ -31,8 +31,8 @@ export class BikeOrderRepository {
         return new_bike_order
     }
 
-    async update_order(bike_order: OrderDO) : Promise<OrderDO> {
-        console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Updating bike ORDER with id: ", bike_order.order_id);
+    async update_order(bike_order: OrderDO): Promise<OrderDO> {
+        console.log("[BIKE SERVICE]", "Updating bike ORDER with id: ", bike_order.order_id);
         let updated_bike_order = await prisma.order.update({
             where: {
                 id: bike_order.id,
@@ -50,7 +50,7 @@ export class BikeOrderRepository {
     }
 
     async update_status(bike_order: OrderDO, status: string): Promise<OrderDO> {
-        console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Updating order STATUS to", status);
+        console.log("[BIKE SERVICE]", "Updating order STATUS to", status);
         let updated_bike_order = await prisma.order.update({
             where: {
                 id: bike_order.id,
@@ -63,7 +63,7 @@ export class BikeOrderRepository {
     }
 
     async check_existance(order_id: string): Promise<boolean> {
-        console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Checking if bike order exists with id: ", order_id);
+        console.log("[BIKE SERVICE]", "Checking if bike order exists with id: ", order_id);
         const order =
             (await prisma.order.findFirst({
                 where: {
@@ -71,14 +71,14 @@ export class BikeOrderRepository {
                 },
             })) || null;
         if (!order) {
-            console.log('\x1b[36m%s\x1b[0m',"[BIKE SERVICE]", 'Bike order with id', order_id,  'not found');
+            console.log("[BIKE SERVICE]", 'Bike order with id', order_id,  'not found');
             return false;
         }
         return true;
     }
 
     async get_order_info(order_id: string): Promise<OrderDO | null> {
-        console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Requsting order info : ", order_id);
+        console.log("[BIKE SERVICE]", "Requsting order info : ", order_id);
         let order =
             (await prisma.order.findFirst({
                 where: {
@@ -93,7 +93,7 @@ export class BikeOrderRepository {
     }
 
     async delete_order(bike_order: OrderDO) {
-        console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Deleting bike order with id: ", bike_order.order_id);
+        console.log("[BIKE SERVICE]", "Deleting bike order with id: ", bike_order.order_id);
         await prisma.order.delete({
             where: {
                 id: bike_order.id,
