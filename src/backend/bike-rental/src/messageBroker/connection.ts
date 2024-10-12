@@ -83,12 +83,7 @@ export class RabbitMQConnection {
     sendNotification(newNotification, REQ_BIKE_QUEUE);
   };
   //----------------------SAGA(CANCEL)--------------------------
-  consumecancelBikeOrder = async (id: string) => {
-    console.log(`[BIKE SERVICE] Canceling order with id: ${id}`);
-    const message = {
-      id: id,
-      status: "CANCELLED",
-    };
+  consumecancelBikeOrder = async () => {
     this.consume(SAGA_RESP_BIKE_QUEUE, (msg) => handle_cancel_request(this, msg)); 
   }
 

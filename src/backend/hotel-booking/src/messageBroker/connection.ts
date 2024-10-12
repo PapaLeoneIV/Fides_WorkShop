@@ -69,7 +69,7 @@ export class RabbitMQConnection {
 
   //----------------------CONSUME-------------------------------
   consumeHotelOrder = async () => {
-    console.log("[HOTEL SERVICE] Listening for HOTEL orders...");
+    console.log("[HOTEL SERVICE] Listening for Hotel orders...");
     this.consume(RESP_HOTEL_QUEUE, (msg) => handle_req_from_order_management(this, msg));
   };
 
@@ -83,12 +83,7 @@ export class RabbitMQConnection {
   };
 
   //----------------------SAGA(CANCEL)--------------------------
-  consumecancelHOTELOrder = async (id: string) => {
-    console.log(`[HOTEL SERVICE] Canceling order with id: ${id}`);
-    const message = {
-      id: id,
-      status: "CANCELLED",
-    };
+  consumecancelHotelOrder = async () => {
     this.consume(SAGA_RESP_HOTEL_QUEUE, (msg) => handle_cancel_request(this, msg)); 
   }
 
