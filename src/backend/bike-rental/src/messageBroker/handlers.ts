@@ -14,7 +14,6 @@ let bike_info_schema = z.object({
 });
 
 export async function handle_req_from_order_management(rabbitmqClient: RabbitMQConnection, msg: string) {
-  console.log(`[BIKE SERVICE] Received Request from order management:`, msg);
   let response_info: { id: string | null; status: string | null } = {
     id: null,
     status: null,
@@ -55,8 +54,8 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
     rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
     return;
   }
-  console.log("[BIKE SERVICE] Order  with id : ", order.id, "CANCELLED, there were not enough bikes");
-  order = await manager_db.update_status(order, "CANCELLED");
+  console.log("[BIKE SERVICE] Order  with id : ", order.id, "DENIED, there were not enough bikes");
+  order = await manager_db.update_status(order, "DENIED");
 
   response_info.status = order.renting_status;
 
@@ -64,11 +63,23 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
   return;
 }
 
-export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, order_id: string) {
+export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, msg: string) {
   let response_info : {id : string |null , status: string | null} =  {
-    id: order_id,
+    id: null,
     status: null,
   }
+  let order_id : string; 
+  try {
+    const data = JSON.parse(msg);
+    order_id = data.description;
+  } catch (error) {
+    console.error(`[BIKE SERVICE] Error while parsing message:`, error);
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "ERROR"}));
+    return;
+  }
+
+  response_info.id = order_id;
+
   const manager_db = new BikeOrderRepository();
   const storage_db = new BikeDBRepository();
 
@@ -77,7 +88,7 @@ export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, 
     if (order && order.renting_status === "APPROVED") {
       storage_db.increment_bike_count(order.road_bike_requested, order.dirt_bike_requested);
       order = await manager_db.update_status(order, "CANCELLED");
-      response_info.status = order.renting_status,    
+      response_info.status = order.renting_status,
       rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
     }
     else {
