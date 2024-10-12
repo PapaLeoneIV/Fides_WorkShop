@@ -10,6 +10,6 @@ export const sendNotification = async (notification: INotification, queue: strin
  
   let res = await rabbitmqClient.sendToQueue(queue, notification);
 
-  console.log(`Sent the notification to consumer`);
+  console.log(`[HOTEL SERVICE]Sent the notification to consumer`);
   return res;
 };

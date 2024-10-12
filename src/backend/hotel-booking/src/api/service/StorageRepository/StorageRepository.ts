@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export class HotelDBRepository {
 
     async getDateIdsForRange (from: Date, to: Date): Promise<any> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Getting date ids for range: ", from, to);
+      console.log("[HOTEL SERVICE] Getting date ids for range: ", from, to);
       let result  = await prisma.date.findMany({
         where: {
           booking_date: {
@@ -21,7 +21,7 @@ export class HotelDBRepository {
     };
     
     async areRoomsAvailable (dateIds: number[], roomNumber: string): Promise<boolean> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Checking if", roomNumber,"is available for the selected dates");
+      console.log("[HOTEL SERVICE] Checking if", roomNumber,"is available for the selected dates");
       const availableRooms = await prisma.room.findMany({
         where: {
           date_id: {
@@ -40,7 +40,7 @@ export class HotelDBRepository {
   
   
     async updateRoomAvailability ( dateIds: number[], roomNumber: string): Promise<void> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Updating room availability for room ", roomNumber);
+      console.log("[HOTEL SERVICE] Updating room availability for room ", roomNumber);
       let res = await prisma.room.updateMany({
         where: {
           date_id: {
@@ -53,13 +53,13 @@ export class HotelDBRepository {
         },
       });
       if (res)
-        console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Room updated successfully!")
+        console.log("[HOTEL SERVICE] Room updated successfully!")
       else
-        console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Room did not update sucessfully!")
+        console.log("[HOTEL SERVICE] Room did not update sucessfully!")
     };
   
     async restoreRoomAvailability ( dateIds: number[], roomNumber: string): Promise<boolean> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Restoring room availability for room ", roomNumber);
+      console.log("[HOTEL SERVICE] Restoring room availability for room ", roomNumber);
       let res : any = await prisma.room.updateMany({
         where: {
           date_id: {

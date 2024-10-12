@@ -14,7 +14,7 @@ export interface OrderDTO {
 export class HotelOrdersRepository {
 
     async create_order(hotel_order: OrderDTO): Promise<OrderDO> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Creating new hotel order with id: ", hotel_order.order_id);
+      console.log("[HOTEL SERVICE]", "Creating new hotel order with id: ", hotel_order.order_id);
       const hotel = await prisma.order.create({
         data: {
           to: hotel_order.to,
@@ -30,7 +30,7 @@ export class HotelOrdersRepository {
       return hotel;
     }
     async check_existance(order_id: string): Promise<boolean> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Checking if hotel order exists with id: ", order_id);
+      console.log("[HOTEL SERVICE] Checking if hotel order exists with id: ", order_id);
       const order =
         (await prisma.order.findFirst({
           where: {
@@ -38,7 +38,7 @@ export class HotelOrdersRepository {
           },
         })) || null;
       if (!order) {
-        console.log(`[HOTEL SERVICE]Hotel order with id ${order_id} not found`);
+        console.log(`[HOTEL SERVICE] Hotel order with id ${order_id} does not exist`);
         return false;
       }
       return true;
@@ -46,7 +46,7 @@ export class HotelOrdersRepository {
   
   
     async get_order_info(order_id: string): Promise<OrderDO | null> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Getting hotel order info with id: ", order_id);
+      console.log("[HOTEL SERVICE] Getting hotel order info with id: ", order_id);
       const order =
         (await prisma.order.findFirst({
           where: {
@@ -54,14 +54,14 @@ export class HotelOrdersRepository {
           },
         })) || null;
       if (!order) {
-        console.log(`[HOTEL SERVICE]Hotel order with id ${order_id} not found`);
+        console.log(`[HOTEL SERVICE] Hotel order with id ${order_id} not found`);
         return null;
       }
       return order;
     }
   
     async update_order(hotel_order: OrderDO): Promise<OrderDO> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Updating hotel order with id: ", hotel_order.order_id);
+      console.log("[HOTEL SERVICE] Updating hotel order with id: ", hotel_order.order_id);
       const updated_bike_order = await prisma.order.update({
         where: {
           id: hotel_order.id,
@@ -80,7 +80,7 @@ export class HotelOrdersRepository {
     }
   
     async update_status(hotel_order: OrderDO, status: string): Promise<OrderDO> {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Updating hotel order status with status: ", status);
+      console.log("[HOTEL SERVICE] Updating hotel order status with status: ", status);
       const updated_hotel_order = await prisma.order.update({
         where: {
           id: hotel_order.id,
@@ -93,7 +93,7 @@ export class HotelOrdersRepository {
     }
   
     async delete_order(hotel_order: OrderDTO) {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "Deleting hotel order with id: ", hotel_order.order_id);
+      console.log("[HOTEL SERVICE] Deleting hotel order with id: ", hotel_order.order_id);
       await prisma.order.delete({
         where: {
           id: hotel_order.order_id,
