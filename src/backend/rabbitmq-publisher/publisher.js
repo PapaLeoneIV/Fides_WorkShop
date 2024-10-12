@@ -15,8 +15,8 @@ async function publishMessage() {
 
         // Create a message to send
         const message = {
-            from: "24/12/2024",
-            to: "25/12/2024",
+            from: new Date(2024, 12, 12),
+            to: new Date(2024, 12, 13),
             room: "104",
             road_bike_requested: 1,
             dirt_bike_requested: 1,
@@ -28,6 +28,7 @@ async function publishMessage() {
             updated_at: new Date(),
             created_at: new Date(),
         };
+        
 
         // Send the message to the queue
         channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(message)), {
