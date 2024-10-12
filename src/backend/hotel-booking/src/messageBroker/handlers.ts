@@ -15,7 +15,6 @@ let hotel_info_schema = z.object({
 });
 
 export async function handle_req_from_order_management(rabbitmqClient: RabbitMQConnection, msg: string) {
-  console.log(`[HOTEL SERVICE] Received Request from order management:`, msg);
   let response_info: { id: string | null; status: string | null } = {
     id: null,
     status: null,
@@ -50,23 +49,23 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
     const dateIds = dateRecords.map((date: any) => date.id);
     if (dateIds.length === 0) {
       console.log("[HOTEL SERVICE]", "No dates found for the requested range.");
-      manager_db.update_status(order, "DENIED");
-      response_info.status = "DENIED";
+      order = await manager_db.update_status(order, "DENIED");
+      response_info.status = order.renting_status;
       rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
       return;
     }
 
     if (!await storage_db.areRoomsAvailable(dateIds, order.room)) {
       console.log("[HOTEL SERVICE]", "Room is not available for the entire date range.");
-      response_info.status = "DENIED";
-      manager_db.update_status(order, "DENIED");
+      order = await manager_db.update_status(order, "DENIED");
+      response_info.status = order.renting_status
       rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
       return;
     }
     await storage_db.updateRoomAvailability(dateIds, order.room);
     console.log(`[HOTEL SERVICE]Room ${order.room} has been successfully booked.`);
-    response_info.status = "APPROVED";
-    manager_db.update_status(order, "APPROVED");
+    order = await manager_db.update_status(order, "APPROVED");
+    response_info.status = order.renting_status
     rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
     return;
 
@@ -99,7 +98,7 @@ export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, 
 
       if (dateIds.length === 0) {
         console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
-        order = await manager_db.update_status(order, "DENIED")
+        order = await manager_db.update_status(order, "ERROR")
         response_info.status = order.renting_status;
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
         return;
@@ -111,7 +110,7 @@ export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, 
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
       }
       else {
-        order = await manager_db.update_status(order, "DENIED")
+        order = await manager_db.update_status(order, "ERROR")
         response_info.status = order.renting_status;
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
       }
