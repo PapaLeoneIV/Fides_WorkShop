@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { order as OrderDO } from "prisma/prisma-client"
 
 import { BikeOrderRepository } from "../service/OrderRepository/OrderRepository";
-import { BikeStorageRepository } from "../service/StorageRepository/StorageRepository";
+import { BikeDBRepository } from "../service/StorageRepository/StorageRepository";
 
 import { parse_and_set_default_values } from "../parser/bikeParser";
 
@@ -24,7 +24,7 @@ interface OrderDTO {
 
 export const receive_order = async (req: Request, res: Response): Promise<void> => {
   const order_repository = new BikeOrderRepository();
-  const storage_repository = new BikeStorageRepository();
+  const storage_repository = new BikeDBRepository();
   let request: OrderDTO;
 
   try {
@@ -66,7 +66,7 @@ export const revert_order = async (req: Request, res: Response): Promise<void> =
   console.log('\x1b[36m%s\x1b[0m', "[BIKE SERVICE]", "Reverting order...");
 
   const order_repository = new BikeOrderRepository();
-  const storage_repository = new BikeStorageRepository();
+  const storage_repository = new BikeDBRepository();
   let request: OrderDTO;
 
   try {
