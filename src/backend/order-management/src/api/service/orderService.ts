@@ -77,7 +77,7 @@ export class OrderManagerDB {
   }
 
   async update_bike_status(id: string, status: string): Promise<OrderDO> {
-    console.log("[ORDER MANAGER]", "Updating order status with status: ", status);
+    console.log("[ORDER MANAGER]", "Updating bike status with status: ", status);
    return  await prisma.order.update({
       where: {
         id: id,
@@ -89,7 +89,7 @@ export class OrderManagerDB {
   }
 
   async update_hotel_status(id: string, status: string): Promise<OrderDO> {
-    console.log("[ORDER MANAGER]", "Updating order status with status: ", status);
+    console.log("[ORDER MANAGER]", "Updating hotel status with status: ", status);
     return await prisma.order.update({
       where: {
         id: id,
@@ -101,7 +101,7 @@ export class OrderManagerDB {
   }
 
   async update_payment_status(id: string, status: string): Promise<OrderDO> {
-    console.log("[ORDER MANAGER]", "Updating order status with status: ", status);
+    console.log("[ORDER MANAGER]", "Updating payment status with status: ", status);
     return await prisma.order.update({
       where: {
         id: id,
