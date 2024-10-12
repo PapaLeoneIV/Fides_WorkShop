@@ -10,8 +10,8 @@ async function main() {
 
    rabbitmqClient.consumeBookingOrder();
    rabbitmqClient.consumeBikeResponse();
-    /*consumeHotelResponse();
-    consumePaymentResponse();
+   rabbitmqClient.consumeHotelResponse();
+    /*consumePaymentResponse();
  */
 
     /*     

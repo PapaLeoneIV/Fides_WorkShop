@@ -8,6 +8,7 @@ async function main() {
     connectToDatabase();
     await rabbitmqClient.connect();
     rabbitmqClient.consumeBikeOrder();
+    rabbitmqClient.consumecancelBikeOrder();
     //app.use("/bike_renting/", BikeRouter);
     //
     //app.listen(port, () => {

@@ -8,6 +8,7 @@ async function main() {
     connectToDatabase();
     await rabbitmqClient.connect()
     rabbitmqClient.consumeHotelOrder()
+    rabbitmqClient.consumecancelHotelOrder()
    /*  app.use("/hotel_booking/", HotelRouter);
 
     app.listen(port, () => {
