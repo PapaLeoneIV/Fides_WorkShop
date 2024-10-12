@@ -27,7 +27,6 @@ const order_info_schema = z.object({
 
 export async function handle_req_from_frontend(instance: RabbitMQConnection, msg: string) {
   let data: OrderDTO;
-
   try {
 
     const parsedMsg = JSON.parse(msg);
@@ -76,9 +75,11 @@ const bike_response_schema = z.object({
 export async function handle_res_from_bike(instance: RabbitMQConnection, msg: string) {
   let data: { id: string, status: string };
   try {
-    const parsedMsg = JSON.parse(msg);
-    const description = JSON.parse(parsedMsg.description);
+    
+    const req = JSON.parse(msg);
+    const description = JSON.parse(req.description);
     data = bike_response_schema.parse(description);
+    
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
@@ -91,13 +92,13 @@ export async function handle_res_from_bike(instance: RabbitMQConnection, msg: st
     await handle_order_status(instance, data.id);
     return;
   }
-  else if (data.status === "CANCELLED") {
+  else if (data.status === "DENIED") {
     manager_db.update_bike_status(data.id, data.status);
+    instance.sendCanceltoHotelMessageBroker(data.id);
     return;
   }
-  else //REJECTED or ERROR
+  else //ORDER CANCELLED or ERROR
   {
-    instance.sendCanceltoHotelMessageBroker(data.id);
     manager_db.update_bike_status(data.id, data.status);
     return;
   }
@@ -128,17 +129,16 @@ export async function handle_res_from_hotel(instance: RabbitMQConnection, msg: s
     await handle_order_status(instance, data.id);
     return;
   }
-  else if (data.status === "CANCELLED") {
+  else if (data.status === "DENIED") {
     manager_db.update_hotel_status(data.id, data.status);
-    return;
-  }
-  else //REJECTED or ERROR
-  {
     instance.sendCanceltoBikeMessageBroker(data.id);
+    return;
+  }
+  else //ORDER CANCELLED
+  {
     manager_db.update_hotel_status(data.id, data.status);
     return;
   }
-
 }
 
 
@@ -165,6 +165,7 @@ export async function handle_res_from_payment(instance: RabbitMQConnection, msg:
 //TODO
 export async function handle_order_status(instance: RabbitMQConnection, order_id: string) {
   try {
+    console.log("HANDLE ORDER STATUS FOR PAYMENT")
     const manager_db = new OrderManagerDB();
     //TODO parse the message
 
