@@ -78,7 +78,7 @@ services:
       - app_network
     ports: 
       - "3001:3000"
-      - "5555:5555" #prisma studio
+      - "5556:5555" #prisma studio
   #--------------------------PAYMENT CONFIRMATION
   payment-confirmation-service:
     container_name: payment-confirmation-service
@@ -105,7 +105,7 @@ services:
       - app_network
     ports:
       - "3002:3000"
-      - "5555:5555" #prisma studio
+      - "5557:5555" #prisma studio
   #--------------------------ORDER MANAGEMENT
   order-management-service:
     container_name: order-management-service
@@ -131,7 +131,7 @@ services:
       - app_network
     ports:
       - "3003:3000"
-      - "5555:5555" #prisma studio
+      - "5558:5555" #prisma studio
 #--------------------------------- -  -
 #----------------------------DATABASES
 #------------------------- -  - --  -  --
