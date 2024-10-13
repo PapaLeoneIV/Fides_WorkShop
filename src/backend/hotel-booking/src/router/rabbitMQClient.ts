@@ -1,11 +1,11 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_HOTEL_QUEUE, RESP_HOTEL_QUEUE, SAGA_RESP_HOTEL_QUEUE} from "./config"
-import { sendNotification } from "./notification";
-import { handle_req_from_order_management, handle_cancel_request} from "./handlers";
+import { rmqUser, rmqPass, rmqhost, REQ_HOTEL_QUEUE, RESP_HOTEL_QUEUE, SAGA_RESP_HOTEL_QUEUE} from "../rabbitConfig/config"
+import { sendNotification } from  "../controller/notification";
+import { handle_req_from_order_management, handle_cancel_request} from "../controller/handlers";
 
-type HandlerCB = (msg: string, instance?: RabbitMQConnection) => any;
+type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitMQConnection {
+export class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -91,5 +91,5 @@ export class RabbitMQConnection {
 
 }
 
-export const rabbitmqClient = new RabbitMQConnection();
+export const rabbitmqClient = new RabbitClient();
 

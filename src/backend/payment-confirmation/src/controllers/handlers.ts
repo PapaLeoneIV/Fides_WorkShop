@@ -1,4 +1,4 @@
-import { RabbitMQConnection } from "./connection";
+import { RabbitClient } from "../router/rabbitMQClient";
 import { z } from 'zod';
 
 
@@ -9,7 +9,7 @@ const payment_schema = z.object({
     updated_at: z.string().transform((val) => new Date(val)),
 });
 
-export async function handle_req_from_order_management(instance: RabbitMQConnection, msg: string) {
+export async function handle_req_from_order_management(instance: RabbitClient, msg: string) {
     let response_info = { id: "", status: "" };
     let data;
     try {
