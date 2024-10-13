@@ -11,8 +11,7 @@ async function main() {
    rabbitmqClient.consumeBookingOrder();
    rabbitmqClient.consumeBikeResponse();
    rabbitmqClient.consumeHotelResponse();
-    /*consumePaymentResponse();
- */
+   rabbitmqClient.consumePaymentResponse();
 
     /*     
         app.use("/order/", OrderRouter);

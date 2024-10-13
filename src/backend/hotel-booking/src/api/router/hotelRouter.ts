@@ -7,7 +7,6 @@ app.use(express.json())
 
 
 const HotelRouter = Router();
-/*TODO these function can be implemented using RABBITMQ and not GET and POST */
 
 HotelRouter.post("/send_data", receive_order);
 console.log("[INFO] Set up send_data route...");

@@ -15,12 +15,11 @@ async function publishMessage() {
 
         // Create a message to send
         const message = {
-            from: new Date(2024, 12, 12),
-            to: new Date(2024, 12, 13),
-            room: "104",
+            from: new Date(2025, 9, 13),
+            to: new Date(2025, 9, 13),
+            room: "103",
             road_bike_requested: 1,
             dirt_bike_requested: 1,
-            order_status: "PENDING",
             bike_status: "PENDING",
             hotel_status: "PENDING",
             payment_status: "PENDING",

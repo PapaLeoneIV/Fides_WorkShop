@@ -8,7 +8,6 @@ export interface OrderDTO {
   amount: string;
   road_bike_requested: number;
   dirt_bike_requested: number;
-  order_status: string;
   bike_status: string;
   hotel_status: string;
   payment_status: string;
@@ -29,7 +28,6 @@ export class OrderManagerDB {
         road_bike_requested: info.road_bike_requested,
         dirt_bike_requested: info.dirt_bike_requested,
         amount: info.amount,
-        order_status: "PENDING",
         bike_status: "PENDING",
         hotel_status: "PENDING",
         payment_status: "PENDING",
@@ -62,18 +60,6 @@ export class OrderManagerDB {
       return false;
     }
     return true;
-  }
-
-  async update_status(id: string, status: string): Promise<OrderDO> {
-    console.log("[ORDER MANAGER]", "Updating order status with status: ", status);
-    return await prisma.order.update({
-      where: {
-        id: id,
-      },
-      data: {
-        order_status: status,
-      },
-    });
   }
 
   async update_bike_status(id: string, status: string): Promise<OrderDO> {
@@ -128,7 +114,6 @@ export class OrderManagerDB {
 
         amount: info.amount,
 
-        order_status: info.order_status,
         bike_status: info.bike_status,
         hotel_status: info.hotel_status,
         payment_status: info.payment_status,

@@ -87,7 +87,7 @@ export class RabbitMQConnection {
     this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(this, msg));
   };
 
-//---------------------------SEND--------------------------------
+//---------------------------SEND------------------------------
   sendToBikeMessageBroker = async (body: string): Promise<void> => {
     const newNotification = {
       title: "Bike order incoming",
@@ -112,7 +112,7 @@ export class RabbitMQConnection {
     sendNotification(newNotification, RESP_PAYMENT_QUEUE);
   };
 
-//---------------------------SAGA(REVERSE ORDER)------------------------
+//---------------------------SAGA(REVERSE ORDER)---------------
 
   sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
     const newNotification = {
