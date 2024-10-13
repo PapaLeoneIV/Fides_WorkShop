@@ -1,11 +1,12 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, RESP_BIKE_QUEUE, SAGA_RESP_BIKE_QUEUE} from "./config"
-import { sendNotification } from "./notification";
-import { handle_req_from_order_management, handle_cancel_request} from "./handlers";
+import { sendNotification } from "../controllers/notification";
+import { handle_req_from_order_management } from "../controllers/handlers";
+import { rmqUser, rmqPass, rmqhost, } from "../rabbitConfig/config";
+import { REQ_PAYMENT_QUEUE, RESP_PAYMENT_QUEUE } from "../rabbitConfig/config";
 
-type HandlerCB = (msg: string, instance?: RabbitMQConnection) => any;
+type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitMQConnection {
+export class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -15,19 +16,19 @@ export class RabbitMQConnection {
     else this.connected = true;
 
     try {
-      console.log(`[BIKE SERVICE] Connecting to Rabbit-MQ Server`);
+      console.log(`[PAYMENT SERVICE] Connecting to Rabbit-MQ Server`);
       this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
-      console.log(`[BIKE SERVICE] Rabbit MQ Connection is ready`);
+      console.log(`[PAYMENT SERVICE] Rabbit MQ Connection is ready`);
 
       this.channel = await this.connection.createChannel();
 
-      console.log(`[BIKE SERVICE] Created RabbitMQ Channel successfully`);
+      console.log(`[PAYMENT SERVICE] Created RabbitMQ Channel successfully`);
     } catch (error) {
       console.error(error);
-      console.error(`[BIKE SERVICE]Not connected to MQ Server`);
+      console.error(`[PAYMENT SERVICE]Not connected to MQ Server`);
     }
   }
 
@@ -39,7 +40,7 @@ export class RabbitMQConnection {
 
       return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
     } catch (error) {
-      console.error("[BIKE SERVICE]", error);
+      console.error("[PAYMENT SERVICE]", error);
       throw error;
     }
 
@@ -55,7 +56,7 @@ export class RabbitMQConnection {
       (msg : any) => {
         {
           if (!msg) {
-            return console.error(`[BIKE SERVICE]Invalid incoming message`);
+            return console.error(`[PAYMENT SERVICE]Invalid incoming message`);
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);
@@ -68,28 +69,24 @@ export class RabbitMQConnection {
   }
 
   //----------------------CONSUME-------------------------------
-  consumeBikeOrder = async () => {
-    console.log("[BIKE SERVICE] Listening for bike orders...");
-    this.consume(RESP_BIKE_QUEUE, (msg) => handle_req_from_order_management(this, msg));
+  consumePaymentgOrder = async () => {
+    console.log("[PAYMENT SERVICE] Listening for booking orders...");
+    this.consume(RESP_PAYMENT_QUEUE, (msg) => handle_req_from_order_management(this, msg));
   };
-
 
   //----------------------SEND----------------------------------
-  sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
+  
+  sendToOrderMessageBroker = async (body: string): Promise<void> => {
     const newNotification = {
-      title: "Bike response incoming",
+      title: "Bike order incoming",
       description: body,
     };
-    sendNotification(newNotification, REQ_BIKE_QUEUE);
+    sendNotification(newNotification, REQ_PAYMENT_QUEUE);
   };
-  //----------------------SAGA(CANCEL)--------------------------
-  consumecancelBikeOrder = async () => {
-    this.consume(SAGA_RESP_BIKE_QUEUE, (msg) => handle_cancel_request(this, msg)); 
-  }
 
-  
+  //----------------------SAGA(CANCEL)--------------------------
 
 }
 
-export const rabbitmqClient = new RabbitMQConnection();
+export const rabbitmqClient = new RabbitClient();
 

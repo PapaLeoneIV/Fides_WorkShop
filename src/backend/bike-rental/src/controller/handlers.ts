@@ -1,7 +1,7 @@
-import { RabbitMQConnection } from "./connection";
+import { RabbitClient } from "../router/rabbitMQClient";
 import { order as BikeDO } from "@prisma/client";
-import { BikeOrderRepository, OrderDTO as BikeDTO } from "../api/service/OrderRepository/OrderRepository";
-import { BikeDBRepository } from "../api/service/StorageRepository/StorageRepository";
+import { BikeOrderRepository, OrderDTO as BikeDTO } from "../service/OrderRepository/OrderRepository";
+import { BikeDBRepository } from "../service/StorageRepository/StorageRepository";
 import { z } from 'zod';
 
 let bike_info_schema = z.object({
@@ -13,7 +13,7 @@ let bike_info_schema = z.object({
   updated_at: z.string().transform((val) => new Date(val)),
 });
 
-export async function handle_req_from_order_management(rabbitmqClient: RabbitMQConnection, msg: string) {
+export async function handle_req_from_order_management(rabbitmqClient: RabbitClient, msg: string) {
   let response_info: { id: string | null; status: string | null } = {
     id: null,
     status: null,
@@ -45,6 +45,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
 
   if (await storage_db.get_number_dirt_bikes() >= order.dirt_bike_requested
     && await storage_db.get_number_road_bikes() >= order.road_bike_requested) {
+      
     console.log("[BIKE SERVICE] Order  with id : ", order.id, "APPROVED");
     storage_db.decrement_bike_count(order.road_bike_requested, order.dirt_bike_requested);
     order = await manager_db.update_status(order, "APPROVED");
@@ -63,7 +64,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
   return;
 }
 
-export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, msg: string) {
+export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: string) {
   let response_info : {id : string |null , status: string | null} =  {
     id: null,
     status: null,

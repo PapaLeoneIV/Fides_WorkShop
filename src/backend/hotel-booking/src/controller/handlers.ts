@@ -1,7 +1,7 @@
-import { RabbitMQConnection } from "./connection";
+import { RabbitClient } from "../router/rabbitMQClient";
 import { order as HotelDO } from "@prisma/client";
-import { HotelOrdersRepository, OrderDTO as HotelDTO } from "../api/service/OrderRepository/OrderRepository";
-import { HotelDBRepository } from "../api/service/StorageRepository/StorageRepository";
+import { HotelOrdersRepository, OrderDTO as HotelDTO } from "../service/OrderRepository/OrderRepository";
+import { HotelDBRepository } from "../service/StorageRepository/StorageRepository";
 import { z } from 'zod';
 
 let hotel_info_schema = z.object({
@@ -14,7 +14,7 @@ let hotel_info_schema = z.object({
   updated_at: z.string().transform((val) => new Date(val)),
 });
 
-export async function handle_req_from_order_management(rabbitmqClient: RabbitMQConnection, msg: string) {
+export async function handle_req_from_order_management(rabbitmqClient: RabbitClient, msg: string) {
   let response_info: { id: string | null; status: string | null } = {
     id: null,
     status: null,
@@ -77,7 +77,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitMQC
   }
 }
 
-export async function handle_cancel_request(rabbitmqClient: RabbitMQConnection, order_id: string) {
+export async function handle_cancel_request(rabbitmqClient: RabbitClient, order_id: string) {
   let response_info: { id: string | null; status: string | null } = {
     id: null,
     status: null,

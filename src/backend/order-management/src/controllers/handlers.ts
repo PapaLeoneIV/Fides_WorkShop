@@ -1,5 +1,5 @@
-import { RabbitMQConnection } from "./connection";
-import { OrderDTO, OrderManagerDB } from "../api/service/orderService";
+import { RabbitClient } from "../router/rabbitMQClient";
+import { OrderDTO, OrderManagerDB } from "../service/orderService";
 import { order as OrderDO } from "@prisma/client";
 import { z } from 'zod';
 
@@ -24,7 +24,7 @@ const order_info_schema = z.object({
   updated_at: z.date()
 });
 
-export async function handle_req_from_frontend(instance: RabbitMQConnection, msg: string) {
+export async function handle_req_from_frontend(instance: RabbitClient, msg: string) {
   let data: OrderDTO;
   try {
 
@@ -71,7 +71,7 @@ const bike_response_schema = z.object({
   status: z.string()
 });
 
-export async function handle_res_from_bike(instance: RabbitMQConnection, msg: string) {
+export async function handle_res_from_bike(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
   try {
 
@@ -110,7 +110,7 @@ const hotel_response_schema = z.object({
 });
 
 
-export async function handle_res_from_hotel(instance: RabbitMQConnection, msg: string) {
+export async function handle_res_from_hotel(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
   try {
     const parsedMsg = JSON.parse(msg);
@@ -145,7 +145,7 @@ const payment_response_schema = z.object({
 });
 
 
-export async function handle_res_from_payment(instance: RabbitMQConnection, msg: string) {
+export async function handle_res_from_payment(instance: RabbitClient, msg: string) {
 
   console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
   let data: { id: string, status: string };
@@ -184,7 +184,7 @@ export async function handle_res_from_payment(instance: RabbitMQConnection, msg:
 
 }
 
-export async function handle_order_status(instance: RabbitMQConnection, order_id: string) {
+export async function handle_order_status(instance: RabbitClient, order_id: string) {
   try {
     console.log("HANDLE ORDER STATUS FOR PAYMENT")
     const manager_db = new OrderManagerDB();

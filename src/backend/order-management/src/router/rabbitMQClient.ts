@@ -1,11 +1,11 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE, SAGA_RESP_BIKE_QUEUE,SAGA_RESP_HOTEL_QUEUE } from "./config"
-import { sendNotification } from "./notification";
-import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "./handlers";
+import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, REQ_BOOKING_QUEUE, REQ_HOTEL_QUEUE, REQ_PAYMENT_QUEUE, RESP_BIKE_QUEUE, RESP_HOTEL_QUEUE, RESP_PAYMENT_QUEUE, SAGA_RESP_BIKE_QUEUE,SAGA_RESP_HOTEL_QUEUE } from "../rabbitConfig/config";
+import { sendNotification } from "../controllers/notification";
+import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "../controllers/handlers";
 
-type HandlerCB = (msg: string, instance?: RabbitMQConnection) => any;
+type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitMQConnection {
+export class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -132,5 +132,5 @@ export class RabbitMQConnection {
 
 }
 
-export const rabbitmqClient = new RabbitMQConnection();
+export const rabbitmqClient = new RabbitClient();
 

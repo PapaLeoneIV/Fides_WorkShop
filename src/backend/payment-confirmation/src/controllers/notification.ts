@@ -1,4 +1,4 @@
-import {rabbitmqClient} from "./connection";
+import {rabbitmqClient} from "../messageBroker/connection";
 
 export type INotification = {
   title: string;
@@ -10,6 +10,6 @@ export const sendNotification = async (notification: INotification, queue: strin
  
   let res = await rabbitmqClient.sendToQueue(queue, notification);
 
-  console.log(`[ORDER SERVICE]Sent the notification to consumer`);
+  console.log(`[PAYMENT SERVICE]Sent the notification to consumer`);
   return res;
 };
