@@ -1,6 +1,6 @@
 
 import { connectToDatabase } from './db/db';
-import { rabbitmqClient } from "./messageBroker/connection";
+import { rabbitmqClient } from "./router/rabbitMQClient";
 
 
 const port = 3002;

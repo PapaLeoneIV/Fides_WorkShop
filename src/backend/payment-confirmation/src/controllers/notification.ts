@@ -1,4 +1,4 @@
-import {rabbitmqClient} from "../messageBroker/connection";
+import {rabbitmqClient} from "../router/rabbitMQClient";
 
 export type INotification = {
   title: string;

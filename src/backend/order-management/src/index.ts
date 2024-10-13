@@ -1,5 +1,5 @@
 import { connectToDatabase } from './db/db';
-import { rabbitmqClient } from "./messageBroker/connection";
+import { rabbitmqClient } from "./router/rabbitMQClient";
 
 const port = 3003;
 
@@ -13,12 +13,6 @@ async function main() {
    rabbitmqClient.consumeHotelResponse();
    rabbitmqClient.consumePaymentResponse();
 
-    /*     
-        app.use("/order/", OrderRouter);
-    
-        app.listen(port, () => {
-           console.log("[INFO] Server running on http://localhost:3003");
-        }); */
 }
 
 main();
