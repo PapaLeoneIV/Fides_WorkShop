@@ -42,12 +42,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
     networks:
       - app_network
     #TODO_PROD: update to serve only in the internal network
     ports:
       - "3000:3000"
+      - "5555:5555" #prisma studio
     # expose:
     #   - "3000"
   #--------------------------HOTEL BOOKING
@@ -72,11 +73,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}?schema=public
     networks:
       - app_network
     ports: 
       - "3001:3000"
+      - "5555:5555" #prisma studio
   #--------------------------PAYMENT CONFIRMATION
   payment-confirmation-service:
     container_name: payment-confirmation-service
@@ -98,11 +100,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}?schema=public
     networks:
       - app_network
     ports:
       - "3002:3000"
+      - "5555:5555" #prisma studio
   #--------------------------ORDER MANAGEMENT
   order-management-service:
     container_name: order-management-service
@@ -123,11 +126,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}?schema=public
     networks:
       - app_network
     ports:
       - "3003:3000"
+      - "5555:5555" #prisma studio
 #--------------------------------- -  -
 #----------------------------DATABASES
 #------------------------- -  - --  -  --
