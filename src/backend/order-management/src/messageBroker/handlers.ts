@@ -15,7 +15,6 @@ const order_info_schema = z.object({
 
   amount: z.string(),
 
-  order_status: z.string(),
   bike_status: z.string(),
   hotel_status: z.string(),
   payment_status: z.string(),
@@ -75,16 +74,16 @@ const bike_response_schema = z.object({
 export async function handle_res_from_bike(instance: RabbitMQConnection, msg: string) {
   let data: { id: string, status: string };
   try {
-    
+
     const req = JSON.parse(msg);
     const description = JSON.parse(req.description);
     data = bike_response_schema.parse(description);
-    
+
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
   }
-  
+
   const manager_db = new OrderManagerDB();
 
   if (data.status === "APPROVED") {
@@ -121,7 +120,7 @@ export async function handle_res_from_hotel(instance: RabbitMQConnection, msg: s
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
   }
-  
+
   const manager_db = new OrderManagerDB();
 
   if (data.status === "APPROVED") {
@@ -140,42 +139,71 @@ export async function handle_res_from_hotel(instance: RabbitMQConnection, msg: s
     return;
   }
 }
+const payment_response_schema = z.object({
+  id: z.string(),
+  status: z.string()
+});
 
 
-//TODO
 export async function handle_res_from_payment(instance: RabbitMQConnection, msg: string) {
+
+  console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
+  let data: { id: string, status: string };
   try {
-    console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
-    //TODO parse the message
-
-    const response = JSON.parse(msg);
-
-    const manager_db = new OrderManagerDB();
-    await manager_db.update_payment_status(response.id, response.status);
-
-    if (response.status !== 'SUCCESS') {
-      console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    }
-
+    const parsedMsg = JSON.parse(msg);
+    const description = JSON.parse(parsedMsg.description);
+    data = payment_response_schema.parse(description);
   } catch (error) {
-    console.error(`[ORDER SERVICE] Error while handling payment response:`, error);
+    console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
+    return;
   }
+
+  const manager_db = new OrderManagerDB();
+  let order = await manager_db.get_order(data.id);
+
+  if (data.status !== 'APPROVED') {
+    console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
+    order = await manager_db.update_payment_status(data.id, data.status);
+    instance.sendCanceltoBikeMessageBroker(data.id);
+    instance.sendCanceltoHotelMessageBroker(data.id);
+    return;
+  }
+
+  //APPROVED
+  order = await manager_db.update_payment_status(data.id, data.status);
+
+  if (order.bike_status === 'APPROVED'
+    && order.hotel_status === 'APPROVED'
+    && order.payment_status === 'APPROVED') {
+    console.log(`[ORDER SERVICE] Order is completed, sending response to frontend`);
+    //TODO send response to frontend
+    //instance.sendResponseToFrontend(order);
+    return;
+  }
+
+
 }
 
-//TODO
 export async function handle_order_status(instance: RabbitMQConnection, order_id: string) {
   try {
     console.log("HANDLE ORDER STATUS FOR PAYMENT")
     const manager_db = new OrderManagerDB();
-    //TODO parse the message
 
     const order: OrderDO | null = await manager_db.get_order(order_id);
 
     if (order && order.bike_status === "APPROVED" && order.hotel_status === "APPROVED") {
       console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
 
-      await instance.sendToPaymentMessageBroker(JSON.stringify(order));
+      const payment_order = {
+        id: order.id,
+        amount: order.amount,
+        created_at: order.created_at,
+        updated_at: order.updated_at
+      };
+
+      instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
     }
+    return; //order is not completed yet
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while checking order status:`, error);
   }

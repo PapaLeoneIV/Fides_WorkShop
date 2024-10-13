@@ -21,7 +21,6 @@ model order {
   road_bike_requested Int
   dirt_bike_requested Int
   amount              String
-  order_status        String
   bike_status         String
   hotel_status        String
   payment_status      String 

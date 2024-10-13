@@ -12,7 +12,6 @@ CREATE TABLE "order" (
 
     "amount" TEXT NOT NULL,
 
-    "order_status" TEXT NOT NULL,
     "bike_status" TEXT NOT NULL,
     "hotel_status" TEXT NOT NULL,
     "payment_status" TEXT NOT NULL,
