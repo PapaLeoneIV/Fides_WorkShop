@@ -39,13 +39,14 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
     return;
   }
   console.log("[BIKE SERVICE] Order does not exist, creating order");
+  
   let order: BikeDO = await manager_db.create_order(order_info);
 
   response_info.id = order_info.order_id;
 
   if (await storage_db.get_number_dirt_bikes() >= order.dirt_bike_requested
     && await storage_db.get_number_road_bikes() >= order.road_bike_requested) {
-      
+
     console.log("[BIKE SERVICE] Order  with id : ", order.id, "APPROVED");
     storage_db.decrement_bike_count(order.road_bike_requested, order.dirt_bike_requested);
     order = await manager_db.update_status(order, "APPROVED");
