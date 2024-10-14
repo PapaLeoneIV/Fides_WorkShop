@@ -17,7 +17,7 @@ export async function handle_req_from_order_management(instance: RabbitClient, m
         data = payment_schema.parse(JSON.parse(parsedMsg.description));
     } catch (error) {
         console.error(`[PAYMENT SERVICE] Error while parsing message:`, error);
-        instance.sendToOrderMessageBroker(JSON.stringify({ id: "", status: "ERROR" }));
+        instance.sendToOrderMessageBroker(JSON.stringify({ id: "", status: "DENIED" }));
         return;
     }
     response_info.id = data.id;

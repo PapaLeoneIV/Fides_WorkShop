@@ -22,7 +22,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
     order_info = bike_info_schema.parse(description);
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "ERROR"}));
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
     return;
   }
 
@@ -31,7 +31,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
 
   if (await manager_db.check_existance(order_info.order_id)) {
     console.log("[BIKE SERVICE] Order already exists");
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id , status: "ERROR"}));
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id , status: "DENIED"}));
     return;
   }
   console.log("[BIKE SERVICE] Order does not exist, creating order");
@@ -41,7 +41,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
   if (await storage_db.get_number_dirt_bikes() >= order.dirt_bike_requested
     && await storage_db.get_number_road_bikes() >= order.road_bike_requested) {
 
-    console.log("[BIKE SERVICE] Order  with id : ", order.id, "APPROVED");
+    console.log("[BIKE SERVICE] Order  with id : ", order.order_id, "APPROVED");
     storage_db.decrement_bike_count(order.road_bike_requested, order.dirt_bike_requested);
     order = await manager_db.update_status(order, "APPROVED");
 
@@ -49,7 +49,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
     rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
     return;
   }
-  console.log("[BIKE SERVICE] Order  with id : ", order.id, "DENIED, there were not enough bikes");
+  console.log("[BIKE SERVICE] Order  with id : ", order.order_id, "DENIED, there were not enough bikes");
   order = await manager_db.update_status(order, "DENIED");
 
 
@@ -64,7 +64,7 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: s
     order_id = data.description;
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "ERROR"}));
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
     return;
   }
 
@@ -81,11 +81,11 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: s
     }
     else {
       console.log("[BIKE SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}))
+      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}))
     }
   } else {
     console.log("[BIKE SERVICE] Order with id: ", order_id, "does not exist");
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}))
+    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}))
   }
 }
 

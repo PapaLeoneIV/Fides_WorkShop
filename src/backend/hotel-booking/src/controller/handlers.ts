@@ -23,7 +23,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
     order_info = hotel_info_schema.parse(description);
   } catch (error) {
     console.error(`[HOTEL SERVICE] Error while parsing message:`, error);
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "ERROR"}));
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
     return;
   }
 
@@ -62,7 +62,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
 
   } else {
     console.log("[HOTEL SERVICE] Error creating order");
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id, status: "ERROR" }));
+    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id, status: "DENIED" }));
     return;
   }
 }
@@ -82,7 +82,7 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, order_
 
       if (dateIds.length === 0) {
         console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
-        order = await manager_db.update_status(order, "ERROR")
+        order = await manager_db.update_status(order, "DENIED")
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id : order.order_id, status: order.renting_status}));
         return;
       }
@@ -92,18 +92,18 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, order_
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id : order.order_id, status: order.renting_status}));
       }
       else {
-        order = await manager_db.update_status(order, "ERROR")
+        order = await manager_db.update_status(order, "DENIED")
         rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id : order.order_id, status: order.renting_status}));
       }
 
     }
     else {
       console.log("[HOTEL SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}));
+      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}));
     }
   } else {
     console.log("[HOTEL SERVICE] Order with id: ", order_id, "does not exist");
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}));
+    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}));
   }
 }
 
