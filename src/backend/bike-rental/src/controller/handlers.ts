@@ -14,10 +14,6 @@ let bike_info_schema = z.object({
 });
 
 export async function handle_req_from_order_management(rabbitmqClient: RabbitClient, msg: string) {
-  let response_info: { id: string | null; status: string | null } = {
-    id: null,
-    status: null,
-  };
   let order_info: BikeDTO;
 
   try {
@@ -42,8 +38,6 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
   
   let order: BikeDO = await manager_db.create_order(order_info);
 
-  response_info.id = order_info.order_id;
-
   if (await storage_db.get_number_dirt_bikes() >= order.dirt_bike_requested
     && await storage_db.get_number_road_bikes() >= order.road_bike_requested) {
 
@@ -51,25 +45,19 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
     storage_db.decrement_bike_count(order.road_bike_requested, order.dirt_bike_requested);
     order = await manager_db.update_status(order, "APPROVED");
 
-    response_info.status = order.renting_status;
 
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
+    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
     return;
   }
   console.log("[BIKE SERVICE] Order  with id : ", order.id, "DENIED, there were not enough bikes");
   order = await manager_db.update_status(order, "DENIED");
 
-  response_info.status = order.renting_status;
 
-  rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
+  rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
   return;
 }
 
 export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: string) {
-  let response_info : {id : string |null , status: string | null} =  {
-    id: null,
-    status: null,
-  }
   let order_id : string; 
   try {
     const data = JSON.parse(msg);
@@ -80,7 +68,6 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: s
     return;
   }
 
-  response_info.id = order_id;
 
   const manager_db = new BikeOrderRepository();
   const storage_db = new BikeDBRepository();
@@ -90,18 +77,15 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: s
     if (order && order.renting_status === "APPROVED") {
       storage_db.increment_bike_count(order.road_bike_requested, order.dirt_bike_requested);
       order = await manager_db.update_status(order, "CANCELLED");
-      response_info.status = order.renting_status,
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info));
+      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id, status: order.renting_status}));
     }
     else {
       console.log("[BIKE SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
-      response_info.status = "ERROR",
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info))
+      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}))
     }
   } else {
     console.log("[BIKE SERVICE] Order with id: ", order_id, "does not exist");
-    response_info.status = "ERROR"
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify(response_info))
+    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "ERROR"}))
   }
 }
 

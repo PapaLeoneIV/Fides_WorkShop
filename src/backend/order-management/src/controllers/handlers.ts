@@ -24,6 +24,23 @@ const order_info_schema = z.object({
   updated_at: z.date()
 });
 
+
+const response_schema = z.object({
+  id: z.string(),
+  status: z.string()
+});
+
+
+function parse_data_from_response(msg: string) {
+  let data: { id: string, status: string };
+  const req = JSON.parse(msg);
+  const description = JSON.parse(req.description);
+  data = response_schema.parse(description);
+
+  return data;
+}
+
+
 export async function handle_req_from_frontend(instance: RabbitClient, msg: string) {
   let data: OrderDTO;
   try {
@@ -66,19 +83,11 @@ export async function handle_req_from_frontend(instance: RabbitClient, msg: stri
 
 }
 
-const bike_response_schema = z.object({
-  id: z.string(),
-  status: z.string()
-});
 
 export async function handle_res_from_bike(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
   try {
-
-    const req = JSON.parse(msg);
-    const description = JSON.parse(req.description);
-    data = bike_response_schema.parse(description);
-
+    data = parse_data_from_response(msg)
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
@@ -86,91 +95,55 @@ export async function handle_res_from_bike(instance: RabbitClient, msg: string) 
 
   const manager_db = new OrderManagerDB();
 
-  if (data.status === "APPROVED") {
-    await manager_db.update_bike_status(data.id, data.status);
-    await handle_order_status(instance, data.id);
-    return;
-  }
-  else if (data.status === "DENIED") {
-    manager_db.update_bike_status(data.id, data.status);
-    instance.sendCanceltoHotelMessageBroker(data.id);
-    return;
-  }
-  else //ORDER CANCELLED or ERROR
-  {
-    manager_db.update_bike_status(data.id, data.status);
-    return;
-  }
+  await manager_db.update_bike_status(data.id, data.status);
 
+  if (data.status === "APPROVED") await handle_order_status(instance, data.id);
+  else if (data.status === "DENIED") instance.sendCanceltoHotelMessageBroker(data.id);
+  else if (data.status === "CANCELLED") await manager_db.update_hotel_status(data.id, "CANCELLED");  // TODO repsond to UI
 }
-
-const hotel_response_schema = z.object({
-  id: z.string(),
-  status: z.string()
-});
-
 
 export async function handle_res_from_hotel(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
   try {
-    const parsedMsg = JSON.parse(msg);
-    const description = JSON.parse(parsedMsg.description);
-    data = hotel_response_schema.parse(description);
+    data = parse_data_from_response(msg)
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
   }
 
   const manager_db = new OrderManagerDB();
+  manager_db.update_hotel_status(data.id, data.status);
 
-  if (data.status === "APPROVED") {
-    await manager_db.update_hotel_status(data.id, data.status);
-    await handle_order_status(instance, data.id);
-    return;
-  }
-  else if (data.status === "DENIED") {
-    manager_db.update_hotel_status(data.id, data.status);
-    instance.sendCanceltoBikeMessageBroker(data.id);
-    return;
-  }
-  else //ORDER CANCELLED
-  {
-    manager_db.update_hotel_status(data.id, data.status);
-    return;
-  }
+  if (data.status === "APPROVED") await handle_order_status(instance, data.id);
+  else if (data.status === "DENIED") instance.sendCanceltoBikeMessageBroker(data.id);
+  else if (data.status === "CANCELLED") await manager_db.update_bike_status(data.id, "CANCELLED"); // TODO repsond to UI
 }
-const payment_response_schema = z.object({
-  id: z.string(),
-  status: z.string()
-});
-
 
 export async function handle_res_from_payment(instance: RabbitClient, msg: string) {
 
   console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
   let data: { id: string, status: string };
   try {
-    const parsedMsg = JSON.parse(msg);
-    const description = JSON.parse(parsedMsg.description);
-    data = payment_response_schema.parse(description);
+    data = parse_data_from_response(msg)
+
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
   }
 
   const manager_db = new OrderManagerDB();
+
   let order = await manager_db.get_order(data.id);
 
-  if (data.status !== 'APPROVED') {
+  order = await manager_db.update_payment_status(data.id, data.status);
+  if (order.payment_status !== 'APPROVED') {
     console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    order = await manager_db.update_payment_status(data.id, data.status);
     instance.sendCanceltoBikeMessageBroker(data.id);
     instance.sendCanceltoHotelMessageBroker(data.id);
     return;
   }
 
   //APPROVED
-  order = await manager_db.update_payment_status(data.id, data.status);
 
   if (order.bike_status === 'APPROVED'
     && order.hotel_status === 'APPROVED'
@@ -202,6 +175,12 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
       };
 
       instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+    }
+    else
+    {
+     /*  setTimeout(() => {
+        console.log("[ORDER SERVICE]")
+      }, 5000) */
     }
     return; //order is not completed yet
   } catch (error) {
