@@ -86,6 +86,7 @@ export async function handle_req_from_frontend(instance: RabbitClient, msg: stri
 
 export async function handle_res_from_bike(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
+  let order: OrderDO;
   try {
     data = parse_data_from_response(msg)
   } catch (error) {
@@ -95,15 +96,14 @@ export async function handle_res_from_bike(instance: RabbitClient, msg: string) 
 
   const manager_db = new OrderManagerDB();
 
-  await manager_db.update_bike_status(data.id, data.status);
+  order = await manager_db.update_bike_status(data.id, data.status);
 
-  if (data.status === "APPROVED") await handle_order_status(instance, data.id);
-  else if (data.status === "DENIED") instance.sendCanceltoHotelMessageBroker(data.id);
-  else if (data.status === "CANCELLED") await manager_db.update_hotel_status(data.id, "CANCELLED");  // TODO repsond to UI
+  handle_order_status(instance, order.id);
 }
 
 export async function handle_res_from_hotel(instance: RabbitClient, msg: string) {
   let data: { id: string, status: string };
+  let order: OrderDO;
   try {
     data = parse_data_from_response(msg)
   } catch (error) {
@@ -112,12 +112,12 @@ export async function handle_res_from_hotel(instance: RabbitClient, msg: string)
   }
 
   const manager_db = new OrderManagerDB();
-  manager_db.update_hotel_status(data.id, data.status);
 
-  if (data.status === "APPROVED") await handle_order_status(instance, data.id);
-  else if (data.status === "DENIED") instance.sendCanceltoBikeMessageBroker(data.id);
-  else if (data.status === "CANCELLED") await manager_db.update_bike_status(data.id, "CANCELLED"); // TODO repsond to UI
+  order = await manager_db.update_hotel_status(data.id, data.status);
+
+  handle_order_status(instance, order.id);
 }
+
 
 export async function handle_res_from_payment(instance: RabbitClient, msg: string) {
 
@@ -156,15 +156,67 @@ export async function handle_res_from_payment(instance: RabbitClient, msg: strin
 
 
 }
+export async function handle_order_status(instance: RabbitClient, order_id: string, retries = 0) {
+  const MAX_RETRIES = 5; // Define a max retry limit to avoid infinite waiting.
+  const TIMEOUT = 10000; // 10 seconds
 
-export async function handle_order_status(instance: RabbitClient, order_id: string) {
   try {
-    console.log("HANDLE ORDER STATUS FOR PAYMENT")
-    const manager_db = new OrderManagerDB();
+    console.log("[ORDER SERVICE] Handling order status for order:", order_id);
 
+    const manager_db = new OrderManagerDB();
     const order: OrderDO | null = await manager_db.get_order(order_id);
 
-    if (order && order.bike_status === "APPROVED" && order.hotel_status === "APPROVED") {
+    if (!order) {
+      console.error(`[ORDER SERVICE] No order found with ID: ${order_id}`);
+      return;
+    }
+
+    // Check if any service is still pending
+    if (order.bike_status === "PENDING" || order.hotel_status === "PENDING") {
+      console.log("[ORDER SERVICE] Still waiting for a response from one of the services");
+
+      if (retries < MAX_RETRIES) {
+        setTimeout(() => {
+          handle_order_status(instance, order_id, retries + 1); // Increment retries
+        }, TIMEOUT);
+      } else {
+        console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
+        // Send cancel if no response after max retries
+        await instance.sendCanceltoBikeMessageBroker(order_id);
+        await instance.sendCanceltoHotelMessageBroker(order_id);
+      }
+      return;
+    }
+
+    if (order.payment_status === "CANCELLED") {
+      console.log(`[ORDER SERVICE] Payment service cancelled the request, cancelling bike and hotel...`);
+      console.log("[ORDER SERVICE] sending CANCELLED REQUEST to UI...");
+      //TODO send responose to UI
+      return;
+    }
+
+    if (order.bike_status == "CANCELLED" && order.hotel_status == "CANCELLED") {
+      console.log(`[ORDER SERVICE] Both services cancelled the request, cancelling order...`);
+      await manager_db.update_payment_status(order_id, "CANCELLED");
+      //TODO send responose to UI
+      return;
+    }
+
+    // Handle denial cases
+    if (order.bike_status === "DENIED") {
+      console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
+      await manager_db.update_bike_status(order_id, "CANCELLED");
+      await instance.sendCanceltoHotelMessageBroker(order_id);
+    }
+
+    if (order.hotel_status === "DENIED") {
+      console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
+      await manager_db.update_hotel_status(order_id, "CANCELLED");
+      await instance.sendCanceltoBikeMessageBroker(order_id);
+    }
+
+    // If both services are approved
+    if (order.bike_status === "APPROVED" && order.hotel_status === "APPROVED" && order.payment_status === "PENDING") {
       console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
 
       const payment_order = {
@@ -174,16 +226,12 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
         updated_at: order.updated_at
       };
 
-      instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      await instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      console.log("[ORDER SERVICE] Sent order to payment service");
     }
-    else
-    {
-     /*  setTimeout(() => {
-        console.log("[ORDER SERVICE]")
-      }, 5000) */
-    }
-    return; //order is not completed yet
+
   } catch (error) {
-    console.error(`[ORDER SERVICE] Error while checking order status:`, error);
+    console.error(`[ORDER SERVICE] Error while handling order status:`, error);
   }
 }
+
