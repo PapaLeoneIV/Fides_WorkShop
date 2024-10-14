@@ -93,6 +93,8 @@ export class RabbitClient {
       title: "Bike order incoming",
       description: body,
     };
+    console.log(`[ORDER SERVICE]Sent the notification to BIKE order`);
+
     sendNotification(newNotification, RESP_BIKE_QUEUE);
   };
 
@@ -101,6 +103,8 @@ export class RabbitClient {
       title: "Hotel order incoming",
       description: body,
     };
+    console.log(`[ORDER SERVICE]Sent the notification to HOTEL order`);
+
     sendNotification(newNotification, RESP_HOTEL_QUEUE)
   };
 
@@ -109,6 +113,8 @@ export class RabbitClient {
       title: "Payment order incoming",
       description: body,
     };
+    console.log(`[ORDER SERVICE]Sent the notification to PAYMENT order`);
+
     sendNotification(newNotification, RESP_PAYMENT_QUEUE);
   };
 
@@ -119,6 +125,8 @@ export class RabbitClient {
       title: "Cancel bike order",
       description: body,
     };
+    console.log(`[ORDER SERVICE]Sent the notification to cancel BIKE order`);
+
     sendNotification(newNotification, SAGA_RESP_BIKE_QUEUE);
   }
 
@@ -127,6 +135,8 @@ export class RabbitClient {
       title: "Cancel hotel order",
       description: body,
     };
+    console.log(`[ORDER SERVICE]Sent the notification to cancel HOTEL order`);
+
     sendNotification(newNotification, SAGA_RESP_HOTEL_QUEUE);
   }
 
