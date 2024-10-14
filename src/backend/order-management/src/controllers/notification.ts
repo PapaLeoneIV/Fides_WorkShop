@@ -10,5 +10,4 @@ export const sendNotification = async (notification: INotification, queue: strin
  
   rabbitmqClient.sendToQueue(queue, notification);
 
-  console.log(`[ORDER SERVICE]Sent the notification to consumer`);
 };
