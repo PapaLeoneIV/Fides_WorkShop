@@ -38,6 +38,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
   
   let order: BikeDO = await manager_db.create_order(order_info);
 
+
   if (await storage_db.get_number_dirt_bikes() >= order.dirt_bike_requested
     && await storage_db.get_number_road_bikes() >= order.road_bike_requested) {
 
@@ -52,7 +53,7 @@ export async function handle_req_from_order_management(rabbitmqClient: RabbitCli
   console.log("[BIKE SERVICE] Order  with id : ", order.order_id, "DENIED, there were not enough bikes");
   order = await manager_db.update_status(order, "DENIED");
 
-
+  //invece di mandarlo direttamente al message broker devo salvarlo dentro il database e avere un altro processo che gestisce l invio
   rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
   return;
 }
@@ -77,10 +78,13 @@ export async function handle_cancel_request(rabbitmqClient: RabbitClient, msg: s
     if (order && order.renting_status === "APPROVED") {
       storage_db.increment_bike_count(order.road_bike_requested, order.dirt_bike_requested);
       order = await manager_db.update_status(order, "CANCELLED");
+      //invece di mandarlo direttamente al message broker devo salvarlo dentro il database e avere un altro processo che gestisce l invio
+
       rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id, status: order.renting_status}));
     }
     else {
       console.log("[BIKE SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
+      //invece di mandarlo direttamente al message broker devo salvarlo dentro il database e avere un altro processo che gestisce l invio
       rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}))
     }
   } else {

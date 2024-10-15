@@ -180,8 +180,8 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        await instance.sendCanceltoBikeMessageBroker(order_id);
-        await instance.sendCanceltoHotelMessageBroker(order_id);
+        instance.sendCanceltoBikeMessageBroker(order_id);
+        instance.sendCanceltoHotelMessageBroker(order_id);
       }
       return;
     }
@@ -203,13 +203,13 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
     if (order.bike_status === "DENIED") {
       console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
       await manager_db.update_bike_status(order_id, "CANCELLED");
-      await instance.sendCanceltoHotelMessageBroker(order_id);
+      instance.sendCanceltoHotelMessageBroker(order_id);
     }
 
     if (order.hotel_status === "DENIED") {
       console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
       await manager_db.update_hotel_status(order_id, "CANCELLED");
-      await instance.sendCanceltoBikeMessageBroker(order_id);
+      instance.sendCanceltoBikeMessageBroker(order_id);
     }
 
     if (order.bike_status === "APPROVED" && order.hotel_status === "APPROVED" && order.payment_status === "PENDING") {
@@ -222,7 +222,7 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
         updated_at: order.updated_at
       };
 
-      await instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
       console.log("[ORDER SERVICE] Sent order to payment service");
     }
 
