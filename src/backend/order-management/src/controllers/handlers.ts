@@ -157,8 +157,8 @@ export async function handle_res_from_payment(instance: RabbitClient, msg: strin
 
 }
 export async function handle_order_status(instance: RabbitClient, order_id: string, retries = 0) {
-  const MAX_RETRIES = 5; // Define a max retry limit to avoid infinite waiting.
-  const TIMEOUT = 10000; // 10 seconds
+  const MAX_RETRIES = 5; 
+  const TIMEOUT = 10000; 
 
   try {
     console.log("[ORDER SERVICE] Handling order status for order:", order_id);
@@ -171,17 +171,15 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
       return;
     }
 
-    // Check if any service is still pending
     if (order.bike_status === "PENDING" || order.hotel_status === "PENDING") {
       console.log("[ORDER SERVICE] Still waiting for a response from one of the services");
 
       if (retries < MAX_RETRIES) {
         setTimeout(() => {
-          handle_order_status(instance, order_id, retries + 1); // Increment retries
+          handle_order_status(instance, order_id, retries + 1);
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        // Send cancel if no response after max retries
         await instance.sendCanceltoBikeMessageBroker(order_id);
         await instance.sendCanceltoHotelMessageBroker(order_id);
       }
@@ -202,7 +200,6 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
       return;
     }
 
-    // Handle denial cases
     if (order.bike_status === "DENIED") {
       console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
       await manager_db.update_bike_status(order_id, "CANCELLED");
@@ -215,7 +212,6 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
       await instance.sendCanceltoBikeMessageBroker(order_id);
     }
 
-    // If both services are approved
     if (order.bike_status === "APPROVED" && order.hotel_status === "APPROVED" && order.payment_status === "PENDING") {
       console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
 
