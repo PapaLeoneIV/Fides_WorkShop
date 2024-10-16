@@ -68,3 +68,12 @@ clean-order:
 #---RabbitMQ MANAGEMENT---#
 start_rabbitmq:
 	docker compose up rabbitmq
+
+
+start-db:
+	docker compose up -d db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
+	docker compose up -d rabbitmq
+
+start-services:
+	docker compose up bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+
