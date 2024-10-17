@@ -5,20 +5,28 @@ import { z } from 'zod';
 
 
 const order_info_schema = z.object({
-
   from: z.string(),
   to: z.string(),
-  room: z.string(),
+  room: z.string().refine((val) => {
+    if (parseInt(val) === null) {
+      console.log("[ORDER SERVICE]Room number is required");
+    }
+    const roomNumber = val !== null ? parseInt(val) : -1;
+    if (roomNumber === -1) {
+      console.log("[ORDER SERVICE]Room number is required", roomNumber);
+      return false;
+    }
+    return roomNumber >= 101 && roomNumber <= 105;
+  }, { message: "[ORDER SERVICE] Room number must be between 101 and 105" }),
 
   road_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
   dirt_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
 
   amount: z.string(),
 
-  bike_status: z.string(),
-  hotel_status: z.string(),
-  payment_status: z.string(),
-
+  bike_status: z.string().refine((val) => {return val === "PENDING"},{message: "Bike status must be PENDING"}),
+  hotel_status: z.string().refine((val) => {return val === "PENDING"},{message: "Hotel status must be PENDING"}),
+  payment_status: z.string().refine((val) => {return val === "PENDING"},{message: "Payment status must be PENDING"}),
 
   created_at: z.date(),
   updated_at: z.date()
@@ -50,8 +58,10 @@ export async function handle_req_from_frontend(instance: RabbitClient, msg: stri
     parsedMsg.updated_at = new Date(parsedMsg.updated_at);
     data = order_info_schema.parse(parsedMsg);
 
-  } catch (error) {
-    console.error(`[ORDER SERVICE] Error while parsing message:`, error);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.issues);
+    }
     return;
   }
 
@@ -95,8 +105,16 @@ export async function handle_res_from_bike(instance: RabbitClient, msg: string) 
   }
 
   const manager_db = new OrderManagerDB();
-
   order = await manager_db.update_bike_status(data.id, data.status);
+
+
+  if (order.bike_status === "DENIED") {
+    console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
+    await manager_db.update_bike_status(order.id, "CANCELLED");
+    instance.sendCanceltoHotelMessageBroker(order.id);
+    return;
+  }
+
 
   handle_order_status(instance, order.id);
 }
@@ -115,7 +133,15 @@ export async function handle_res_from_hotel(instance: RabbitClient, msg: string)
 
   order = await manager_db.update_hotel_status(data.id, data.status);
 
+  if (order.hotel_status === "DENIED") {
+    console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
+    await manager_db.update_hotel_status(order.id, "CANCELLED");
+    instance.sendCanceltoBikeMessageBroker(order.id);
+    return;
+  }
+
   handle_order_status(instance, order.id);
+
 }
 
 
@@ -160,6 +186,8 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
   const MAX_RETRIES = 5; 
   const TIMEOUT = 10000; 
 
+
+
   try {
     console.log("[ORDER SERVICE] Handling order status for order:", order_id);
 
@@ -170,10 +198,6 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
       console.error(`[ORDER SERVICE] No order found with ID: ${order_id}`);
       return;
     }
-
-    order = await manager_db.get_order(order_id);
-    
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
 
     if (order.bike_status === "PENDING" || order.hotel_status === "PENDING") {
       console.log("[ORDER SERVICE] Still waiting for a response from one of the services");
@@ -188,53 +212,22 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
         instance.sendCanceltoHotelMessageBroker(order_id);
       }
       return;
-    }
-    order = await manager_db.get_order(order_id);
-    
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
+    }  
 
-    if (order.payment_status === "CANCELLED") {
-      console.log(`[ORDER SERVICE] Payment service cancelled the request, cancelling bike and hotel...`);
-      console.log("[ORDER SERVICE] sending CANCELLED REQUEST to UI...");
-      //TODO send responose to UI
-      return;
-    }
-
-    order = await manager_db.get_order(order_id);
-    
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
-
-    if (order.bike_status == "CANCELLED" && order.hotel_status == "CANCELLED") {
+    if (order.bike_status == "CANCELLED" && order.hotel_status == "CANCELLED" && order.payment_status !== "CANCELLED") {
       console.log(`[ORDER SERVICE] Both services cancelled the request, cancelling order...`);
-       await manager_db.update_payment_status(order_id, "CANCELLED");
+
+      await manager_db.update_payment_status(order_id, "CANCELLED");
+
+       console.log("[ORDER SERVICE] sending CANCELLED REQUEST to UI...");
       //TODO send responose to UI
       return;
     }
 
-    order = await manager_db.get_order(order_id);
+  
+
     
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
-
-    if (order.bike_status === "DENIED") {
-      console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
-      await manager_db.update_bike_status(order_id, "CANCELLED");
-      instance.sendCanceltoHotelMessageBroker(order_id);
-    }
-
-    order = await manager_db.get_order(order_id);
-    
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
-
-    if (order.hotel_status === "DENIED") {
-      console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
-      await manager_db.update_hotel_status(order_id, "CANCELLED");
-      instance.sendCanceltoBikeMessageBroker(order_id);
-    }
-    order = await manager_db.get_order(order_id);
-    
-    if(!order) throw new Error(`[ORDER SERVICE] Order not found with ID: ${order_id}`);
-
-
+   
     if (order.bike_status === "APPROVED" && order.hotel_status === "APPROVED" && order.payment_status === "PENDING") {
       console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
 
