@@ -2,7 +2,7 @@ import amqp from 'amqplib';
 
 const QUEUE = 'booking_request';
 
-async function publishMessage() {
+async function publishMessage(room) {
     try {
         // Connect to RabbitMQ using the connection string
         const connection = await amqp.connect(`amqp://rileone:password@localhost:5672`);
@@ -15,7 +15,7 @@ async function publishMessage() {
         const message = {
             from: new Date(2025, 11, 11),
             to: new Date(2025, 11, 11),
-            room: "104",
+            room: room,
             road_bike_requested: 1,
             dirt_bike_requested: 2,
             bike_status: "PENDING",
@@ -43,4 +43,34 @@ async function publishMessage() {
 }
 
 // Execute the publishMessage function
-publishMessage();
+let room = [];
+
+room.push(0); //0
+room.push("104"); //valid string
+room.push(104); //invalid data type number
+room.push(""); //invalid empty string
+room.push(" "); //invalid whitespace string
+room.push("104 "); //invalid whitespace string
+room.push(" 104"); //invalid whitespace string
+room.push("10 4"); //invalid whitespace string
+room.push("10a4"); //invalid whitespace string
+room.push("104a"); //invalid whitespace string
+room.push("a104"); //invalid whitespace string
+room.push("a"); //invalid whitespace string
+room.push("a104a"); //invalid whitespace string
+room.push("104a104"); //invalid whitespace string
+room.push(new Date()); //invalid data type DATE
+room.push(null); //invalid data type NULL
+room.push(undefined); //invalid data type UNDEFINED
+room.push(true); //invalid data type BOOLEAN
+room.push(false); //invalid data type BOOLEAN
+room.push({}); //invalid data type OBJECT
+room.push([]); //invalid data type ARRAY
+room.push([104]); //invalid data type ARRAY
+room.push(["104"]); //invalid data type ARRAY
+
+for (let i = 0; i < room.length; i++) {
+    console.log("Publishing message with room:", room[i], "typeof room:", typeof room[i]);
+    publishMessage(room[i]);
+}
+

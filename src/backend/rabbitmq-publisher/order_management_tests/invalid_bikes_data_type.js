@@ -16,7 +16,7 @@ async function publishMessage() {
             from: new Date(2025, 11, 11),
             to: new Date(2025, 11, 11),
             room: "104",
-            road_bike_requested: 1,
+            road_bike_requested: 1.34,
             dirt_bike_requested: 2,
             bike_status: "PENDING",
             hotel_status: "PENDING",

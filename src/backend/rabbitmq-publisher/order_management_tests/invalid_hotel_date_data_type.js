@@ -13,9 +13,9 @@ async function publishMessage() {
 
         // Create a message to send
         const message = {
-            from: new Date(2025, 11, 11),
-            to: new Date(2025, 11, 11),
-            room: "104",
+            from: new Date(1, 0, 0).toISOString(),
+            to: new Date(2025, 11, 11).toISOString(),
+            room: "103",
             road_bike_requested: 1,
             dirt_bike_requested: 2,
             bike_status: "PENDING",
