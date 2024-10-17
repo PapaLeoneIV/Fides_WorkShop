@@ -12,7 +12,10 @@ CREATE TABLE "order" (
 
     "amount" TEXT NOT NULL,
 
-    "order_status" TEXT NOT NULL,
+    "bike_status" TEXT NOT NULL,
+    "hotel_status" TEXT NOT NULL,
+    "payment_status" TEXT NOT NULL,
+
 
     "created_at" TIMESTAMPTZ DEFAULT now(),
     "updated_at" TIMESTAMPTZ DEFAULT now()

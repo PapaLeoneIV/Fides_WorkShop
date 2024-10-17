@@ -1,0 +1,12 @@
+{
+  "name": "rabbitmq-publisher",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "publisher.js",
+  "scripts": {
+    "start": "node publisher.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.0"
+  }
+}

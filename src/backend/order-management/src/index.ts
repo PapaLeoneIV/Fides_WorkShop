@@ -1,17 +1,18 @@
-import express from 'express';
-import { db, connectToDatabase } from './db/db';
-import { app, OrderRouter } from "./api/router/orderRouter"
+import { connectToDatabase } from './db/db';
+import { rabbitmqClient } from "./router/rabbitMQClient";
 
 const port = 3003;
 
-function main() { 
-    
-    connectToDatabase();
-    app.use("/order/", OrderRouter);
+async function main() {
 
-    app.listen(port, () => {
-       console.log("[INFO] Server running on http://localhost:3003");
-    });
+   connectToDatabase();
+   await rabbitmqClient.connect();
+
+   rabbitmqClient.consumeBookingOrder();
+   rabbitmqClient.consumeBikeResponse();
+   rabbitmqClient.consumeHotelResponse();
+   rabbitmqClient.consumePaymentResponse();
+
 }
 
 main();

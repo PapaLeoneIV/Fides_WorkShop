@@ -10,8 +10,12 @@ no-volume: clean clean-volumes build up
 build:
 	docker compose build
 
+CONTAINER_IDS = $(shell docker ps -aq)
+
+
 clean:
-	docker compose down --remove-orphans --volumes
+	docker kill $(CONTAINER_IDS)
+	docker rm $(shell docker ps -aq)
 	docker system prune -f
 
 clean-volumes:
@@ -68,3 +72,23 @@ clean-order:
 #---RabbitMQ MANAGEMENT---#
 start_rabbitmq:
 	docker compose up rabbitmq
+
+
+
+start-db:
+	docker compose up -d db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
+	sleep 5
+	docker compose up -d rabbitmq
+
+start-services:
+	docker compose up bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+
+start-app: start-db
+	sleep 5
+	make start-services
+
+down-service:
+	docker compose down bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+
+down-db:
+	docker compose down db_bike_rental db_hotel_booking db_payment_confirmation db_order_management

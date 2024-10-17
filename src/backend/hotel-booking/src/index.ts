@@ -1,16 +1,11 @@
-import express from 'express';
-import { db, connectToDatabase } from './db/db';
-import { app, HotelRouter } from "./api/router/hotelRouter"
+import { connectToDatabase } from './db/db';
+import { rabbitmqClient } from "./router/rabbitMQClient";
 
-const port = 3001;
-
-function main() {
+async function main() {
     connectToDatabase();
-    app.use("/hotel_booking/", HotelRouter);
-
-    app.listen(port, () => {
-        console.log("[INFO] Server running on http://localhost:3001");
-    });
+    await rabbitmqClient.connect()
+    rabbitmqClient.consumeHotelOrder()
+    rabbitmqClient.consumecancelHotelOrder()
 }
 
 main();

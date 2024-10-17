@@ -1,17 +1,19 @@
-import express from 'express';
-import { db, connectToDatabase } from './db/db';
-import { app, MoneyRouter } from "./api/router/moneyRouter"
+
+import { connectToDatabase } from './db/db';
+import { rabbitmqClient } from "./router/rabbitMQClient";
 
 
 const port = 3002;
 
-function main() {
+async function main() {
     connectToDatabase();
-    app.use("/payment/", MoneyRouter);
-
-    app.listen(port, () => {
-       console.log("[INFO] Server running on http://localhost:3002");
-    });
+    await rabbitmqClient.connect();
+    rabbitmqClient.consumePaymentgOrder();
+    //app.use("/payment/", MoneyRouter);
+//
+    //app.listen(port, () => {
+    //   console.log("[INFO] Server running on http://localhost:3002");
+    //});
 }
 
 main();
