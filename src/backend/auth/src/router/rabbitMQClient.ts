@@ -1,7 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
 import { rmqUser, rmqPass, rmqhost, LOGIN_QUEUE_REQUEST, LOGIN_QUEUE_RESPONSE, REGISTRATION_QUEUE_RESPONSE, REGISTRATION_QUEUE_REQUEST} from "../rabbitConfig/config";
 import { sendNotification } from  "../controller/notification";
-import { } from "../controller/handlers";
+import { handle_login_req, handle_registration_req } from "../controller/handlers";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
@@ -70,20 +70,20 @@ export class RabbitClient {
   //----------------------CONSUME-------------------------------
   
     async consumeLoginRequest(handlerFunc: HandlerCB) {
-        await this.consume(LOGIN_QUEUE_REQUEST, handlerFunc);
+        await this.consume(LOGIN_QUEUE_REQUEST, handle_login_req);
     }
 
     async consumeRegistrationRequest(handlerFunc: HandlerCB) {
-        await this.consume(REGISTRATION_QUEUE_REQUEST, handlerFunc);
+        await this.consume(REGISTRATION_QUEUE_REQUEST, handle_registration_req);
     }
 
   //----------------------SEND----------------------------------
  
-    async sendLoginRequest(message: any) {
+    async sendLoginResp(message: any) {
         await this.sendToQueue(LOGIN_QUEUE_RESPONSE, message);
     }
 
-    async sendRegistrationRequest(message: any) {
+    async sendRegistrationResp(message: any) {
         await this.sendToQueue(REGISTRATION_QUEUE_RESPONSE, message);
     }
 }
