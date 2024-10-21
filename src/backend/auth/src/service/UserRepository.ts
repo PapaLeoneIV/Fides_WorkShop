@@ -2,7 +2,6 @@ import { PrismaClient, registered_users as UserDO } from "@prisma/client";
 import bcrypt from 'bcrypt';
 
 export interface UserDTO {
-    username: string;
     password: string;
     email: string;
 }
@@ -14,20 +13,20 @@ export class UserManager{
     }
     
     async register_user(data: UserDTO) : Promise<UserDO>{ {
+        let hashedPassword = await bcrypt.hash(data.password, process.env.BYCRYPT_HASH_SEED as string);
         return await this.prisma.registered_users.create({
             data: {
-                username: data.username,
-                password: await bcrypt.hash(data.password, process.env.BYCRYPT_SALT),
+                password: hashedPassword,
                 email: data.email
             }
         });
     }
     }
 
-    async check_password(username: string, password: string) : Promise<boolean>{
+    async check_password(email: string, password: string) : Promise<boolean>{
         let user = await this.prisma.registered_users.findUnique({
             where: {
-                username: username
+                email: email
             }
         });
         if(user){
@@ -36,10 +35,10 @@ export class UserManager{
         return false;
     }
 
-    async get_user_password(username: string) : Promise<string>{
+    async get_user_password(email: string) : Promise<string>{
         let user = await this.prisma.registered_users.findUnique({
             where: {
-                username: username
+                email: email
             }
         });
         if(user){
@@ -48,18 +47,18 @@ export class UserManager{
         return "";
     }
 
-    async check_existance(username: string) : Promise<boolean>{
+    async check_existance(email: string) : Promise<boolean>{
         return await this.prisma.registered_users.findUnique({
             where: {
-                username: username
+                email: email
             }
         }) !== null;
     }
 
-    async get_user(username: string) : Promise<UserDO | null> {
+    async get_user(email: string) : Promise<UserDO | null> {
         return await this.prisma.registered_users.findUnique({
             where: {
-                username: username
+                email: email
             }
         });
     }
