@@ -69,11 +69,11 @@ export class RabbitClient {
 
   //----------------------CONSUME-------------------------------
   
-    async consumeLoginRequest(handlerFunc: HandlerCB) {
+    async consumeLoginRequest() {
         await this.consume(LOGIN_QUEUE_REQUEST, handle_login_req);
     }
 
-    async consumeRegistrationRequest(handlerFunc: HandlerCB) {
+    async consumeRegistrationRequest() {
         await this.consume(REGISTRATION_QUEUE_REQUEST, handle_registration_req);
     }
 
