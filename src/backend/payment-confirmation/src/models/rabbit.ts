@@ -1,12 +1,17 @@
 import client, { Connection, Channel } from "amqplib";
-import { sendNotification } from "../controllers/notification";
 import { handle_req_from_order_management } from "../controllers/handlers";
-import { rmqUser, rmqPass, rmqhost, } from "../rabbitConfig/config";
-import { REQ_PAYMENT_QUEUE, RESP_PAYMENT_QUEUE } from "../rabbitConfig/config";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitClient {
+const rmqUser = process.env.RABBITMQ_USER || "rileone"
+const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
+const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
+
+const REQ_PAYMENT_QUEUE = "payment_request"
+
+const RESP_PAYMENT_QUEUE = "payment_response"
+
+class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -71,22 +76,18 @@ export class RabbitClient {
   //----------------------CONSUME-------------------------------
   consumePaymentgOrder = async () => {
     console.log("[PAYMENT SERVICE] Listening for booking orders...");
-    this.consume(RESP_PAYMENT_QUEUE, (msg) => handle_req_from_order_management(this, msg));
+    this.consume(RESP_PAYMENT_QUEUE, (msg) => handle_req_from_order_management(msg));
   };
 
   //----------------------SEND----------------------------------
   
   sendToOrderMessageBroker = async (body: string): Promise<void> => {
-    const newNotification = {
-      title: "Bike order incoming",
-      description: body,
-    };
-    sendNotification(newNotification, REQ_PAYMENT_QUEUE);
+    this.sendToQueue(REQ_PAYMENT_QUEUE, body);
   };
 
   //----------------------SAGA(CANCEL)--------------------------
 
 }
 
-export const rabbitmqClient = new RabbitClient();
+export default RabbitClient;
 

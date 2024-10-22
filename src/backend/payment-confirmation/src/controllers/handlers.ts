@@ -1,15 +1,8 @@
-import { RabbitClient } from "../router/rabbitMQClient";
-import { z } from 'zod';
+import { rabbitmqClient } from '../models';
+import payment_schema from '../zodschema/payment_schema';
 
 
-const payment_schema = z.object({
-    id: z.string(),
-    amount: z.string(),
-    created_at: z.string().transform((val) => new Date(val)),
-    updated_at: z.string().transform((val) => new Date(val)),
-});
-
-export async function handle_req_from_order_management(instance: RabbitClient, msg: string) {
+export async function handle_req_from_order_management(msg: string) {
     let response_info = { id: "", status: "" };
     let data;
     try {
@@ -17,12 +10,12 @@ export async function handle_req_from_order_management(instance: RabbitClient, m
         data = payment_schema.parse(JSON.parse(parsedMsg.description));
     } catch (error) {
         console.error(`[PAYMENT SERVICE] Error while parsing message:`, error);
-        instance.sendToOrderMessageBroker(JSON.stringify({ id: "", status: "DENIED" }));
+        rabbitmqClient.sendToOrderMessageBroker(JSON.stringify({ id: "", status: "DENIED" }));
         return;
     }
     response_info.id = data.id;
     response_info.status = Math.random() < 0.9 ? "APPROVED" : "DENIED";
     //send response to order management 
-    instance.sendToOrderMessageBroker(JSON.stringify(response_info));
+    rabbitmqClient.sendToOrderMessageBroker(JSON.stringify(response_info));
 
 }
