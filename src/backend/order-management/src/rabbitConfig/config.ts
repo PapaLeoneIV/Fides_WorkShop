@@ -6,7 +6,7 @@ console.log("RabbitMQ Configurations: ", process.env.RABBITMQ_USER, process.env.
 
 const rmqUser = process.env.RABBITMQ_USER || "rileone"
 const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
-const rmqhost = process.env.RABBITMQ_HOST || "rabbitMQ"
+const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
 
 const REQ_BIKE_QUEUE = "bike_request"
 const REQ_HOTEL_QUEUE = "hotel_request"
