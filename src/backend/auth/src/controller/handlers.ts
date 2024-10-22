@@ -1,37 +1,31 @@
-import { UserManager, UserDTO } from "../service/UserRepository";
-import { RabbitClient } from "../router/rabbitMQClient";
-import bcrypt from 'bcrypt';
-import { z } from "zod";
-import { generateAccessToken } from "../jwt/jwt";
+import {loginManager, rabbitmqClient} from "../models/index";
+import { generateAccessToken, authenticateToken } from "../jwt/jwt";
+import  {registration_schema, login_schema}  from "../zodschema/index";
 
-const registration_and_login_schema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8).max(20),
-});
-
+interface LoginDTO {
+    password: string;
+    email: string;
+    jwtToken?: string;
+}
 export async function handle_registration_req(msg: string) {
-    let registration_info: UserDTO;
-    const User_manager = new UserManager();
-    const rabbitmqClient = new RabbitClient();
+    let registration_info: {email: string, password: string, jwtToken?: string};
 
     try {
         const data = JSON.parse(msg);
-        const description = JSON.parse(data.description);
-        registration_info = registration_and_login_schema.parse(description);
+        registration_info = registration_schema.parse(data);
     } catch (error) {
         console.log("[AUTH SERVICE] Invalid data format");
         rabbitmqClient.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Invalid data format" }));
         return;
     }
 
-
-    if (await User_manager.check_existance(registration_info.email)) {
+    if (await loginManager.check_existance(registration_info.email)) {
         console.error("[AUTH SERVICE] User already exists");
         rabbitmqClient.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "User already exists" }));
         return;
     }
 
-    let user = await User_manager.register_user(registration_info);
+    let user = await loginManager.register_user(registration_info);
     if (user) {
         console.log("[AUTH SERVICE] User registered successfully");
         rabbitmqClient.sendRegistrationResp(JSON.stringify({ status: "APPROVED", error: "User registered successfully" }));
@@ -42,30 +36,40 @@ export async function handle_registration_req(msg: string) {
     return;
 }
 
+
 export async function handle_login_req(msg: string) {
-    let registration_info: UserDTO;
+    let login_info: {email: string, password: string, jwtToken?: string};
     let token: string;
-    const User_manager = new UserManager();
-    const rabbitmqClient = new RabbitClient();
 
     try {
         const data = JSON.parse(msg);
-        const description = JSON.parse(data.description);
-        registration_info = registration_and_login_schema.parse(description);
+        login_info = login_schema.parse(data);
     } catch (error) {
         console.log("[AUTH SERVICE] Invalid data format");
         rabbitmqClient.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Invalid data format" }));
         return;
     }
 
-    if (await User_manager.check_existance(registration_info.email)) {
+    if (await loginManager.check_existance(login_info.email)) {
         console.log("[AUTH SERVICE] User exists");
-        let hashedPassword = await User_manager.get_user_password(registration_info.email);
+        let hashedPassword = await loginManager.get_user_password(login_info.email);
         if (hashedPassword) {
-            if (await bcrypt.compare(registration_info.password, hashedPassword)) {
+            if (await loginManager.compare_passwords(login_info.password, hashedPassword)) {
                 console.log("[AUTH SERVICE] User logged in successfully");
-
-                token = generateAccessToken(registration_info.email);
+                if (login_info.jwtToken) {
+                    let jwtToken = authenticateToken(login_info.jwtToken);
+                    if (jwtToken) {
+                        console.log("[AUTH SERVICE] JWT Token is valid");
+                        rabbitmqClient.sendLoginResp(JSON.stringify({ status: "APPROVED", error: "" }));
+                        return;
+                    }
+                    else {
+                        console.error("[AUTH SERVICE] JWT Token is invalid");
+                        rabbitmqClient.sendLoginResp(JSON.stringify({ status: "ERROR", error: "JWT Token is invalid" }));
+                        return;
+                    }
+                }
+                token = generateAccessToken(login_info.email);
                 rabbitmqClient.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
                 return;
             }
