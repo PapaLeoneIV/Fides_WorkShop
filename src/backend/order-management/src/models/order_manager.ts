@@ -17,7 +17,7 @@ export interface OrderDTO {
 
 
 
-export class OrderManagerDB {
+class OrderManagerDB {
 
   async create_order(info: OrderDTO): Promise<OrderDO> {
     const x = await prisma.order.create({
@@ -124,3 +124,5 @@ export class OrderManagerDB {
     });
   }
 }
+
+export default OrderManagerDB;
