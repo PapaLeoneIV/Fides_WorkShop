@@ -1,11 +1,19 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_BIKE_QUEUE, RESP_BIKE_QUEUE, SAGA_RESP_BIKE_QUEUE} from "../rabbitConfig/config"
-import { sendNotification } from "../controller/notification";
 import { handle_req_from_order_management, handle_cancel_request} from "../controller/handlers";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitClient {
+const rmqUser = process.env.RABBITMQ_USER || "rileone"
+const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
+const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
+
+const REQ_BIKE_QUEUE = "bike_request"
+
+const RESP_BIKE_QUEUE = "bike_response"
+
+const SAGA_RESP_BIKE_QUEUE = "saga_bike_response"
+
+class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -70,26 +78,22 @@ export class RabbitClient {
   //----------------------CONSUME-------------------------------
   consumeBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
-    this.consume(RESP_BIKE_QUEUE, (msg) => handle_req_from_order_management(this, msg));
+    this.consume(RESP_BIKE_QUEUE, (msg) => handle_req_from_order_management(msg));
   };
 
 
   //----------------------SEND----------------------------------
   sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
-    const newNotification = {
-      title: "Bike response incoming",
-      description: body,
-    };
-    sendNotification(newNotification, REQ_BIKE_QUEUE);
+   this.sendToQueue(REQ_BIKE_QUEUE, body);
   };
   //----------------------SAGA(CANCEL)--------------------------
   consumecancelBikeOrder = async () => {
-    this.consume(SAGA_RESP_BIKE_QUEUE, (msg) => handle_cancel_request(this, msg)); 
+    this.consume(SAGA_RESP_BIKE_QUEUE, (msg) => handle_cancel_request(msg)); 
   }
 
   
 
 }
 
-export const rabbitmqClient = new RabbitClient();
 
+export default RabbitClient;

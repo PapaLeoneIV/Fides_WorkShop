@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export class BikeDBRepository {
+
+class BikeDBRepository {
 
 
     async get_number_road_bikes(): Promise<number> {
@@ -53,3 +54,4 @@ export class BikeDBRepository {
     }
   }
   
+  export default BikeDBRepository;

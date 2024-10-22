@@ -11,7 +11,7 @@ export interface OrderDTO {
 }
 
 
-export class BikeOrderRepository {
+class BikeOrderRepository {
 
     async create_order(bike_order: OrderDTO): Promise<OrderDO> {
         console.log(
@@ -101,3 +101,5 @@ export class BikeOrderRepository {
         });
     }
 }
+
+export default BikeOrderRepository;
