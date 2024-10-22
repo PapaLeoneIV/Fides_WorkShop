@@ -2,13 +2,6 @@ import { PrismaClient, registered_users as UserDO } from "@prisma/client";
 
 import bcrypt from 'bcrypt';
 
-
-interface LoginDTO {
-    password: string;
-    email: string;
-    jwtToken?: string;
-}
-
 class LoginManager{
     private prisma: PrismaClient;
     constructor(){
