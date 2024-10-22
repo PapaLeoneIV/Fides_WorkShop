@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
 
-const QUEUE = 'booking_request';
+const QUEUE = 'login_request';
 
 async function publishMessage() {
     try {
@@ -13,19 +13,10 @@ async function publishMessage() {
 
         // Create a message to send
         const message = {
-            from: new Date(2025, 11, 11),
-            to: new Date(2025, 11, 11),
-            room: "104",
-            road_bike_requested: 1,
-            dirt_bike_requested: 2,
-            bike_status: "PENDING",
-            hotel_status: "PENDING",
-            payment_status: "PENDING",
-            amount: "100",
-            updated_at: new Date(),
-            created_at: new Date(),
+            email: 'rileone@gmail.com',
+            password: 'password',
         };
-        
+
 
         // Send the message to the queue
         channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(message)), {
