@@ -155,6 +155,12 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_auth:${POSTGRES_PORT}/${POSTGRES_DB_AUTH}?schema=public
       BYCRYPT_SALT: ${BYCRYPT_HASH_SEED}
       TOKEN_SECRET: ${TOKEN_SECRET}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+    env_file:
+      - .env.temp
     networks:
       - app_network
     ports:
@@ -269,7 +275,7 @@ services:
 #------------------------- -  - --  -  --
   #--------------------------RabbitMQ
   rabbitmq:
-    container_name: rabbitMQ
+    container_name: rabbitmq
     image: rabbitmq:3-management
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", ""]
