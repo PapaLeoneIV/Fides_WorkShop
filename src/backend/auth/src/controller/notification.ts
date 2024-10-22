@@ -1,4 +1,4 @@
-import {rabbitmqClient} from "../router/rabbitMQClient";
+import { rabbitmqClient } from "../models";
 
 export type INotification = {
   title: string;
@@ -10,5 +10,5 @@ export const sendNotification = async (notification: INotification, queue: strin
  
   rabbitmqClient.sendToQueue(queue, notification);
 
-  console.log(`[HOTEL SERVICE]Sent the notification to consumer`);
+  console.log(`[AUTH SERVICE]Sent the notification to consumer`);
 };
