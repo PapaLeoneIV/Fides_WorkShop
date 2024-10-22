@@ -1,11 +1,19 @@
 import client, { Connection, Channel } from "amqplib";
-import { rmqUser, rmqPass, rmqhost, REQ_HOTEL_QUEUE, RESP_HOTEL_QUEUE, SAGA_RESP_HOTEL_QUEUE} from "../rabbitConfig/config"
-import { sendNotification } from  "../controller/notification";
 import { handle_req_from_order_management, handle_cancel_request} from "../controller/handlers";
+
+const rmqUser = process.env.RABBITMQ_USER || "rileone"
+const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
+const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
+
+const REQ_HOTEL_QUEUE = "hotel_request"
+
+const RESP_HOTEL_QUEUE = "hotel_response"
+
+const SAGA_RESP_HOTEL_QUEUE = "saga_hotel_response"
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
-export class RabbitClient {
+class RabbitClient {
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -70,26 +78,21 @@ export class RabbitClient {
   //----------------------CONSUME-------------------------------
   consumeHotelOrder = async () => {
     console.log("[HOTEL SERVICE] Listening for Hotel orders...");
-    this.consume(RESP_HOTEL_QUEUE, (msg) => handle_req_from_order_management(this, msg));
+    this.consume(RESP_HOTEL_QUEUE, (msg) => handle_req_from_order_management(msg));
   };
 
   //----------------------SEND----------------------------------
   sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
-    const newNotification = {
-      title: "Hotel response incoming",
-      description: body,
-    };
-    sendNotification(newNotification, REQ_HOTEL_QUEUE);
+    this.sendToQueue(REQ_HOTEL_QUEUE, body);
   };
 
   //----------------------SAGA(CANCEL)--------------------------
   consumecancelHotelOrder = async () => {
-    this.consume(SAGA_RESP_HOTEL_QUEUE, (msg) => handle_cancel_request(this, msg)); 
+    this.consume(SAGA_RESP_HOTEL_QUEUE, (msg) => handle_cancel_request(msg)); 
   }
 
   
 
 }
 
-export const rabbitmqClient = new RabbitClient();
-
+export default RabbitClient;

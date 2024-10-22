@@ -11,7 +11,7 @@ export interface OrderDTO {
     updated_at: Date
 }
 
-export class HotelOrdersRepository {
+class HotelOrdersRepository {
 
     async create_order(hotel_order: OrderDTO): Promise<OrderDO> {
       console.log("[HOTEL SERVICE]", "Creating new hotel order with id: ", hotel_order.order_id);
@@ -102,3 +102,5 @@ export class HotelOrdersRepository {
     }
   
   }
+
+  export default HotelOrdersRepository;

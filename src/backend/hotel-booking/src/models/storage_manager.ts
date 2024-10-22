@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 
-export class HotelDBRepository {
+class HotelDBRepository {
 
     async getDateIdsForRange (from: Date, to: Date): Promise<any> {
       console.log("[HOTEL SERVICE] Getting date ids for range: ", from, to);
@@ -77,3 +77,5 @@ export class HotelDBRepository {
     }
   }
   
+
+  export default HotelDBRepository;
