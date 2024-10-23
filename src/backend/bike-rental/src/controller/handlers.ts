@@ -7,9 +7,7 @@ export async function handle_req_from_order_management(msg: string) {
   let order_info: BikeDTO;
 
   try {
-    const data = JSON.parse(msg);
-    const description = JSON.parse(data.description);
-    order_info = bike_info_schema.parse(description);
+    order_info = bike_info_schema.parse(JSON.parse(msg));
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
     await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
@@ -48,8 +46,7 @@ export async function handle_req_from_order_management(msg: string) {
 export async function handle_cancel_request(msg: string) {
   let order_id : string; 
   try {
-    const data = JSON.parse(msg);
-    order_id = data.description;
+    order_id = JSON.parse(msg);
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
     await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));

@@ -1,7 +1,9 @@
 import amqp from 'amqplib';
 
-const QUEUE = 'login_request';
+const QUEUE = 'booking_request';
 
+
+let counter = 0;
 async function publishMessage() {
     try {
         // Connect to RabbitMQ using the connection string
@@ -13,10 +15,19 @@ async function publishMessage() {
 
         // Create a message to send
         const message = {
-            email: 'rileone@gmail.com',
-            password: 'password',
+            from: new Date(2025, 11, 11),
+            to: new Date(2025, 11, 11),
+            room: "104",
+            road_bike_requested: 1,
+            dirt_bike_requested: 2,
+            bike_status: "PENDING",
+            hotel_status: "PENDING",
+            payment_status: "PENDING",
+            amount: "100",
+            updated_at: new Date(),
+            created_at: new Date(),
         };
-
+        
 
         // Send the message to the queue
         channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(message)), {

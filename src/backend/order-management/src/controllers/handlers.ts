@@ -40,12 +40,7 @@ const response_schema = z.object({
 
 
 function parse_data_from_response(msg: string) {
-  let data: { id: string, status: string };
-  const req = JSON.parse(msg);
-  const description = JSON.parse(req.description);
-  data = response_schema.parse(description);
-
-  return data;
+  return response_schema.parse(JSON.parse(msg));
 }
 
 
@@ -56,7 +51,7 @@ export async function handle_req_from_frontend(msg: string) {
     parsedMsg.created_at = new Date(parsedMsg.created_at);
     parsedMsg.updated_at = new Date(parsedMsg.updated_at);
     data = order_info_schema.parse(parsedMsg);
-
+    console.log("DBG data", data);
   } catch (err) {
     if (err instanceof z.ZodError) {
       console.log(err.issues);
@@ -97,6 +92,7 @@ export async function handle_res_from_bike( msg: string) {
   let order: OrderDO;
   try {
     data = parse_data_from_response(msg)
+    console.log(data);
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
