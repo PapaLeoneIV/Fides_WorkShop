@@ -43,7 +43,7 @@ class RabbitClient {
         await this.connect();
       }
 
-      return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+      return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
       console.error("[PAYMENT SERVICE]", error);
       throw error;

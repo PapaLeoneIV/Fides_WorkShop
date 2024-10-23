@@ -52,7 +52,7 @@ class RabbitClient {
         await this.connect();
       }
 
-      return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+      return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
       console.error("[ORDER SERVICE]", error);
       throw error;
@@ -104,14 +104,17 @@ class RabbitClient {
 
 //---------------------------SEND------------------------------
   sendToBikeMessageBroker = async (body: string): Promise<void> => {
+    console.log(`[ORDER SERVICE] Sending to Bike Service: ${body}`);
     this.sendToQueue(RESP_BIKE_QUEUE, body);
   };
 
   sendToHotelMessageBroker = async (body: string): Promise<void> => {
+    console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
       this.sendToQueue(RESP_HOTEL_QUEUE, body);
   };
 
   sendToPaymentMessageBroker = async (body: string): Promise<void> => {
+    console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
     this.sendToQueue(RESP_PAYMENT_QUEUE, body);
   };
 

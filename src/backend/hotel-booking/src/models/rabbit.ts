@@ -45,7 +45,7 @@ class RabbitClient {
         await this.connect();
       }
 
-      return this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+      return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
       console.error("[HOTEL SERVICE]", error);
       throw error;
