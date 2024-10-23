@@ -8,7 +8,7 @@ CREATE TABLE "bikes" (
 );
 
 INSERT INTO "bikes" ("id", "road", "dirt") VALUES
-('1', 5000, 6969);
+('1', 420, 6969);
 
 CREATE TABLE "order" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
