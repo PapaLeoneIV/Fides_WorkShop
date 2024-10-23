@@ -1,8 +1,8 @@
-import { RabbitClient } from "../router/rabbitMQClient";
-import { OrderDTO, OrderManagerDB } from "../service/orderService";
 import { order as OrderDO } from "@prisma/client";
+import { OrderDTO } from "../models/order_manager";
 import { z } from 'zod';
-
+import { rabbitmqClient } from "../models/index";
+import {orderManagerDB} from "../models/index";
 
 const order_info_schema = z.object({
   from: z.string(),
@@ -40,24 +40,18 @@ const response_schema = z.object({
 
 
 function parse_data_from_response(msg: string) {
-  let data: { id: string, status: string };
-  const req = JSON.parse(msg);
-  const description = JSON.parse(req.description);
-  data = response_schema.parse(description);
-
-  return data;
+  return response_schema.parse(JSON.parse(msg));
 }
 
 
-export async function handle_req_from_frontend(instance: RabbitClient, msg: string) {
+export async function handle_req_from_frontend(msg: string) {
   let data: OrderDTO;
   try {
-
     const parsedMsg = JSON.parse(msg);
     parsedMsg.created_at = new Date(parsedMsg.created_at);
     parsedMsg.updated_at = new Date(parsedMsg.updated_at);
     data = order_info_schema.parse(parsedMsg);
-
+    console.log("DBG data", data);
   } catch (err) {
     if (err instanceof z.ZodError) {
       console.log(err.issues);
@@ -65,9 +59,8 @@ export async function handle_req_from_frontend(instance: RabbitClient, msg: stri
     return;
   }
 
-  const manager_db = new OrderManagerDB();
 
-  const order = await manager_db.create_order(data);
+  const order = await orderManagerDB.create_order(data);
 
   const bike_order = {
     order_id: order.id,
@@ -88,38 +81,38 @@ export async function handle_req_from_frontend(instance: RabbitClient, msg: stri
     updated_at: order.updated_at
   };
 
-  instance.sendToBikeMessageBroker(JSON.stringify(bike_order));
-  instance.sendToHotelMessageBroker(JSON.stringify(hotel_order));
+  rabbitmqClient.sendToBikeMessageBroker(JSON.stringify(bike_order));
+  rabbitmqClient.sendToHotelMessageBroker(JSON.stringify(hotel_order));
 
 }
 
 
-export async function handle_res_from_bike(instance: RabbitClient, msg: string) {
+export async function handle_res_from_bike( msg: string) {
   let data: { id: string, status: string };
   let order: OrderDO;
   try {
     data = parse_data_from_response(msg)
+    console.log(data);
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
   }
 
-  const manager_db = new OrderManagerDB();
-  order = await manager_db.update_bike_status(data.id, data.status);
+  order = await orderManagerDB.update_bike_status(data.id, data.status);
 
 
   if (order.bike_status === "DENIED") {
     console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
-    await manager_db.update_bike_status(order.id, "CANCELLED");
-    instance.sendCanceltoHotelMessageBroker(order.id);
+    await orderManagerDB.update_bike_status(order.id, "CANCELLED");
+    rabbitmqClient.sendCanceltoHotelMessageBroker(order.id);
     return;
   }
 
 
-  handle_order_status(instance, order.id);
+  handle_order_status(order.id);
 }
 
-export async function handle_res_from_hotel(instance: RabbitClient, msg: string) {
+export async function handle_res_from_hotel( msg: string) {
   let data: { id: string, status: string };
   let order: OrderDO;
   try {
@@ -129,23 +122,22 @@ export async function handle_res_from_hotel(instance: RabbitClient, msg: string)
     return;
   }
 
-  const manager_db = new OrderManagerDB();
 
-  order = await manager_db.update_hotel_status(data.id, data.status);
+  order = await orderManagerDB.update_hotel_status(data.id, data.status);
 
   if (order.hotel_status === "DENIED") {
     console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
-    await manager_db.update_hotel_status(order.id, "CANCELLED");
-    instance.sendCanceltoBikeMessageBroker(order.id);
+    await orderManagerDB.update_hotel_status(order.id, "CANCELLED");
+    rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
     return;
   }
 
-  handle_order_status(instance, order.id);
+  handle_order_status(order.id);
 
 }
 
 
-export async function handle_res_from_payment(instance: RabbitClient, msg: string) {
+export async function handle_res_from_payment( msg: string) {
 
   console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
   let data: { id: string, status: string };
@@ -157,15 +149,13 @@ export async function handle_res_from_payment(instance: RabbitClient, msg: strin
     return;
   }
 
-  const manager_db = new OrderManagerDB();
+  let order = await orderManagerDB.get_order(data.id);
 
-  let order = await manager_db.get_order(data.id);
-
-  order = await manager_db.update_payment_status(data.id, data.status);
+  order = await orderManagerDB.update_payment_status(data.id, data.status);
   if (order.payment_status !== 'APPROVED') {
     console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    instance.sendCanceltoBikeMessageBroker(data.id);
-    instance.sendCanceltoHotelMessageBroker(data.id);
+    rabbitmqClient.sendCanceltoBikeMessageBroker(data.id);
+    rabbitmqClient.sendCanceltoHotelMessageBroker(data.id);
     return;
   }
 
@@ -176,13 +166,12 @@ export async function handle_res_from_payment(instance: RabbitClient, msg: strin
     && order.payment_status === 'APPROVED') {
     console.log(`[ORDER SERVICE] Order is completed, sending response to frontend`);
     //TODO send response to frontend
-    //instance.sendResponseToFrontend(order);
     return;
   }
 
 
 }
-export async function handle_order_status(instance: RabbitClient, order_id: string, retries = 0) {
+export async function handle_order_status(order_id: string, retries = 0) {
   const MAX_RETRIES = 5; 
   const TIMEOUT = 10000; 
 
@@ -191,8 +180,7 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
   try {
     console.log("[ORDER SERVICE] Handling order status for order:", order_id);
 
-    const manager_db = new OrderManagerDB();
-    let order: OrderDO | null = await manager_db.get_order(order_id);
+    let order: OrderDO | null = await orderManagerDB.get_order(order_id);
 
     if (!order) {
       console.error(`[ORDER SERVICE] No order found with ID: ${order_id}`);
@@ -204,12 +192,12 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
 
       if (retries < MAX_RETRIES) {
         setTimeout(() => {
-          handle_order_status(instance, order_id, retries + 1);
+          handle_order_status(order_id, retries + 1);
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        instance.sendCanceltoBikeMessageBroker(order_id);
-        instance.sendCanceltoHotelMessageBroker(order_id);
+        rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
+        rabbitmqClient.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
       }
       return;
     }  
@@ -217,7 +205,7 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
     if (order.bike_status == "CANCELLED" && order.hotel_status == "CANCELLED" && order.payment_status !== "CANCELLED") {
       console.log(`[ORDER SERVICE] Both services cancelled the request, cancelling order...`);
 
-      await manager_db.update_payment_status(order_id, "CANCELLED");
+      await orderManagerDB.update_payment_status(order_id, "CANCELLED");
 
        console.log("[ORDER SERVICE] sending CANCELLED REQUEST to UI...");
       //TODO send responose to UI
@@ -238,7 +226,7 @@ export async function handle_order_status(instance: RabbitClient, order_id: stri
         updated_at: order.updated_at
       };
 
-      instance.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      rabbitmqClient.sendToPaymentMessageBroker(JSON.stringify(payment_order));
       console.log("[ORDER SERVICE] Sent order to payment service");
     }
 

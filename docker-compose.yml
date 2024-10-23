@@ -36,7 +36,7 @@ services:
       - ./src/backend/bike-rental:/app
       - ./src/backend/bike-rental/package.json:/app/package.json
     env_file:
-      - .env
+      - .env.temp
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_BIKE}
@@ -67,7 +67,7 @@ services:
       - ./src/backend/hotel-booking:/app
       - ./src/backend/hotel-booking/package.json:/app/package.json
     env_file:
-      - .env
+      - .env.temp
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_HOTEL}
@@ -94,7 +94,7 @@ services:
       - ./src/backend/payment-confirmation:/app
       - ./src/backend/payment-confirmation/package.json:/app/package.json
     env_file:
-      - .env
+      - .env.temp
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
@@ -153,6 +153,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_auth:${POSTGRES_PORT}/${POSTGRES_DB_AUTH}?schema=public
+      BYCRYPT_SALT: ${BYCRYPT_HASH_SEED}
+      TOKEN_SECRET: ${TOKEN_SECRET}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+    env_file:
+      - .env.temp
     networks:
       - app_network
     ports:
@@ -267,7 +275,7 @@ services:
 #------------------------- -  - --  -  --
   #--------------------------RabbitMQ
   rabbitmq:
-    container_name: rabbitMQ
+    container_name: rabbitmq
     image: rabbitmq:3-management
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", ""]
@@ -275,7 +283,7 @@ services:
       timeout: 3s
       retries: 5
     env_file:
-      - .env
+      - .env.temp
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}

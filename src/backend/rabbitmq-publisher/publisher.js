@@ -2,6 +2,8 @@ import amqp from 'amqplib';
 
 const QUEUE = 'booking_request';
 
+
+let counter = 0;
 async function publishMessage() {
     try {
         // Connect to RabbitMQ using the connection string
