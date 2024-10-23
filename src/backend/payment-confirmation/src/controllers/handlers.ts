@@ -6,8 +6,7 @@ export async function handle_req_from_order_management(msg: string) {
     let response_info = { id: "", status: "" };
     let data;
     try {
-        const parsedMsg = JSON.parse(msg);
-        data = payment_schema.parse(JSON.parse(parsedMsg.description));
+        data = payment_schema.parse(JSON.parse(msg));
     } catch (error) {
         console.error(`[PAYMENT SERVICE] Error while parsing message:`, error);
         rabbitmqClient.sendToOrderMessageBroker(JSON.stringify({ id: "", status: "DENIED" }));

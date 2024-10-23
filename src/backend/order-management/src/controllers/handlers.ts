@@ -128,7 +128,7 @@ export async function handle_res_from_hotel( msg: string) {
   if (order.hotel_status === "DENIED") {
     console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
     await orderManagerDB.update_hotel_status(order.id, "CANCELLED");
-    rabbitmqClient.sendCanceltoBikeMessageBroker(order.id);
+    rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
     return;
   }
 
@@ -196,8 +196,8 @@ export async function handle_order_status(order_id: string, retries = 0) {
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        rabbitmqClient.sendCanceltoBikeMessageBroker(order_id);
-        rabbitmqClient.sendCanceltoHotelMessageBroker(order_id);
+        rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
+        rabbitmqClient.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
       }
       return;
     }  

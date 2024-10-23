@@ -9,9 +9,7 @@ export async function handle_req_from_order_management(msg: string) {
   let order_info: HotelDTO;
 
   try {
-    const data = JSON.parse(msg);
-    const description = JSON.parse(data.description);
-    order_info = hotel_info_schema.parse(description);
+    order_info = hotel_info_schema.parse(JSON.parse(msg));
   } catch (error) {
     console.error(`[HOTEL SERVICE] Error while parsing message:`, error);
     await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({ id: "", status: "DENIED" }));
