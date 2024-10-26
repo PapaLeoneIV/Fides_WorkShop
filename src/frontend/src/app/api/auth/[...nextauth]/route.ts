@@ -6,6 +6,8 @@ import GoogleProvider from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
+const baseUrl = "http://localhost:6969" 
+
 const authOptions: AuthOptions = {
     providers: [
         GitHubProvider({
@@ -18,6 +20,14 @@ const authOptions: AuthOptions = {
         }),
     ],
     adapter: PrismaAdapter(prisma),
+    callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+            return true
+        },
+        async redirect({ url, baseUrl }) {
+            return baseUrl
+        },
+    }
 };
 
 // NextAuth handler

@@ -165,7 +165,7 @@ services:
     command: >
       sh -c "npm install \
       ; npx prisma generate \
-      ; npm run dev"
+      ; npm run dev -- -p 6969"
     volumes:
       - ./src/frontend:/app
       - ./src/frontend/package.json:/app/package.json
@@ -180,10 +180,11 @@ services:
       GOOGLE_CLIENT_SECRET: $GOOGLE_CLIENT_SECRET
       GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
       GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
+      NEXTAUTH_URL: $NEXTAUTH_URL
     networks:
       - app_network
     ports:
-      - "6969:3000"
+      - "6969:6969"
     # expose:
     #   - "3000"
 #--------------------------------- -  -
