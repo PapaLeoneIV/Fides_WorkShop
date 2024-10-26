@@ -46,19 +46,52 @@ class RabbitClient {
     }
   }
 
-  async sendToQueue(queue: string, message: any): Promise<boolean> {
+  async setupEventExchange(exchange: string, exchangeType: string) {
+
+    try {
+      // Declare a fanout exchange
+      await this.channel.assertExchange(exchange, exchangeType, {
+        durable: true,
+      });
+      console.log(`[ORDER SERVICE] Event Exchange '${exchange}' declared`);
+    } catch (error) {
+      console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
+    }
+  }
+
+  async publishEvent(exchange: string, eventType: string, message: any): Promise<boolean> {
+
     try {
       if (!this.channel) {
         await this.connect();
       }
 
-      return this.channel.sendToQueue(queue, Buffer.from(message));
+      message.eventType = eventType;
+
+      return this.channel.publish(
+        exchange,
+        '', // No routing key needed for fanout
+        Buffer.from(JSON.stringify(message))
+      );
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      console.error("[ORDER SERVICE] Error publishing event:", error);
       throw error;
     }
-
   }
+
+  // async sendToQueue(queue: string, message: any): Promise<boolean> {
+  //   try {
+  //     if (!this.channel) {
+  //       await this.connect();
+  //     }
+
+  //     return this.channel.sendToQueue(queue, Buffer.from(message));
+  //   } catch (error) {
+  //     console.error("[ORDER SERVICE]", error);
+  //     throw error;
+  //   }
+
+  // }
 
   async consume(queue: string, handlerFunc: HandlerCB) {
     await this.channel.assertQueue(queue, {
@@ -81,7 +114,7 @@ class RabbitClient {
       }
     );
   }
-//---------------------------CONSUME--------------------------
+  //---------------------------CONSUME--------------------------
   consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
     this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(msg));
@@ -102,30 +135,33 @@ class RabbitClient {
     this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(msg));
   };
 
-//---------------------------SEND------------------------------
+  //---------------------------SEND------------------------------
+
+  //OrderExchange
   sendToBikeMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Bike Service: ${body}`);
-    this.sendToQueue(RESP_BIKE_QUEUE, body);
+    this.publishEvent("OrderEventExchange", "ProcessBikeOrder", body);
   };
-
+  //OrderExchange
   sendToHotelMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
-      this.sendToQueue(RESP_HOTEL_QUEUE, body);
+    this.publishEvent("OrderEventExchange", "ProcessHotelOrder", body);
   };
-
+  //OrderExchange
   sendToPaymentMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
-    this.sendToQueue(RESP_PAYMENT_QUEUE, body);
+    this.publishEvent("OrderEventExchange", "ProcessPayment", body);
   };
 
-//---------------------------SAGA(REVERSE ORDER)---------------
-
-  sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
-   this.sendToQueue(SAGA_RESP_BIKE_QUEUE, body);
-  }
-
+  //---------------------------SAGA(REVERSE ORDER)---------------
+  //SAGAExchange
+    sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
+      this.publishEvent("SagaExchange", "CancelBikeOrder", body);
+    }
+  
+  //SAGAExchange
   sendCanceltoHotelMessageBroker = async (body: string): Promise<void> => {
-    this.sendToQueue(SAGA_RESP_HOTEL_QUEUE, body);
+    this.publishEvent("SagaExchange", "CancelHotelOrder", body);
   }
 
 }
