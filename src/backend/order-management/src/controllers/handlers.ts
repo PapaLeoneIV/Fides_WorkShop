@@ -1,7 +1,7 @@
 import { order as OrderDO } from "@prisma/client";
 import { OrderDTO } from "../models/order_manager";
 import { z } from 'zod';
-import { rabbitmqClient } from "../models/index";
+import { rabbitPub, rabbitSub } from "../models/index";
 import {orderManagerDB} from "../models/index";
 
 const order_info_schema = z.object({
@@ -81,8 +81,8 @@ export async function handle_req_from_frontend(msg: string) {
     updated_at: order.updated_at
   };
 
-  rabbitmqClient.sendToBikeMessageBroker(JSON.stringify(bike_order));
-  rabbitmqClient.sendToHotelMessageBroker(JSON.stringify(hotel_order));
+  rabbitPub.sendToBikeMessageBroker(JSON.stringify(bike_order));
+  rabbitPub.sendToHotelMessageBroker(JSON.stringify(hotel_order));
 
 }
 
@@ -104,7 +104,7 @@ export async function handle_res_from_bike( msg: string) {
   if (order.bike_status === "DENIED") {
     console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
     await orderManagerDB.update_bike_status(order.id, "CANCELLED");
-    rabbitmqClient.sendCanceltoHotelMessageBroker(order.id);
+    rabbitPub.sendCanceltoHotelMessageBroker(order.id);
     return;
   }
 
@@ -128,7 +128,7 @@ export async function handle_res_from_hotel( msg: string) {
   if (order.hotel_status === "DENIED") {
     console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
     await orderManagerDB.update_hotel_status(order.id, "CANCELLED");
-    rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
+    rabbitPub.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
     return;
   }
 
@@ -154,8 +154,8 @@ export async function handle_res_from_payment( msg: string) {
   order = await orderManagerDB.update_payment_status(data.id, data.status);
   if (order.payment_status !== 'APPROVED') {
     console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    rabbitmqClient.sendCanceltoBikeMessageBroker(data.id);
-    rabbitmqClient.sendCanceltoHotelMessageBroker(data.id);
+    rabbitPub.sendCanceltoBikeMessageBroker(data.id);
+    rabbitPub.sendCanceltoHotelMessageBroker(data.id);
     return;
   }
 
@@ -196,8 +196,8 @@ export async function handle_order_status(order_id: string, retries = 0) {
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
-        rabbitmqClient.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
+        rabbitPub.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
+        rabbitPub.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
       }
       return;
     }  
@@ -226,7 +226,7 @@ export async function handle_order_status(order_id: string, retries = 0) {
         updated_at: order.updated_at
       };
 
-      rabbitmqClient.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      rabbitPub.sendToPaymentMessageBroker(JSON.stringify(payment_order));
       console.log("[ORDER SERVICE] Sent order to payment service");
     }
 
