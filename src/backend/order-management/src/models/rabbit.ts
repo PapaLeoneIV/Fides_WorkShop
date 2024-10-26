@@ -45,8 +45,7 @@ class RabbitClient {
       console.error(`[ORDER SERVICE]Not connected to MQ Server`);
     }
   }
-
-  async setupEventExchange(exchange: string, exchangeType: string) {
+  async setupExchange(exchange: string, exchangeType: string) {
 
     try {
       // Declare a fanout exchange
@@ -58,45 +57,49 @@ class RabbitClient {
       console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
     }
   }
-
-  async publishEvent(exchange: string, eventType: string, message: any): Promise<boolean> {
+  async publishEvent(exchange: string, routingKey: string,  message: any): Promise<boolean> {
 
     try {
       if (!this.channel) {
         await this.connect();
       }
 
-      message.eventType = eventType;
-
       return this.channel.publish(
         exchange,
-        '', // No routing key needed for fanout
-        Buffer.from(JSON.stringify(message))
+        routingKey, // No routing key needed for fanout
+        Buffer.from(JSON.stringify(message)),
+        {
+          //TODO se necessario continuare a customizzare il channel
+          appId: "OrderService",
+        }
       );
     } catch (error) {
       console.error("[ORDER SERVICE] Error publishing event:", error);
       throw error;
     }
   }
+  async sendToQueue(queue: string, message: any): Promise<boolean> {
+    try {
+      if (!this.channel) {
+        await this.connect();
+      }
 
-  // async sendToQueue(queue: string, message: any): Promise<boolean> {
-  //   try {
-  //     if (!this.channel) {
-  //       await this.connect();
-  //     }
+      return this.channel.sendToQueue(queue, Buffer.from(message));
+    } catch (error) {
+      console.error("[ORDER SERVICE]", error);
+      throw error;
+    }
 
-  //     return this.channel.sendToQueue(queue, Buffer.from(message));
-  //   } catch (error) {
-  //     console.error("[ORDER SERVICE]", error);
-  //     throw error;
-  //   }
+  }
 
-  // }
-
-  async consume(queue: string, handlerFunc: HandlerCB) {
+  async createQueue(queue: string) {
     await this.channel.assertQueue(queue, {
       durable: true,
     });
+  }
+  async consume(queue: string,exchange: string, bindingKey: string,   handlerFunc: HandlerCB) {
+
+    this.channel.bindQueue(queue, exchange, bindingKey);
 
     this.channel.consume(
       queue,
@@ -114,56 +117,97 @@ class RabbitClient {
       }
     );
   }
-  //---------------------------CONSUME--------------------------
-  consumeBookingOrder = async () => {
-    console.log("[ORDER SERVICE] Listening for booking orders...");
-    this.consume(REQ_BOOKING_QUEUE, (msg) => handle_req_from_frontend(msg));
-  };
+ 
 
-  consumeBikeResponse = async () => {
-    console.log("[ORDER SERVICE] Listening for bike responses...");
-    this.consume(REQ_BIKE_QUEUE, (msg) => handle_res_from_bike(msg));
-  };
+}
 
-  consumeHotelResponse = async () => {
-    console.log("[ORDER SERVICE] Listening for hotel responses...");
-    this.consume(REQ_HOTEL_QUEUE, (msg) => handle_res_from_hotel(msg));
-  };
-
-  consumePaymentResponse = async () => {
-    console.log("[ORDER SERVICE] Listening for payment responses...");
-    this.consume(REQ_PAYMENT_QUEUE, (msg) => handle_res_from_payment(msg));
-  };
-
-  //---------------------------SEND------------------------------
+class RabbitPublisher extends RabbitClient {
+  constructor() {
+    super();
+  }
 
   //OrderExchange
   sendToBikeMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Bike Service: ${body}`);
-    this.publishEvent("OrderEventExchange", "ProcessBikeOrder", body);
+    const bindingKey = "RKbike_request";
+    this.publishEvent("OrderEventExchange", bindingKey, body);
   };
   //OrderExchange
   sendToHotelMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
-    this.publishEvent("OrderEventExchange", "ProcessHotelOrder", body);
+    const bindingKey = "RKhotel_request";
+    this.publishEvent("OrderEventExchange", bindingKey, body);
   };
   //OrderExchange
   sendToPaymentMessageBroker = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
-    this.publishEvent("OrderEventExchange", "ProcessPayment", body);
+    const bindingKey = "RKpayment_request";
+    this.publishEvent("OrderEventExchange", bindingKey , body);
   };
 
   //---------------------------SAGA(REVERSE ORDER)---------------
   //SAGAExchange
     sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
-      this.publishEvent("SagaExchange", "CancelBikeOrder", body);
+      const bindingKey = "RKbike_SAGA_request";
+      this.publishEvent("OrderEventExchange", bindingKey , body);
     }
   
   //SAGAExchange
   sendCanceltoHotelMessageBroker = async (body: string): Promise<void> => {
-    this.publishEvent("SagaExchange", "CancelHotelOrder", body);
+    const bindingKey = "RKhotel_SAGA_request";
+    this.publishEvent("OrderEventExchange", bindingKey, body);
   }
+}
+
+class RabbitSubscriber extends RabbitClient {
+  constructor() {
+    super();
+  }
+
+   //---------------------------CONSUME--------------------------
+   consumeBookingOrder = async () => {
+    console.log("[ORDER SERVICE] Listening for booking orders...");
+    const bindingKey = "booking_order_listener";
+    this.consume(REQ_BOOKING_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => handle_req_from_frontend(msg));
+  };
+
+  consumeBikeResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for bike responses...");
+    const bindingKey = "bike_main_listener";
+    this.consume(REQ_BIKE_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => handle_res_from_bike(msg));
+  };
+
+  consumeHotelResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for hotel responses...");
+    const bindingKey = "hotel_main_listener";
+    this.consume(REQ_HOTEL_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => handle_res_from_hotel(msg));
+  };
+
+
+  consumePaymentResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for payment responses...");
+    const bindingKey = "payment_main_listener";
+    this.consume(REQ_PAYMENT_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => handle_res_from_payment(msg));
+  };
+  //---------------------------SAGA(REVERSE ORDER)---------------
+
+  consumeHotelSagaResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for hotel saga responses...");
+    const bindingKey = "hotel_saga_listener";
+    this.consume(SAGA_RESP_HOTEL_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => console.log(msg));
+  };
+
+  consumeBikeSagaResponse = async () => {
+    console.log("[ORDER SERVICE] Listening for bike saga responses...");
+    const bindingKey = "bike_saga_listener";
+    this.consume(SAGA_RESP_BIKE_QUEUE,"OrderEventExchange" , bindingKey ,(msg) => console.log(msg));
+  }
+
 
 }
 
-export default RabbitClient;
+export  {
+  RabbitClient, 
+  RabbitPublisher,
+  RabbitSubscriber
+};
