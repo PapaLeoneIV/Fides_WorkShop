@@ -76,9 +76,7 @@ start_rabbitmq:
 
 
 start-db:
-	docker compose up -d db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
-	sleep 5
-	docker compose up -d rabbitmq
+	docker compose up -d db_bike_rental db_hotel_booking db_payment_confirmation db_order_management rabbitmq
 
 start-services:
 	docker compose up bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
