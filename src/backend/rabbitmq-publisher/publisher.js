@@ -1,6 +1,7 @@
 import amqp from 'amqplib';
 
-const QUEUE = 'booking_request';
+const QUEUE = 'order_service_booking_request';
+const EXCHANGE = 'OrderEventExchange';
 
 
 let counter = 0;
@@ -11,13 +12,20 @@ async function publishMessage() {
         const channel = await connection.createChannel();
 
         // Ensure the queue exists
+        try {
+            await channel.checkExchange(EXCHANGE, 'direct', { durable: true });
+            
+        } catch (error) {
+            console.error('Error checking exchange:', error);
+            
+        }
         await channel.assertQueue(QUEUE, { durable: true });
 
         // Create a message to send
         const message = {
             from: new Date(2025, 11, 11),
             to: new Date(2025, 11, 11),
-            room: "104",
+            room: "101",
             road_bike_requested: 1,
             dirt_bike_requested: 2,
             bike_status: "PENDING",
