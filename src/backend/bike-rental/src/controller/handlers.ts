@@ -8,7 +8,7 @@ export async function handle_req_from_order_management(msg: string) {
 
   try {
     console.log("[BIKE SERVICE] Parsing message ", JSON.parse(msg));
-    order_info = bike_info_schema.parse(msg);
+    order_info = bike_info_schema.parse((JSON.parse(msg)));
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
     await rabbitPub.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
