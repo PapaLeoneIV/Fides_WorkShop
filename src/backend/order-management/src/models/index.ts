@@ -1,11 +1,12 @@
 import {RabbitPublisher, RabbitSubscriber} from "./rabbit";
 import OrderManagerDB from "./order_manager";
 
-
-const REQ_BIKE_QUEUE = "bike_request"
-const REQ_HOTEL_QUEUE = "hotel_request"
-const REQ_PAYMENT_QUEUE = "payment_request"
-const REQ_BOOKING_QUEUE = "booking_request"
+const ORDER_SERVICE_BIKE_RESP_QUEUE = "order_service_bike_response"
+const ORDER_SERVICE_HOTEL_RESP_QUEUE = "order_service_hotel_response"
+const ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE = "order_service_SAGA_hotel_request"
+const ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE = "order_service_SAGA_bike_request"
+const ORDER_SERVICE_RESP_PAYMENT_QUEUE = "order_service_payment_request"
+const ORDER_SERVICE_REQ_BOOKING_QUEUE = "order_service_booking_request"
 
 const rabbitPub = new RabbitPublisher();
 const rabbitSub = new RabbitSubscriber();
@@ -22,10 +23,13 @@ export async function bootstrapRabbitConfig() {
     await rabbitPub.setupExchange("OrderEventExchange", "direct");
 
     console.log("[ORDER SERVICE]Setting up queues");
-    await rabbitSub.createQueue(REQ_BOOKING_QUEUE);
-    await rabbitSub.createQueue(REQ_BIKE_QUEUE);
-    await rabbitSub.createQueue(REQ_HOTEL_QUEUE);
-    await rabbitSub.createQueue(REQ_PAYMENT_QUEUE);
+    
+    await rabbitSub.createQueue(ORDER_SERVICE_BIKE_RESP_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_HOTEL_RESP_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_RESP_PAYMENT_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_REQ_BOOKING_QUEUE);
 }
 
 

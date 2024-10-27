@@ -7,18 +7,13 @@ const rmqUser = process.env.RABBITMQ_USER || "rileone"
 const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
 const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
 
-const REQ_BIKE_QUEUE = "bike_request"
-const REQ_HOTEL_QUEUE = "hotel_request"
-const REQ_PAYMENT_QUEUE = "payment_request"
-const REQ_BOOKING_QUEUE = "booking_request"
+const ORDER_SERVICE_BIKE_RESP_QUEUE = "order_service_bike_response"
+const ORDER_SERVICE_HOTEL_RESP_QUEUE = "order_service_hotel_response"
+const ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE = "order_service_SAGA_hotel_request"
+const ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE = "order_service_SAGA_bike_request"
+const ORDER_SERVICE_RESP_PAYMENT_QUEUE = "order_service_payment_request"
+const ORDER_SERVICE_REQ_BOOKING_QUEUE = "order_service_booking_request"
 
-const RESP_BIKE_QUEUE = "bike_response"
-const RESP_HOTEL_QUEUE = "hotel_response"
-const RESP_PAYMENT_QUEUE = "payment_response"
-const RESP_BOOKING_QUEUE = "booking_response"
-
-const SAGA_RESP_BIKE_QUEUE = "saga_bike_response"
-const SAGA_RESP_HOTEL_QUEUE = "saga_hotel_response"
 
 class RabbitClient {
   connection!: Connection;
@@ -67,7 +62,7 @@ class RabbitClient {
       return this.channel.publish(
         exchange,
         routingKey, // No routing key needed for fanout
-        Buffer.from(JSON.stringify(message)),
+        Buffer.from(message),
         {
           //TODO se necessario continuare a customizzare il channel
           appId: "OrderService",
@@ -171,39 +166,39 @@ class RabbitSubscriber extends RabbitClient {
    consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
     const routingKey = "booking_order_listener";
-    this.consume(REQ_BOOKING_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_req_from_frontend(msg));
+    this.consume(ORDER_SERVICE_REQ_BOOKING_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_req_from_frontend(msg));
   };
 
   consumeBikeResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike responses...");
     const routingKey = "bike_main_listener";
-    this.consume(REQ_BIKE_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
+    this.consume(ORDER_SERVICE_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
   };
 
   consumeHotelResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel responses...");
     const routingKey = "hotel_main_listener";
-    this.consume(REQ_HOTEL_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
+    this.consume(ORDER_SERVICE_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
   };
 
 
   consumePaymentResponse = async () => {
     console.log("[ORDER SERVICE] Listening for payment responses...");
     const routingKey = "payment_main_listener";
-    this.consume(REQ_PAYMENT_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_payment(msg));
+    this.consume(ORDER_SERVICE_RESP_PAYMENT_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_payment(msg));
   };
   //---------------------------SAGA(REVERSE ORDER)---------------
 
   consumeHotelSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel saga responses...");
     const routingKey = "hotel_saga_listener";
-    this.consume(REQ_BIKE_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
+    this.consume(ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
   };
 
   consumeBikeSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike saga responses...");
     const routingKey = "bike_saga_listener";
-    this.consume(REQ_HOTEL_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
+    this.consume(ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
   }
 
 

@@ -3,7 +3,7 @@ import { bootstrapRabbitConfig, rabbitSub } from './models/index';
 
 async function main() {
 
-   connectToDatabase();
+   await connectToDatabase();
 
    await bootstrapRabbitConfig();
 
