@@ -2,10 +2,8 @@ import {RabbitPublisher, RabbitSubscriber} from "./rabbit";
 import BikeOrderRepository from "./order_manager";
 import BikeDBRepository from "./storage_manager";
 
+
 const BIKE_SERVICE_REQ_BIKE_QUEUE = "bike_service_bike_request"
-
-const BIKE_SERVICE_RESP_BIKE_QUEUE = "bike_service_bike_response"
-
 const BIKE_SERVICE_SAGA_REQ_BIKE_QUEUE = "bike_service_saga_bike_request"
 
 
