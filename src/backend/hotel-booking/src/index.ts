@@ -1,10 +1,11 @@
 import { connectToDatabase } from './db/db';
-import { rabbitmqClient } from './models/index';
+import { bootstrapRabbitConfig, rabbitSub } from './models/index';
 async function main() {
-    connectToDatabase();
-    await rabbitmqClient.connect()
-    rabbitmqClient.consumeHotelOrder()
-    rabbitmqClient.consumecancelHotelOrder()
+    await connectToDatabase();
+    await bootstrapRabbitConfig();   
+
+    rabbitSub.consumeHotelOrder()
+    rabbitSub.consumecancelHotelOrder()
 }
 
 main();
