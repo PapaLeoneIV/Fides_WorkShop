@@ -277,11 +277,6 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", ""]
-      interval: 2s
-      timeout: 3s
-      retries: 5
     env_file:
       - .env.temp
     environment:

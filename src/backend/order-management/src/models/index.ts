@@ -1,10 +1,14 @@
-import RabbitClient from "./rabbit";
+import {RabbitPublisher, RabbitSubscriber} from "./rabbit";
 import OrderManagerDB from "./order_manager";
 
-const rabbitmqClient = new RabbitClient();
+
+
+const rabbitPub = new RabbitPublisher();
+const rabbitSub = new RabbitSubscriber();
 const orderManagerDB = new OrderManagerDB();
 
 export {
-    rabbitmqClient,
+    rabbitPub,
+    rabbitSub,
     orderManagerDB
 }

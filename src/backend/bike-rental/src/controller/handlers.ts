@@ -1,4 +1,4 @@
-import {rabbitmqClient, orderManager, bikeDBManager} from "../models/index";
+import {rabbitPub ,orderManager, bikeDBManager} from "../models/index";
 import { OrderDTO as BikeDTO } from "../models/order_manager";
 import { order as BikeDO } from "@prisma/client";
 import { bike_info_schema } from "../zodschema";
@@ -7,16 +7,17 @@ export async function handle_req_from_order_management(msg: string) {
   let order_info: BikeDTO;
 
   try {
+    console.log("[BIKE SERVICE] Parsing message ", JSON.parse(msg));
     order_info = bike_info_schema.parse(JSON.parse(msg));
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
+    await rabbitPub.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
     return;
   }
 
   if (await orderManager.check_existance(order_info.order_id)) {
     console.log("[BIKE SERVICE] Order already exists");
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id , status: "DENIED"}));
+    await rabbitPub.sendToOrderManagementMessageBroker(JSON.stringify({id: order_info.order_id , status: "DENIED"}));
     return;
   }
   console.log("[BIKE SERVICE] Order does not exist, creating order");
@@ -32,14 +33,14 @@ export async function handle_req_from_order_management(msg: string) {
     order = await orderManager.update_status(order, "APPROVED");
 
 
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
+    rabbitPub.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
     return;
   }
   console.log("[BIKE SERVICE] Order  with id : ", order.order_id, "DENIED, there were not enough bikes");
   order = await orderManager.update_status(order, "DENIED");
 
   //invece di mandarlo direttamente al message broker devo salvarlo dentro il database e avere un altro processo che gestisce l invio
-  rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
+  rabbitPub.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id , status: order.renting_status}));
   return;
 }
 
@@ -49,7 +50,7 @@ export async function handle_cancel_request(msg: string) {
     order_id = JSON.parse(msg);
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    await rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: "", status: "DENIED"}));
+    await rabbitPub.sendToOrderManagementMessageBrokerSAGA(JSON.stringify({id: "", status: "DENIED"}));
     return;
   }
 
@@ -59,15 +60,15 @@ export async function handle_cancel_request(msg: string) {
       bikeDBManager.increment_bike_count(order.road_bike_requested, order.dirt_bike_requested);
       order = await orderManager.update_status(order, "CANCELLED");
 
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order.order_id, status: order.renting_status}));
+      rabbitPub.sendToOrderManagementMessageBrokerSAGA(JSON.stringify({id: order.order_id, status: order.renting_status}));
     }
     else {
       console.log("[BIKE SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
-      rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}))
+      rabbitPub.sendToOrderManagementMessageBrokerSAGA(JSON.stringify({id: order_id, status: "DENIED"}))
     }
   } else {
     console.log("[BIKE SERVICE] Order with id: ", order_id, "does not exist");
-    rabbitmqClient.sendToOrderManagementMessageBroker(JSON.stringify({id: order_id, status: "DENIED"}))
+    rabbitPub.sendToOrderManagementMessageBrokerSAGA(JSON.stringify({id: order_id, status: "DENIED"}))
   }
 }
 

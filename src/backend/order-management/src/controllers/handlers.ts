@@ -1,42 +1,7 @@
 import { order as OrderDO } from "@prisma/client";
 import { OrderDTO } from "../models/order_manager";
-import { z } from 'zod';
-import { rabbitmqClient } from "../models/index";
-import {orderManagerDB} from "../models/index";
-
-const order_info_schema = z.object({
-  from: z.string(),
-  to: z.string(),
-  room: z.string().refine((val) => {
-    if (parseInt(val) === null) {
-      console.log("[ORDER SERVICE]Room number is required");
-    }
-    const roomNumber = val !== null ? parseInt(val) : -1;
-    if (roomNumber === -1) {
-      console.log("[ORDER SERVICE]Room number is required", roomNumber);
-      return false;
-    }
-    return roomNumber >= 101 && roomNumber <= 105;
-  }, { message: "[ORDER SERVICE] Room number must be between 101 and 105" }),
-
-  road_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
-  dirt_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
-
-  amount: z.string(),
-
-  bike_status: z.string().refine((val) => {return val === "PENDING"},{message: "Bike status must be PENDING"}),
-  hotel_status: z.string().refine((val) => {return val === "PENDING"},{message: "Hotel status must be PENDING"}),
-  payment_status: z.string().refine((val) => {return val === "PENDING"},{message: "Payment status must be PENDING"}),
-
-  created_at: z.date(),
-  updated_at: z.date()
-});
-
-
-const response_schema = z.object({
-  id: z.string(),
-  status: z.string()
-});
+import { rabbitPub, orderManagerDB} from "../models/index";
+import { response_schema, order_info_schema } from "../zodschema/index";
 
 
 function parse_data_from_response(msg: string) {
@@ -53,9 +18,7 @@ export async function handle_req_from_frontend(msg: string) {
     data = order_info_schema.parse(parsedMsg);
     console.log("DBG data", data);
   } catch (err) {
-    if (err instanceof z.ZodError) {
-      console.log(err.issues);
-    }
+    console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
   }
 
@@ -81,11 +44,10 @@ export async function handle_req_from_frontend(msg: string) {
     updated_at: order.updated_at
   };
 
-  rabbitmqClient.sendToBikeMessageBroker(JSON.stringify(bike_order));
-  rabbitmqClient.sendToHotelMessageBroker(JSON.stringify(hotel_order));
+  rabbitPub.sendToBikeMessageBroker(JSON.stringify(bike_order));
+  rabbitPub.sendToHotelMessageBroker(JSON.stringify(hotel_order));
 
 }
-
 
 export async function handle_res_from_bike( msg: string) {
   let data: { id: string, status: string };
@@ -104,7 +66,7 @@ export async function handle_res_from_bike( msg: string) {
   if (order.bike_status === "DENIED") {
     console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
     await orderManagerDB.update_bike_status(order.id, "CANCELLED");
-    rabbitmqClient.sendCanceltoHotelMessageBroker(order.id);
+    rabbitPub.sendCanceltoHotelMessageBroker(order.id);
     return;
   }
 
@@ -128,14 +90,13 @@ export async function handle_res_from_hotel( msg: string) {
   if (order.hotel_status === "DENIED") {
     console.log(`[ORDER SERVICE] Hotel service denied the request, cancelling bike...`);
     await orderManagerDB.update_hotel_status(order.id, "CANCELLED");
-    rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
+    rabbitPub.sendCanceltoBikeMessageBroker(JSON.stringify(order.id));
     return;
   }
 
   handle_order_status(order.id);
 
 }
-
 
 export async function handle_res_from_payment( msg: string) {
 
@@ -154,8 +115,8 @@ export async function handle_res_from_payment( msg: string) {
   order = await orderManagerDB.update_payment_status(data.id, data.status);
   if (order.payment_status !== 'APPROVED') {
     console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    rabbitmqClient.sendCanceltoBikeMessageBroker(data.id);
-    rabbitmqClient.sendCanceltoHotelMessageBroker(data.id);
+    rabbitPub.sendCanceltoBikeMessageBroker(data.id);
+    rabbitPub.sendCanceltoHotelMessageBroker(data.id);
     return;
   }
 
@@ -171,6 +132,7 @@ export async function handle_res_from_payment( msg: string) {
 
 
 }
+
 export async function handle_order_status(order_id: string, retries = 0) {
   const MAX_RETRIES = 5; 
   const TIMEOUT = 10000; 
@@ -196,8 +158,8 @@ export async function handle_order_status(order_id: string, retries = 0) {
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        rabbitmqClient.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
-        rabbitmqClient.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
+        rabbitPub.sendCanceltoBikeMessageBroker(JSON.stringify(order_id));
+        rabbitPub.sendCanceltoHotelMessageBroker(JSON.stringify(order_id));
       }
       return;
     }  
@@ -226,7 +188,7 @@ export async function handle_order_status(order_id: string, retries = 0) {
         updated_at: order.updated_at
       };
 
-      rabbitmqClient.sendToPaymentMessageBroker(JSON.stringify(payment_order));
+      rabbitPub.sendToPaymentMessageBroker(JSON.stringify(payment_order));
       console.log("[ORDER SERVICE] Sent order to payment service");
     }
 

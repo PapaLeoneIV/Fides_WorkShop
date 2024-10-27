@@ -1,11 +1,12 @@
-import { connectToDatabase } from './db/db';
-import { rabbitmqClient } from './models';
+import bootService from "./boot";
+import {rabbitSub} from "./models/index";
 
 async function main() {
-    connectToDatabase();
-    await rabbitmqClient.connect();
-    rabbitmqClient.consumeBikeOrder();
-    rabbitmqClient.consumecancelBikeOrder();
+
+    await bootService();
+    
+    rabbitSub.consumeBikeOrder();
+    rabbitSub.consumecancelBikeOrder();
 }
 
 main();

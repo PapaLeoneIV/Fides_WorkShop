@@ -1,17 +1,18 @@
-import { connectToDatabase } from './db/db';
-import { rabbitmqClient } from './models/index';
-const port = 3003;
-
+import bootService from "./boot";
+import {rabbitSub} from "./models/index";
 async function main() {
 
-   connectToDatabase();
-   await rabbitmqClient.connect();
+   await bootService();
 
-   rabbitmqClient.consumeBookingOrder();
-   rabbitmqClient.consumeBikeResponse();
-   rabbitmqClient.consumeHotelResponse();
-   rabbitmqClient.consumePaymentResponse();
+   //CONSUME
+   rabbitSub.consumeBookingOrder();
+   rabbitSub.consumeBikeResponse();
+   rabbitSub.consumeHotelResponse();
+   rabbitSub.consumePaymentResponse();
 
+   //CONSUME SAGA
+   rabbitSub.consumeHotelSagaResponse();
+   rabbitSub.consumeBikeSagaResponse();
 }
 
 main();

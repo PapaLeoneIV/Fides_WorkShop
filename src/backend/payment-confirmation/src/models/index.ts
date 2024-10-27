@@ -1,7 +1,11 @@
-import RabbitClient from "./rabbit";
+import {RabbitPublisher, RabbitSubscriber} from "./rabbit";
 
-const rabbitmqClient = new RabbitClient();
+
+const rabbitPub = new RabbitPublisher();
+const rabbitSub = new RabbitSubscriber();
+
 
 export {
-    rabbitmqClient
+    rabbitPub,
+    rabbitSub
 }
