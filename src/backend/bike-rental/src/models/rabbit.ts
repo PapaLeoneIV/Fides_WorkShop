@@ -21,19 +21,19 @@ class RabbitClient {
     else this.connected = true;
 
     try {
-      console.log(`[ORDER SERVICE] Connecting to Rabbit-MQ Server`);
+      console.log(`[BIKE SERVICE] Connecting to Rabbit-MQ Server`);
       this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
-      console.log(`[ORDER SERVICE] Rabbit MQ Connection is ready`);
+      console.log(`[BIKE SERVICE] Rabbit MQ Connection is ready`);
 
       this.channel = await this.connection.createChannel();
 
-      console.log(`[ORDER SERVICE] Created RabbitMQ Channel successfully`);
+      console.log(`[BIKE SERVICE] Created RabbitMQ Channel successfully`);
     } catch (error) {
       console.error(error);
-      console.error(`[ORDER SERVICE]Not connected to MQ Server`);
+      console.error(`[BIKE SERVICE]Not connected to MQ Server`);
     }
   }
   async setupExchange(exchange: string, exchangeType: string) {
@@ -43,9 +43,9 @@ class RabbitClient {
       await this.channel.assertExchange(exchange, exchangeType, {
         durable: true,
       });
-      console.log(`[ORDER SERVICE] Event Exchange '${exchange}' declared`);
+      console.log(`[BIKE SERVICE] Event Exchange '${exchange}' declared`);
     } catch (error) {
-      console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
+      console.error(`[BIKE SERVICE] Error setting up event exchange:`, error);
     }
   }
   async publishEvent(exchange: string, routingKey: string, message: any): Promise<boolean> {
@@ -61,11 +61,11 @@ class RabbitClient {
         Buffer.from(message),
         {
           //TODO se necessario continuare a customizzare il channel
-          appId: "OrderService",
+          appId: "BikerService",
         }
       );
     } catch (error) {
-      console.error("[ORDER SERVICE] Error publishing event:", error);
+      console.error("[BIKE SERVICE] Error publishing event:", error);
       throw error;
     }
   }
@@ -77,7 +77,7 @@ class RabbitClient {
 
       return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      console.error("[BIKE SERVICE]", error);
       throw error;
     }
 
@@ -123,12 +123,12 @@ class RabbitPublisher extends RabbitClient {
   //OrderExchange
 
   sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
-    console.log(`[ORDER SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
   sendToOrderManagementMessageBrokerSAGA = async (body: string): Promise<void> => {
-    console.log(`[ORDER SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
