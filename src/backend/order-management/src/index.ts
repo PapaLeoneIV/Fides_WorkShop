@@ -1,11 +1,11 @@
 import { connectToDatabase } from './db/db';
-import { rabbitPub, rabbitSub } from './models/index';
+import { bootstrapRabbitConfig, rabbitSub } from './models/index';
 
 async function main() {
 
    connectToDatabase();
 
-   
+   await bootstrapRabbitConfig();
 
    //CONSUME
    rabbitSub.consumeBookingOrder();
