@@ -52,6 +52,7 @@ services:
       - "5555:5555" #prisma studio
     # expose:
     #   - "3000"
+    restart: always
   #--------------------------HOTEL BOOKING
   hotel-booking-service:
     container_name: hotel-booking-service
@@ -80,6 +81,8 @@ services:
     ports: 
       - "3001:3000"
       - "5556:5556" #prisma studio
+    restart: always
+
   #--------------------------PAYMENT CONFIRMATION
   payment-confirmation-service:
     container_name: payment-confirmation-service
@@ -107,6 +110,7 @@ services:
     ports:
       - "3002:3000"
       - "5557:5557" #prisma studio
+    restart: always
   #--------------------------ORDER MANAGEMENT
   order-management-service:
     container_name: order-management-service
@@ -133,6 +137,8 @@ services:
     ports:
       - "3003:3000"
       - "5558:5558" #prisma studio
+    restart: always
+  #--------------------------AUTHENTICATION
   authentication-service:
     container_name: authentication-service
     build: ./src/backend/auth
@@ -166,12 +172,11 @@ services:
     ports:
       - "3004:3000"
       - "5559:5559" #prisma studio
+    restart: always
 #--------------------------------- -  -
 #----------------------------DATABASES
 #------------------------- -  - --  -  --
   #--------------------------bike rental
-
-
   db_bike_rental:
     image: postgres:13
     healthcheck:
@@ -194,6 +199,7 @@ services:
       - "5433:5432"
     # expose:
     #   - "5432"
+    restart: always
   #--------------------------hotel booking
   db_hotel_booking:
     image: postgres:13
@@ -213,6 +219,7 @@ services:
       - app_network
     ports:
       - "5434:5432"
+    restart: always
   #--------------------------payment confirmation
   db_payment_confirmation:
     image: postgres:13
@@ -232,6 +239,7 @@ services:
       - app_network
     ports:
       - "5435:5432"
+    restart: always
   #--------------------------order management
   db_order_management:
     image: postgres:13
@@ -251,6 +259,8 @@ services:
       - app_network
     ports:
       - "5436:5432"
+    restart: always
+  #--------------------------authentication
   db_auth:
     image: postgres:13
     healthcheck:
@@ -269,7 +279,7 @@ services:
       - app_network
     ports:
       - "5437:5432"
-
+    restart: always
 #--------------------------------- -  -
 #--------------------------MESSAGE BROKER
 #------------------------- -  - --  -  --
@@ -287,6 +297,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    restart: always
   #LOGGING AND MONITORING
 
   #grafana:
