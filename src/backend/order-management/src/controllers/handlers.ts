@@ -1,42 +1,7 @@
 import { order as OrderDO } from "@prisma/client";
 import { OrderDTO } from "../models/order_manager";
-import { z } from 'zod';
-import { rabbitPub, rabbitSub } from "../models/index";
-import {orderManagerDB} from "../models/index";
-
-const order_info_schema = z.object({
-  from: z.string(),
-  to: z.string(),
-  room: z.string().refine((val) => {
-    if (parseInt(val) === null) {
-      console.log("[ORDER SERVICE]Room number is required");
-    }
-    const roomNumber = val !== null ? parseInt(val) : -1;
-    if (roomNumber === -1) {
-      console.log("[ORDER SERVICE]Room number is required", roomNumber);
-      return false;
-    }
-    return roomNumber >= 101 && roomNumber <= 105;
-  }, { message: "[ORDER SERVICE] Room number must be between 101 and 105" }),
-
-  road_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
-  dirt_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
-
-  amount: z.string(),
-
-  bike_status: z.string().refine((val) => {return val === "PENDING"},{message: "Bike status must be PENDING"}),
-  hotel_status: z.string().refine((val) => {return val === "PENDING"},{message: "Hotel status must be PENDING"}),
-  payment_status: z.string().refine((val) => {return val === "PENDING"},{message: "Payment status must be PENDING"}),
-
-  created_at: z.date(),
-  updated_at: z.date()
-});
-
-
-const response_schema = z.object({
-  id: z.string(),
-  status: z.string()
-});
+import { rabbitPub, orderManagerDB} from "../models/index";
+import { response_schema, order_info_schema } from "../zodschema/index";
 
 
 function parse_data_from_response(msg: string) {
@@ -53,9 +18,7 @@ export async function handle_req_from_frontend(msg: string) {
     data = order_info_schema.parse(parsedMsg);
     console.log("DBG data", data);
   } catch (err) {
-    if (err instanceof z.ZodError) {
-      console.log(err.issues);
-    }
+    console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
   }
 
@@ -85,7 +48,6 @@ export async function handle_req_from_frontend(msg: string) {
   rabbitPub.sendToHotelMessageBroker(JSON.stringify(hotel_order));
 
 }
-
 
 export async function handle_res_from_bike( msg: string) {
   let data: { id: string, status: string };
@@ -136,7 +98,6 @@ export async function handle_res_from_hotel( msg: string) {
 
 }
 
-
 export async function handle_res_from_payment( msg: string) {
 
   console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
@@ -171,6 +132,7 @@ export async function handle_res_from_payment( msg: string) {
 
 
 }
+
 export async function handle_order_status(order_id: string, retries = 0) {
   const MAX_RETRIES = 5; 
   const TIMEOUT = 10000; 

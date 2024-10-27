@@ -1,13 +1,10 @@
-import { connectToDatabase } from './db/db';
-import { bootstrapRabbitConfig, rabbitSub } from './models';
+import bootService from "./boot";
+import {rabbitSub} from "./models/index";
 
 async function main() {
-    await connectToDatabase();
-    await bootstrapRabbitConfig();
 
+    await bootService();
     
-
-
     rabbitSub.consumeBikeOrder();
     rabbitSub.consumecancelBikeOrder();
 }
