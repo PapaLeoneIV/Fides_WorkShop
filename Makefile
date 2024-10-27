@@ -1,92 +1,175 @@
-.PHONY: all build up down build-bike-rental-service up-bike-rental-service build-hotel-booking-service up-hotel-booking-service build-payment-confirmation-service up-payment-confirmation-service build-order-service up-order-service start_docker_compose start_bike-rental start_hotel-booking
+DATABASES = db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
+SERVICES = bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+ALL = $(DATABASES) $(SERVICES) rabbitmq
+DATE = $(shell date +%Y-%m-%d:%H:%M:%S)
+STATUS_LOG = .status.log
+STATUS_CNT_LOG = .status_cnt.log
+CURRENT_DIR = $(shell basename $(shell pwd))
+NETWORK = $(CURRENT_DIR)_app_network
 
-NAME=tra-gency
+# --- STATUS AND MONITORING --- #
+status:
+	@echo "===== Status Report =====" >> $(STATUS_LOG)
+	@echo "===== Date: $(DATE) =====" >> $(STATUS_LOG)
+	@echo "===== Docker Compose Version =====" >> $(STATUS_LOG)
+	@docker compose version >> $(STATUS_LOG)
+	@echo "===== Container Status =====" >> $(STATUS_LOG)
+	@docker compose ps --all >> $(STATUS_LOG)
+	@for service in $(ALL); do \
+		if [ -z $$(docker compose ps $$service --services --filter "status=running") ]; then \
+			echo "$$service is not running" >> $(STATUS_LOG); \
+		fi; \
+	done
+	@echo "===== Resource Usage =====" >> $(STATUS_LOG)
+	@docker compose stats --no-stream >> $(STATUS_LOG)
+	@echo "===== Public Ports =====" >> $(STATUS_LOG)
+	@for service in $(SERVICES); do \
+		echo "$$service: $$(docker compose port $$service 80 || echo 'Not exposed')" >> $(STATUS_LOG); \
+	done
+	@echo "===== Logs =====" >> $(STATUS_LOG)
+	@docker compose logs --tail=5 >> $(STATUS_LOG)
+	@echo "===== Running Processes =====" >> $(STATUS_LOG)
+	@docker compose top >> $(STATUS_LOG)
 
-#---FULL APPLICATION MANAGEMENT---#
-all: clean build up
+clear-status:
+	@echo "Clearing status logs..."
+	@rm -f $(STATUS_LOG)
 
-no-volume: clean clean-volumes build up
+# --- CONTAINERS --- #
+status-containers:
+	@echo "===== Container Information =====" >> $(STATUS_CNT_LOG)
+	@docker ps --all >> $(STATUS_CNT_LOG)
+	@echo "===== Container Details =====" >> $(STATUS_CNT_LOG)
+	@docker inspect $(shell docker ps -aq) >> $(STATUS_CNT_LOG)
 
-build:
-	docker compose build
+clear-status-cnt:
+	@echo "Clearing container status logs..."
+	@rm -f $(STATUS_CNT_LOG)
 
-CONTAINER_IDS = $(shell docker ps -aq)
+# --- NETWORK --- #
+status-network:
+	@echo "===== Network Information ====="
+	@docker network ls
+	@echo "===== Network Details ====="
+	@docker network inspect $(NETWORK)
 
+# --- VOLUMES --- #
+status-volumes:
+	@echo "===== Volume Information ====="
+	@docker volume ls
+	@echo "===== Volume Details ====="
+	@docker volume inspect $(shell docker volume ls -q)
 
-clean:
-	docker kill $(CONTAINER_IDS)
-	docker rm $(shell docker ps -aq)
-	docker system prune -f
+# --- BUILD --- #
+build-container:
+	@echo "Building container..."
+	@if [ -z $(CNT) ]; then \
+		echo "CNT is not set (CNT=container_name)"; \
+		exit 1; \
+	fi
+	docker compose build $(CNT)
 
-clean-volumes:
-	docker volume prune -f
+build-services:
+	@echo "Building services..."
+	docker compose build $(SERVICES)
 
-up: clean
-	docker compose up
+# --- STARTUP --- #
+up-container:
+	@echo "Starting container..."
+	@if [ -z $(CNT) ]; then \
+		echo "CNT is not set (CNT=container_name)"; \
+		exit 1; \
+	fi
+	docker compose up -d $(CNT)
 
+up-db:
+	@echo "Starting databases..."
+	docker compose up -d $(DATABASES)
 
-#---BIKE MICROSERVICE MANAGEMENT---#
-build-bike-rental:
-	docker compose build bike-rental-service
+up-rabbitmq:
+	@echo "Starting RabbitMQ..."
+	docker compose up -d rabbitmq
 
-up-bike-rental: clean-bike-rental
-	docker compose up -d db_bike_rental --remove-orphans
-	docker compose up bike-rental-service --remove-orphans
+up-services:
+	@echo "Starting services..."
+	docker compose up -d $(SERVICES)
 
-clean-bike-rental:
-	docker compose down db_bike_rental bike-rental-service --remove-orphans --volumes
+up: up-db up-rabbitmq
+	@bash -c "echo 'Waiting for databases and RabbitMQ to start...' && sleep 20"
+	@make up-services
 
-#---HOTEL MICROSERVICE MANAGEMENT---#
-build-hotel-booking:
-	docker compose build hotel-booking-service
+# --- RESTART --- #
+restart-container:
+	@echo "Restarting container..."
+	@if [ -z $(CNT) ]; then \
+		echo "CNT is not set (CNT=container_name)"; \
+		exit 1; \
+	fi
+	docker compose restart $(CNT)
 
-up-hotel-booking: clean-hotel-booking
-	docker compose up -d db_hotel_booking --remove-orphans
-	docker compose up hotel-booking-service --remove-orphans
+restart-db:
+	@echo "Restarting databases..."
+	docker compose restart $(DATABASES)
 
-clean-hotel-booking:
-	docker compose down db_hotel_booking hotel-booking-service --remove-orphans --volumes
+restart-rabbitmq:
+	@echo "Restarting RabbitMQ..."
+	docker compose restart rabbitmq
 
-#---MONEY MICROSERVICE MANAGEMENT---#
-build-payment:
-	docker compose build payment-confirmation-service
+restart-services:
+	@echo "Restarting services..."
+	docker compose restart $(SERVICES)
 
-up-payment: clean-payment
-	docker compose up -d db_payment_confirmation --remove-orphans
-	docker compose up payment-confirmation-service --remove-orphans
+restart: restart-db restart-rabbitmq
+	@bash -c "sleep 20"
+	@make restart-services
 
-clean-payment:
-	docker compose down db_payment_confirmation payment-confirmation-service --remove-orphans --volumes
-
-#---ORDER MICROSERVICE MANAGEMENT---#
-build-order:
-	docker compose build order-management-service
-
-up-order: clean-order
-	docker compose up -d db_order_management --remove-orphans
-	docker compose up order-management-service --remove-orphans
-
-clean-order:
-	docker compose down db_order_management order-management-service --remove-orphans --volumes
-
-#---RabbitMQ MANAGEMENT---#
-start_rabbitmq:
-	docker compose up rabbitmq
-
-
-
-start-db:
-	docker compose up -d db_bike_rental db_hotel_booking db_payment_confirmation db_order_management rabbitmq
-
-start-services:
-	docker compose up bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
-
-start-app: start-db
-	sleep 5
-	make start-services
-
-down-service:
-	docker compose down bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+# --- SHUTDOWN --- #
+down-container:
+	@echo "Stopping container..."
+	@if [ -z $(CNT) ]; then \
+		echo "CNT is not set (CNT=container_name)"; \
+		exit 1; \
+	fi
+	docker compose down $(CNT) --remove-orphans
 
 down-db:
-	docker compose down db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
+	@echo "Stopping databases..."
+	docker compose down $(DATABASES) --remove-orphans
+
+down-rabbitmq:
+	@echo "Stopping RabbitMQ..."
+	docker compose down rabbitmq --remove-orphans
+
+down-services:
+	@echo "Stopping services..."
+	docker compose down $(SERVICES) --remove-orphans
+
+down: down-db down-rabbitmq down-services
+	@echo "Bringing down all containers..."
+
+# --- CLEANUP --- #
+clean-container:
+	@echo "Removing containers..."
+	@if [ -z $(CNT) ]; then \
+		echo "CNT is not set (CNT=container_name)"; \
+		exit 1; \
+	fi
+	docker compose rm -fs $(CNT)
+
+clean-db: down-db
+	@echo "Removing databases..."
+	docker compose rm -fs $(DATABASES)
+
+clean-rabbitmq: down-rabbitmq
+	@echo "Removing RabbitMQ..."
+	docker compose rm -fs rabbitmq
+
+clean-services: down-services
+	@echo "Removing services..."
+	docker compose rm -fs $(SERVICES)
+
+clean: clean-db clean-rabbitmq clean-services
+
+fclean: clean
+	@echo "Removing all services and volumes..."
+	docker compose down --volumes --remove-orphans

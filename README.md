@@ -20,9 +20,9 @@ Il backend è stato progettato per rispecchiare le dinamiche di business del pro
   - Microservizio per la validazione della protazioni di bici da trekking   (Repository Pattern)
   - Microservizio per la conferma di pagamento                              (Repository Pattern)
 
-## How to build it
+## How to run it
 - from the root directory:
 ```
-make all
+make up
 `````
 
