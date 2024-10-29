@@ -1,22 +1,10 @@
-import { PrismaClient, order as OrderDO } from "@prisma/client";
+import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import { PENDING } from "../config/status";
+import OrderRequestDTO from "../dtos/OrderRequest.dto";
 import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();
 
-export interface OrderDTO {
-  from: string;
-  to: string;
-  room: string;
-  amount: string;
-  road_bike_requested: number;
-  dirt_bike_requested: number;
-  bike_status: string;
-  hotel_status: string;
-  payment_status: string;
-  created_at: Date;
-  updated_at: Date;
-}
 
 
 @tsyringe.singleton()
@@ -24,7 +12,7 @@ class OrderManagerDB {
   constructor() {
   }
 
-  async create_order(info: OrderDTO): Promise<OrderDO> {
+  async create_order(info: OrderRequestDTO): Promise<OrderEntity> {
     const x = await prisma.order.create({
       data : {
         from: info.from,
@@ -44,7 +32,7 @@ class OrderManagerDB {
     return x;
   }
 
-  async get_order(id: string): Promise<OrderDO | null> {
+  async get_order(id: string): Promise<OrderEntity | null> {
     console.log("[ORDER MANAGER] Getting order with id: ", id);
     return  await prisma.order.findFirst({
       where: {
@@ -67,7 +55,7 @@ class OrderManagerDB {
     return true;
   }
 
-  async update_bike_status(id: string, status: string): Promise<OrderDO> {
+  async update_bike_status(id: string, status: string): Promise<OrderEntity> {
     console.log("[ORDER MANAGER] Updating bike status with status: ", status);
    return  await prisma.order.update({
       where: {
@@ -79,7 +67,7 @@ class OrderManagerDB {
     });
   }
 
-  async update_hotel_status(id: string, status: string): Promise<OrderDO> {
+  async update_hotel_status(id: string, status: string): Promise<OrderEntity> {
     console.log("[ORDER MANAGER] Updating hotel status with status: ", status);
     return await prisma.order.update({
       where: {
@@ -91,7 +79,7 @@ class OrderManagerDB {
     });
   }
 
-  async update_payment_status(id: string, status: string): Promise<OrderDO> {
+  async update_payment_status(id: string, status: string): Promise<OrderEntity> {
     console.log("[ORDER MANAGER] Updating payment status with status: ", status);
     return await prisma.order.update({
       where: {
@@ -103,7 +91,7 @@ class OrderManagerDB {
     });
   }
 
-  async update_order(info: OrderDO): Promise<OrderDO> {
+  async update_order(info: OrderEntity): Promise<OrderEntity> {
     console.log("[ORDER MANAGER] Updating order with id: ", info.id);
     return await prisma.order.update({
       where: {

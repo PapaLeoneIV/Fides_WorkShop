@@ -1,20 +1,12 @@
-import { PrismaClient, order as OrderDO } from "@prisma/client";
-const prisma = new PrismaClient();
+import { PrismaClient, order as OrderEntity } from "@prisma/client";
+import BikeOrderDTO from "../dtos/bikeOrder.dto";
 import * as tsyringe from "tsyringe";
-
-export interface OrderDTO {
-    order_id: string,
-    road_bike_requested: number,
-    dirt_bike_requested: number,
-    renting_status: string,
-    created_at: Date,
-    updated_at: Date
-}
+const prisma = new PrismaClient();
 
 @tsyringe.singleton()  
 class BikeOrderRepository {
 
-    async create_order(bike_order: OrderDTO): Promise<OrderDO> {
+    async create_order(bike_order: BikeOrderDTO): Promise<OrderEntity> {
         console.log(
             "[BIKE SERVICE]", "Creating new bike order in the DB with id: ",
             bike_order.order_id
@@ -32,7 +24,7 @@ class BikeOrderRepository {
         return new_bike_order
     }
 
-    async update_order(bike_order: OrderDO): Promise<OrderDO> {
+    async update_order(bike_order: OrderEntity): Promise<OrderEntity> {
         console.log("[BIKE SERVICE]", "Updating bike ORDER with id: ", bike_order.order_id);
         let updated_bike_order = await prisma.order.update({
             where: {
@@ -50,7 +42,7 @@ class BikeOrderRepository {
         return updated_bike_order;
     }
 
-    async update_status(bike_order: OrderDO, status: string): Promise<OrderDO> {
+    async update_status(bike_order: OrderEntity, status: string): Promise<OrderEntity> {
         console.log("[BIKE SERVICE]", "Updating order STATUS to", status);
         let updated_bike_order = await prisma.order.update({
             where: {
@@ -78,7 +70,7 @@ class BikeOrderRepository {
         return true;
     }
 
-    async get_order_info(order_id: string): Promise<OrderDO | null> {
+    async get_order_info(order_id: string): Promise<OrderEntity | null> {
         console.log("[BIKE SERVICE]", "Requsting order info : ", order_id);
         let order =
             (await prisma.order.findFirst({
@@ -93,7 +85,7 @@ class BikeOrderRepository {
         return order;
     }
 
-    async delete_order(bike_order: OrderDO) {
+    async delete_order(bike_order: OrderEntity) {
         console.log("[BIKE SERVICE]", "Deleting bike order with id: ", bike_order.order_id);
         await prisma.order.delete({
             where: {

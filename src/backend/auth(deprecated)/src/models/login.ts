@@ -1,4 +1,4 @@
-import { PrismaClient, registered_users as UserDO } from "@prisma/client";
+import { PrismaClient, registered_users as UserEntity } from "@prisma/client";
 
 import bcrypt from 'bcrypt';
 
@@ -8,7 +8,7 @@ class LoginManager{
         this.prisma = new PrismaClient();
     }
     
-    async register_user(data: { email: string, password: string }) : Promise<UserDO>{ {
+    async register_user(data: { email: string, password: string }) : Promise<UserEntity>{ {
         const saltRounds = 10;
         let salt = await bcrypt.genSalt(saltRounds);
         let hashedPassword = await bcrypt.hash(data.password, salt);
@@ -57,7 +57,7 @@ class LoginManager{
         return false;
     }
 
-    async get_user(email: string) : Promise<UserDO | null> {
+    async get_user(email: string) : Promise<UserEntity | null> {
         return await this.prisma.registered_users.findUnique({
             where: {
                 email: email

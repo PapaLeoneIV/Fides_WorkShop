@@ -1,5 +1,6 @@
-import { order as OrderDO } from "@prisma/client";
-import { OrderDTO } from "../models/order_manager";
+import { order as OrderEntity } from "@prisma/client";
+
+import OrderRequestDTO from "../dtos/OrderRequest.dto";
 import { rabbitPub, orderManagerDB } from "../models/index";
 import { response_schema, order_info_schema } from "../zodschema/index";
 import { DENIED, APPROVED, ERROR, CANCELLED, PENDING } from "../config/status";
@@ -12,7 +13,7 @@ function parse_data_from_response(msg: string) {
 
 
 export async function handle_req_from_frontend(msg: string) {
-  let data: OrderDTO;
+  let data: OrderRequestDTO;
   try {
     const parsedMsg = JSON.parse(msg);
     parsedMsg.created_at = new Date(parsedMsg.created_at);
@@ -52,7 +53,7 @@ export async function handle_req_from_frontend(msg: string) {
 
 export async function handle_res_from_bike(msg: string) {
   let data: { id: string, status: string };
-  let order: OrderDO;
+  let order: OrderEntity;
   try {
     data = parse_data_from_response(msg)
   } catch (error) {
@@ -86,7 +87,7 @@ export async function handle_res_from_bike(msg: string) {
 
 export async function handle_res_from_hotel(msg: string) {
   let data: { id: string, status: string };
-  let order: OrderDO;
+  let order: OrderEntity;
   try {
     data = parse_data_from_response(msg)
   } catch (error) {
@@ -162,7 +163,7 @@ export async function handle_order_status(order_id: string, retries = 0) {
   try {
     console.log("[ORDER SERVICE] Handling order status for order:", order_id);
 
-    let order: OrderDO | null = await orderManagerDB.get_order(order_id);
+    let order: OrderEntity | null = await orderManagerDB.get_order(order_id);
 
     if (!order) {
       console.error(`[ORDER SERVICE] No order found with ID: ${order_id}`);

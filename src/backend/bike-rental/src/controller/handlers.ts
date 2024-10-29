@@ -1,11 +1,11 @@
 import {rabbitPub ,orderManager, bikeDBManager} from "../models/index";
-import { OrderDTO as BikeDTO } from "../models/order_manager";
-import { order as BikeDO } from "@prisma/client";
+import BikeOrderDTO  from "../dtos/bikeOrder.dto";
 import { bike_info_schema } from "../zodschema";
 import { APPROVED, CANCELLED, DENIED} from "../config/status";
+import { order as BikeEntity } from "@prisma/client";
 
 export async function handle_req_from_order_management(msg: string) {
-  let order_info: BikeDTO;
+  let order_info: BikeOrderDTO;
 
   try {
     console.log("[BIKE SERVICE] Parsing message ", JSON.parse(msg));
@@ -23,7 +23,7 @@ export async function handle_req_from_order_management(msg: string) {
   }
   console.log("[BIKE SERVICE] Order does not exist, creating order");
   
-  let order: BikeDO = await orderManager.create_order(order_info);
+  let order: BikeEntity = await orderManager.create_order(order_info);
 
 
   if (await bikeDBManager.get_number_dirt_bikes() >= order.dirt_bike_requested

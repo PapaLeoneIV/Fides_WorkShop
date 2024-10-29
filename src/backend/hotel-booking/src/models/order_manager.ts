@@ -1,22 +1,15 @@
-import { PrismaClient, order as OrderDO } from "@prisma/client";
+import { PrismaClient, order as OrderEntity } from "@prisma/client";
+import HotelOrderDTO from "../dtos/hotelOrder.dto";
 import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();
 
-export interface OrderDTO {
-    order_id: string,
-    to: string,
-    from: string,
-    room: string,
-    renting_status: string,
-    created_at: Date,
-    updated_at: Date
-}
+
 
 @tsyringe.singleton()
 class HotelOrdersRepository {
 
-    async create_order(hotel_order: OrderDTO): Promise<OrderDO> {
+    async create_order(hotel_order: HotelOrderDTO): Promise<OrderEntity> {
       console.log("[HOTEL SERVICE]", "Creating new hotel order with id: ", hotel_order.order_id);
       const hotel = await prisma.order.create({
         data: {
@@ -48,7 +41,7 @@ class HotelOrdersRepository {
     }
   
   
-    async get_order_info(order_id: string): Promise<OrderDO | null> {
+    async get_order_info(order_id: string): Promise<OrderEntity | null> {
       console.log("[HOTEL SERVICE] Getting hotel order info with id: ", order_id);
       const order =
         (await prisma.order.findFirst({
@@ -63,7 +56,7 @@ class HotelOrdersRepository {
       return order;
     }
   
-    async update_order(hotel_order: OrderDO): Promise<OrderDO> {
+    async update_order(hotel_order: OrderEntity): Promise<OrderEntity> {
       console.log("[HOTEL SERVICE] Updating hotel order with id: ", hotel_order.order_id);
       const updated_bike_order = await prisma.order.update({
         where: {
@@ -82,7 +75,7 @@ class HotelOrdersRepository {
       return updated_bike_order;
     }
   
-    async update_status(hotel_order: OrderDO, status: string): Promise<OrderDO> {
+    async update_status(hotel_order: OrderEntity, status: string): Promise<OrderEntity> {
       console.log("[HOTEL SERVICE] Updating hotel order status with status: ", status);
       const updated_hotel_order = await prisma.order.update({
         where: {
@@ -95,7 +88,7 @@ class HotelOrdersRepository {
       return updated_hotel_order;
     }
   
-    async delete_order(hotel_order: OrderDTO) {
+    async delete_order(hotel_order: HotelOrderDTO) {
       console.log("[HOTEL SERVICE] Deleting hotel order with id: ", hotel_order.order_id);
       await prisma.order.delete({
         where: {

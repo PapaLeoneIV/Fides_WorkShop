@@ -1,13 +1,12 @@
-import { order as HotelDO } from "@prisma/client";
-import { OrderDTO as HotelDTO } from "../models/order_manager";
+import { order as HotelEntity } from "@prisma/client";
+import HotelOrderDTO from "../dtos/hotelOrder.dto";
 import { rabbitPub } from "../models";
 import { order_manager } from "../models";
 import { storage_db } from "../models";
-import { hotel_info_schema } from "../zodschema";
-import { DENIED, APPROVED, ERROR, CANCELLED } from "../config/status";
+import { DENIED, APPROVED, CANCELLED } from "../config/status";
 
 export async function handle_req_from_order_management(msg: string) {
-  let order_info: HotelDTO;
+  let order_info: HotelOrderDTO;
 
   try {
     order_info = JSON.parse(msg);
@@ -23,7 +22,7 @@ export async function handle_req_from_order_management(msg: string) {
     return;
   }
   console.log("[HOTEL SERVICE] Order does not exist, creating order");
-  let order: HotelDO | null = await order_manager.create_order(order_info);
+  let order: HotelEntity | null = await order_manager.create_order(order_info);
   if (order) {
     const dateRecords = await storage_db.getDateIdsForRange(new Date(order.from), new Date(order.to))
     const dateIds = dateRecords.map((date: any) => date.id);
