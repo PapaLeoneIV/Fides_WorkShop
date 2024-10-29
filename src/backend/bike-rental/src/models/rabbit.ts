@@ -1,15 +1,9 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
+import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
+import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
-
-const rmqUser = process.env.RABBITMQ_USER || "rileone"
-const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
-const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
-
-const BIKE_SERVICE_ORDER_REQ_QUEUE = "bike_service_bike_request"
-
-const BIKE_SERVICE_SAGA_REQ_QUEUE = "bike_service_saga_bike_request"
 
 class RabbitClient {
   connection!: Connection;
@@ -39,7 +33,6 @@ class RabbitClient {
   async setupExchange(exchange: string, exchangeType: string) {
 
     try {
-      // Declare a fanout exchange
       await this.channel.assertExchange(exchange, exchangeType, {
         durable: true,
       });
@@ -100,7 +93,7 @@ class RabbitClient {
       (msg) => {
         {
           if (!msg) {
-            return console.error(`Invalid incoming message`);
+            return console.error(`[BIKE SERVICE] Invalid incoming message`);
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);
@@ -120,14 +113,13 @@ class RabbitPublisher extends RabbitClient {
     super();
   }
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
-  //OrderExchange
-
-  sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
+  //TODO muovere tutte le roouting key in un file di configurazione
+  publish_to_order_management = async (body: string): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
-  sendToOrderManagementMessageBrokerSAGA = async (body: string): Promise<void> => {
+  publish_to_order_managementSAGA = async (body: string): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);

@@ -3,7 +3,7 @@ import amqp from 'amqplib';
 const QUEUE = 'order_service_booking_request';
 const EXCHANGE = 'OrderEventExchange';
 const TOTAL_MESSAGES = 100;  // Adjust the total number of messages as needed
-const DELAY = 10;  // Delay in milliseconds between messages to simulate load
+const DELAY = 50;  // Delay in milliseconds between messages to simulate load
 
 async function publishMessage() {
     try {
@@ -25,7 +25,7 @@ async function publishMessage() {
             const message = {
                 from: new Date(2025, (11 + count) % 12, (11 + count) % 28),
                 to: new Date(2025, (11 + count) % 12, (11 + count) % 28 + 1),
-                room: "101",
+                room: "102",
                 road_bike_requested: count % 5 + 1,
                 dirt_bike_requested: count % 3 + 1,
                 bike_status: "PENDING",

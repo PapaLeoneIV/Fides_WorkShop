@@ -1,14 +1,9 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management } from "../controllers/handlers";
+import { PAYMENT_SERVICE_RESP_PAYMENT_QUEUE } from "../config/rabbit";
+import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
-
-const rmqUser = process.env.RABBITMQ_USER || "rileone"
-const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
-const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
-
-const PAYMENT_SERVICE_RESP_PAYMENT_QUEUE = "payment_service_payment_request"
-
 
 class RabbitClient {
   connection!: Connection;
@@ -119,7 +114,7 @@ class RabbitPublisher extends RabbitClient
   constructor() {
     super();
   }
-  sendToOrderMessageBroker = async (body: string): Promise<void> => {
+  publish_to_order_management = async (body: string): Promise<void> => {
     console.log(`[PAYMENT SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "payment_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);

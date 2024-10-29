@@ -92,7 +92,7 @@ up-rabbitmq:
 
 up-services:
 	@echo "Starting services..."
-	docker compose up -d $(SERVICES)
+	docker compose up $(SERVICES)
 
 up: up-db up-rabbitmq
 	@bash -c "echo 'Waiting for databases and RabbitMQ to start...' && sleep 20"

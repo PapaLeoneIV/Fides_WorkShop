@@ -1,10 +1,10 @@
 import {bootstrapRabbitConfig} from "./rabbitmq";   
-import { connectToDatabase } from "./db";
+import { bootstrapDBconfig } from "./db";
 
 
 async function bootService() {
     
-    await connectToDatabase();
+    await bootstrapDBconfig();
 
     await bootstrapRabbitConfig();
 }

@@ -1,12 +1,8 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
+import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
+import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 
-const rmqUser = process.env.RABBITMQ_USER || "rileone"
-const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
-const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
-
-const HOTEL_SERVICE_ORDER_REQ_QUEUE = "hotel_service_hotel_request"
-const HOTEL_SERVICE_SAGA_REQ_QUEUE = "hotel_service_saga_hotel_request"
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 class RabbitClient {
@@ -116,12 +112,12 @@ class RabbitClient {
 
 class RabbitPublisher extends RabbitClient {
   //----------------------SEND----------------------------------
-  sendToOrderManagementMessageBroker = async (body: string): Promise<void> => {
+  publish_to_order_management = async (body: string): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "hotel_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
-  sendToOrderManagementMessageBrokerSAGA = async (body: string): Promise<void> => {
+  publish_to_order_managementSAGA = async (body: string): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "hotel_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);

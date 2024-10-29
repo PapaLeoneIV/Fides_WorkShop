@@ -1,6 +1,5 @@
 import { rabbitPub, rabbitSub } from "../models/index";
-
-const PAYMENT_SERVICE_RESP_PAYMENT_QUEUE = "payment_service_payment_request"
+import { PAYMENT_SERVICE_RESP_PAYMENT_QUEUE } from "../config/rabbit";
 
 async function bootstrapRabbitConfig() {
     console.log("[PAYMENT SERVICE]PUB Connecting to RabbitMQ...");

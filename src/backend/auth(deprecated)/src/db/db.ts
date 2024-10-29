@@ -15,7 +15,7 @@ export const db = new Pool({
     database: process.env.POSTGRES_DB,
 });
 
-export async function connectToDatabase() {
+export async function bootstrapDBconfig() {
     console.log("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
     try {
         await db.connect();

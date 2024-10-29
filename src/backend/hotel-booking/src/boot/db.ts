@@ -1,7 +1,7 @@
 import db from '../db/db';
 import { exit } from 'process'; 
 
-async function connectToDatabase() {
+async function bootstrapDBconfig() {
     console.log("[INFO] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
     try {
         await db.connect();
@@ -12,4 +12,4 @@ async function connectToDatabase() {
     }
 }
 
-export default connectToDatabase;
+export default bootstrapDBconfig;

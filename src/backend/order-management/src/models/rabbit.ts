@@ -1,18 +1,9 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "../controllers/handlers";
+import { ORDER_SERVICE_BIKE_RESP_QUEUE, ORDER_SERVICE_HOTEL_RESP_QUEUE, ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE, ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE, ORDER_SERVICE_RESP_PAYMENT_QUEUE, ORDER_SERVICE_REQ_BOOKING_QUEUE } from "../config/rabbit";
+import { rmqUser, rmqPass, rmqhost } from "../config/rabbit";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
-
-const rmqUser = process.env.RABBITMQ_USER || "rileone"
-const rmqPass = process.env.RABBITMQ_PASSWORD || "password"
-const rmqhost = process.env.RABBITMQ_HOST || "rabbitmq"
-
-const ORDER_SERVICE_BIKE_RESP_QUEUE = "order_service_bike_response"
-const ORDER_SERVICE_HOTEL_RESP_QUEUE = "order_service_hotel_response"
-const ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE = "order_service_SAGA_hotel_request"
-const ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE = "order_service_SAGA_bike_request"
-const ORDER_SERVICE_RESP_PAYMENT_QUEUE = "order_service_payment_request"
-const ORDER_SERVICE_REQ_BOOKING_QUEUE = "order_service_booking_request"
 
 
 class RabbitClient {
@@ -137,7 +128,7 @@ class RabbitPublisher extends RabbitClient {
     this.publishEvent("OrderEventExchange", routingKey, body);
   };
   //OrderExchange
-  sendToPaymentMessageBroker = async (body: string): Promise<void> => {
+  publish_payment_orderEvent = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
     const routingKey = "BDpayment_request";
     this.publishEvent("OrderEventExchange", routingKey , body);
@@ -145,13 +136,13 @@ class RabbitPublisher extends RabbitClient {
 
   //---------------------------SAGA(REVERSE ORDER)---------------
   //SAGAExchange
-    sendCanceltoBikeMessageBroker = async (body: string): Promise<void> => {
+    publish_bike_orderEvent = async (body: string): Promise<void> => {
       const routingKey = "BDbike_SAGA_request";
       this.publishEvent("OrderEventExchange", routingKey , body);
     }
   
   //SAGAExchange
-  sendCanceltoHotelMessageBroker = async (body: string): Promise<void> => {
+  publish_cancel_bike_orderEvent = async (body: string): Promise<void> => {
     const routingKey = "BDhotel_SAGA_request";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }

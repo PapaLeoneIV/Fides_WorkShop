@@ -1,8 +1,8 @@
-import connectToDatabase from "./db";
+import bootstrapDBconfig from "./db";
 import bootstrapRabbitConfig from "./rabbit";
 
 async function bootService() {
-    await connectToDatabase();
+    await bootstrapDBconfig();
     await bootstrapRabbitConfig();
 }
 

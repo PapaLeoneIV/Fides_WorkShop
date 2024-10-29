@@ -1,7 +1,5 @@
 import { rabbitPub, rabbitSub } from "../models/index";
-
-const HOTEL_SERVICE_ORDER_REQ_QUEUE = "hotel_service_hotel_request"
-const HOTEL_SERVICE_SAGA_REQ_QUEUE = "hotel_service_saga_hotel_request"
+import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 
 async function bootstrapRabbitConfig() {
     console.log("[HOTEL SERVICE]PUB Connecting to RabbitMQ...");
