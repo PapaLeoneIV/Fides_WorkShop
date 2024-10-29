@@ -59,7 +59,7 @@ class RabbitClient {
         Buffer.from(message),
         {
           //TODO se necessario continuare a customizzare il channel
-          appId: "OrderService",
+          appId: "HotelService",
         }
       );
     } catch (error) {
