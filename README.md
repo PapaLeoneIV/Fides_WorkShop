@@ -7,6 +7,7 @@ nostro progetto è comunque rivolto all Architettura del progetto e allo svilupp
 - [Riccardo Leone](https://github.com/PapaLeoneIV)
 - [Emma Veronelli](https://github.com/minestrinad)
 
+
 ## Build prerequisites
 Tutti gli strumenti che potrebbero servirvi to build the project:
 - make
