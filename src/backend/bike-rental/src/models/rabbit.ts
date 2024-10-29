@@ -2,6 +2,7 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
+import * as tsyringe from "tsyringe";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
@@ -108,6 +109,8 @@ class RabbitClient {
 
 }
 
+
+@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   constructor() {
     super();
@@ -126,6 +129,7 @@ class RabbitPublisher extends RabbitClient {
   }
 }
 
+@tsyringe.singleton() 
 class RabbitSubscriber extends RabbitClient {
   constructor() {
     super();

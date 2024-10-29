@@ -1,5 +1,7 @@
 import { PrismaClient, order as OrderDO } from "@prisma/client";
 import { PENDING } from "../config/status";
+import * as tsyringe from "tsyringe";
+
 const prisma = new PrismaClient();
 
 export interface OrderDTO {
@@ -17,7 +19,7 @@ export interface OrderDTO {
 }
 
 
-
+@tsyringe.singleton()
 class OrderManagerDB {
   constructor() {
   }

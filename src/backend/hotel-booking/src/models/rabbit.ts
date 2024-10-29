@@ -2,9 +2,11 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
+import * as tsyringe from "tsyringe";
 
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
+
 class RabbitClient {
   connection!: Connection;
   channel!: Channel;
@@ -109,7 +111,7 @@ class RabbitClient {
 
 }
 
-
+@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   //----------------------SEND----------------------------------
   publish_to_order_management = async (body: string): Promise<void> => {
@@ -125,6 +127,7 @@ class RabbitPublisher extends RabbitClient {
 
 }
 
+@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient {
   consumeHotelOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");

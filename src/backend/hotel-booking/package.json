@@ -17,8 +17,9 @@
     "express": "^4.21.1",
     "nvm": "^0.0.4",
     "pg": "^8.13.0",
-    "zod": "^3.23.8",
-    "rabbitmq-stream-js-client": "^0.4.2"
+    "rabbitmq-stream-js-client": "^0.4.2",
+    "tsyringe": "^4.8.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",

@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import * as tsyringe from "tsyringe";
+
 const prisma = new PrismaClient();
 
 
+@tsyringe.singleton()
 class BikeDBRepository {
 
 

@@ -1,4 +1,6 @@
 import { PrismaClient, order as OrderDO } from "@prisma/client";
+import * as tsyringe from "tsyringe";
+
 const prisma = new PrismaClient();
 
 export interface OrderDTO {
@@ -11,6 +13,7 @@ export interface OrderDTO {
     updated_at: Date
 }
 
+@tsyringe.singleton()
 class HotelOrdersRepository {
 
     async create_order(hotel_order: OrderDTO): Promise<OrderDO> {

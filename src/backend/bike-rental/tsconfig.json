@@ -7,7 +7,10 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "experimentalDecorators": true, //tsyringe
+    "emitDecoratorMetadata": true   //tsyringe
+
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
