@@ -1,6 +1,6 @@
 import client, { Connection, Channel } from "amqplib";
+import * as queue from "../config/rabbit";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "../controllers/handlers";
-import { ORDER_SERVICE_BIKE_RESP_QUEUE, ORDER_SERVICE_HOTEL_RESP_QUEUE, ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE, ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE, ORDER_SERVICE_RESP_PAYMENT_QUEUE, ORDER_SERVICE_REQ_BOOKING_QUEUE } from "../config/rabbit";
 import { rmqUser, rmqPass, rmqhost } from "../config/rabbit";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
@@ -116,13 +116,13 @@ class RabbitPublisher extends RabbitClient {
   }
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
   //OrderExchange
-  sendToBikeMessageBroker = async (body: string): Promise<void> => {
+  publish_to_bike_orderEvent = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Bike Service: ${body}`);
     const routingKey = "BDbike_request";
     this.publishEvent("OrderEventExchange", routingKey, body);
   };
   //OrderExchange
-  sendToHotelMessageBroker = async (body: string): Promise<void> => {
+  publish_to_hotel_orderEvent = async (body: string): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
     const routingKey = "BDhotel_request";
     this.publishEvent("OrderEventExchange", routingKey, body);
@@ -157,39 +157,39 @@ class RabbitSubscriber extends RabbitClient {
    consumeBookingOrder = async () => {
     console.log("[ORDER SERVICE] Listening for booking orders...");
     const routingKey = "booking_order_listener";
-    this.consume(ORDER_SERVICE_REQ_BOOKING_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_req_from_frontend(msg));
+    this.consume(queue.ORDER_SERVICE_REQ_BOOKING_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_req_from_frontend(msg));
   };
 
   consumeBikeResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike responses...");
     const routingKey = "bike_main_listener";
-    this.consume(ORDER_SERVICE_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
+    this.consume(queue.ORDER_SERVICE_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
   };
 
   consumeHotelResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel responses...");
     const routingKey = "hotel_main_listener";
-    this.consume(ORDER_SERVICE_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
+    this.consume(queue.ORDER_SERVICE_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
   };
 
 
   consumePaymentResponse = async () => {
     console.log("[ORDER SERVICE] Listening for payment responses...");
     const routingKey = "payment_main_listener";
-    this.consume(ORDER_SERVICE_RESP_PAYMENT_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_payment(msg));
+    this.consume(queue.ORDER_SERVICE_RESP_PAYMENT_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_payment(msg));
   };
   //---------------------------SAGA(REVERSE ORDER)---------------
 
   consumeHotelSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel saga responses...");
     const routingKey = "hotel_saga_listener";
-    this.consume(ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
+    this.consume(queue.ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_hotel(msg));
   };
 
   consumeBikeSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike saga responses...");
     const routingKey = "bike_saga_listener";
-    this.consume(ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
+    this.consume(queue.ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE,"OrderEventExchange" , routingKey ,(msg) => handle_res_from_bike(msg));
   }
 
 

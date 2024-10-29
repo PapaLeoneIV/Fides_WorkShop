@@ -18,7 +18,6 @@ export async function handle_req_from_frontend(msg: string) {
     parsedMsg.created_at = new Date(parsedMsg.created_at);
     parsedMsg.updated_at = new Date(parsedMsg.updated_at);
     data = order_info_schema.parse(parsedMsg);
-    console.log("DBG data", data);
   } catch (err) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
@@ -46,8 +45,8 @@ export async function handle_req_from_frontend(msg: string) {
     updated_at: order.updated_at
   };
 
-  rabbitPub.sendToBikeMessageBroker(JSON.stringify(bike_order));
-  rabbitPub.sendToHotelMessageBroker(JSON.stringify(hotel_order));
+  rabbitPub.publish_to_bike_orderEvent(JSON.stringify(bike_order));
+  rabbitPub.publish_to_hotel_orderEvent(JSON.stringify(hotel_order));
 
 }
 
@@ -56,7 +55,6 @@ export async function handle_res_from_bike(msg: string) {
   let order: OrderDO;
   try {
     data = parse_data_from_response(msg)
-    console.log(data);
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
@@ -100,8 +98,6 @@ export async function handle_res_from_hotel(msg: string) {
     console.log(`[ORDER SERVICE] Error while processing hotel request, the data sent was not correct`);
     return
   }
-
-
 
   order = await orderManagerDB.update_hotel_status(data.id, data.status);
 

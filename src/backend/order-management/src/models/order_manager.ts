@@ -19,6 +19,8 @@ export interface OrderDTO {
 
 
 class OrderManagerDB {
+  constructor() {
+  }
 
   async create_order(info: OrderDTO): Promise<OrderDO> {
     const x = await prisma.order.create({
