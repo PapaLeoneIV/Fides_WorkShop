@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-let bike_info_schema = z.object({
+export let bike_info_schema = z.object({
     order_id: z.string(),
     road_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
     dirt_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
@@ -10,4 +10,3 @@ let bike_info_schema = z.object({
   });
 
   
-  export default bike_info_schema;
