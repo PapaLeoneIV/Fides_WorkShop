@@ -79,24 +79,32 @@ export async function handle_cancel_request(order_id: string) {
 
   let order = await order_manager.get_order_info(order_id)!;
 
-  if (order.status !== APPROVED) {
-    console.log("[HOTEL SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
+  if (!order) {
+    console.log("[HOTEL SERVICE] Error while fetching order with id: ", order_id);
     rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
-  }
-
-  const n_bookedDays = await getBookedDays(order);
-
-  if (!n_bookedDays) {
-    console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
-    await updateStatus_and_publishEvent(order, DENIED);
-    return;
-  }
-
-  const roomAvailabilityRestored = await storage_db.restoreRoomAvailability(n_bookedDays, order.room);
-  if (!roomAvailabilityRestored) {
-    await updateStatus_and_publishEvent(order, DENIED);
     return
   }
-  await updateStatus_and_publishEvent(order, CANCELLED);
+  else {
+    if (order.renting_status !== APPROVED) {
+      console.log("[HOTEL SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
+      rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
+    }
+
+    const n_bookedDays = await getBookedDays(order)!;
+
+    if (!n_bookedDays) {
+      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
+      await updateStatus_and_publishEvent(order, DENIED);
+      return;
+    }
+
+    const roomAvailabilityRestored = await storage_db.restoreRoomAvailability(n_bookedDays, order.room);
+    if (!roomAvailabilityRestored) {
+      await updateStatus_and_publishEvent(order, DENIED);
+      return
+    }
+    await updateStatus_and_publishEvent(order, CANCELLED);
+  }
+
 }
 
