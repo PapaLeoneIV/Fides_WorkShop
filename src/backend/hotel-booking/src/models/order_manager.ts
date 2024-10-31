@@ -1,12 +1,12 @@
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import HotelOrderDTO from "../dtos/hotelOrder.dto";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();
 
 
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class HotelOrdersRepository {
 
     async create_order(hotel_order: HotelOrderDTO): Promise<OrderEntity> {

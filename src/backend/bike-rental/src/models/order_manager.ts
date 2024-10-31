@@ -1,9 +1,9 @@
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import BikeOrderDTO from "../dtos/bikeOrder.dto";
-import * as tsyringe from "tsyringe";
+// //import * as tsyringe from "tsyringe";
 const prisma = new PrismaClient();
 
-@tsyringe.singleton()  
+// @tsyringe.singleton()  
 class BikeOrderRepository {
 
     async create_order(bike_order: BikeOrderDTO): Promise<OrderEntity> {

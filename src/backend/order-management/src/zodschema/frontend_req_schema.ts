@@ -1,4 +1,10 @@
 import { z } from 'zod';
+import { z } from "zod";
+
+// Define your date fields with transformation
+const dateSchema = z.preprocess((arg) => {
+  return typeof arg === "string" ? new Date(arg) : arg;
+}, z.date());
 
 const order_info_schema = z.object({
     from: z.string(),
@@ -24,8 +30,8 @@ const order_info_schema = z.object({
     hotel_status: z.string().refine((val) => {return val === "PENDING"},{message: "Hotel status must be PENDING"}),
     payment_status: z.string().refine((val) => {return val === "PENDING"},{message: "Payment status must be PENDING"}),
   
-    created_at: z.date(),
-    updated_at: z.date()
+    created_at: dateSchema,
+    updated_at: dateSchema
   });
   
   

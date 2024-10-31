@@ -30,7 +30,7 @@ async function updateStatus_and_publishEvent(order: HotelEntity, status: string)
 
 export async function handle_req_from_order_management(msg: string) {
   let order_info: HotelOrderDTO;
-
+  let order: HotelEntity;
   order_info = await parse_request(msg, hotel_info_schema);
 
   const orderExists = await order_manager.check_existance(order_info.order_id);
@@ -41,26 +41,26 @@ export async function handle_req_from_order_management(msg: string) {
   }
   console.log("[HOTEL SERVICE] Order does not exist, creating order");
 
-  let order: HotelEntity = await order_manager.create_order(order_info);
+  order = await order_manager.create_order(order_info);
   if (!order) {
     console.log("[HOTEL SERVICE] Error creating order");
     await rabbitPub.publish_to_order_management({ id: order_info.order_id, status: DENIED });
     return;
   }
-  const bookedDays = await getBookedDays(order);
+  const n_bookedDays = await getBookedDays(order);
 
-  if (!bookedDays) {
+  if (!n_bookedDays) {
     console.log("[HOTEL SERVICE] No dates found for the requested range.");
     await updateStatus_and_publishEvent(order, DENIED);
     return;
   }
-  const roomAvailable = await storage_db.areRoomsAvailable(bookedDays, order.room);
+  const roomAvailable = await storage_db.areRoomsAvailable(n_bookedDays, order.room);
   if (!roomAvailable) {
     console.log("[HOTEL SERVICE] Room is not available for the entire date range.");
     await updateStatus_and_publishEvent(order, DENIED);
     return;
   }
-  await storage_db.updateRoomAvailability(bookedDays, order.room);
+  await storage_db.updateRoomAvailability(n_bookedDays, order.room);
   await updateStatus_and_publishEvent(order, APPROVED);
   return;
 }
@@ -84,15 +84,15 @@ export async function handle_cancel_request(order_id: string) {
     rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
   }
 
-  const bookedDays = await getBookedDays(order);
+  const n_bookedDays = await getBookedDays(order);
 
-  if (!bookedDays) {
+  if (!n_bookedDays) {
     console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
     await updateStatus_and_publishEvent(order, DENIED);
     return;
   }
 
-  const roomAvailabilityRestored = await storage_db.restoreRoomAvailability(bookedDays, order.room);
+  const roomAvailabilityRestored = await storage_db.restoreRoomAvailability(n_bookedDays, order.room);
   if (!roomAvailabilityRestored) {
     await updateStatus_and_publishEvent(order, DENIED);
     return

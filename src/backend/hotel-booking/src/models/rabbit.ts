@@ -2,7 +2,7 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
 import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 
 
@@ -112,23 +112,23 @@ class RabbitClient {
 
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   //----------------------SEND----------------------------------
   publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
-    console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[HOTEL SERVICE] Sending to Order Management Service: `, body);
     const routingKey = "hotel_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
   publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
-    console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[HOTEL SERVICE] Sending to Order Management Service:`, body);
     const routingKey = "hotel_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
 
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient {
   consumeHotelOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
