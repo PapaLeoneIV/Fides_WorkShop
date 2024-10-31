@@ -3,89 +3,100 @@ import HotelOrderDTO from "../dtos/hotelOrder.dto";
 import { rabbitPub } from "../models";
 import { order_manager } from "../models";
 import { storage_db } from "../models";
+import { hotel_info_schema } from "../zodschema/orderschema";
 import { DENIED, APPROVED, CANCELLED } from "../config/status";
 
-export async function handle_req_from_order_management(msg: string) {
-  let order_info: HotelOrderDTO;
 
+async function parse_request(msg: string, schema: any) {
   try {
-    order_info = JSON.parse(msg);
+    return schema.parse((JSON.parse(msg)));
   } catch (error) {
     console.error(`[HOTEL SERVICE] Error while parsing message:`, error);
     await rabbitPub.publish_to_order_management({ id: "", status: DENIED });
     return;
   }
 
+}
+
+async function getBookedDays(order: HotelEntity): Promise<number[]> {
+  let bookedDaysID =  await storage_db.getDateIdsForRange(new Date(order.from), new Date(order.to));
+  return bookedDaysID.map((date: any) => date.id);
+}
+
+async function updateStatus_and_publishEvent(order: HotelEntity, status: string) {
+  order = await order_manager.update_status(order, status);
+  rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
+}
+
+export async function handle_req_from_order_management(msg: string) {
+  let order_info: HotelOrderDTO;
+
+  order_info = await parse_request(msg, hotel_info_schema);
+
   const orderExists = await order_manager.check_existance(order_info.order_id);
-  if(orderExists)
-  {
+  if (orderExists) {
     console.log("[HOTEL SERVICE] Order already exists");
-    await rabbitPub.publish_to_order_management({ id: order_info.order_id , status: DENIED });
+    await rabbitPub.publish_to_order_management({ id: order_info.order_id, status: DENIED });
     return;
   }
   console.log("[HOTEL SERVICE] Order does not exist, creating order");
-  let order: HotelEntity | null = await order_manager.create_order(order_info);
+
+  let order: HotelEntity = await order_manager.create_order(order_info);
   if (!order) {
     console.log("[HOTEL SERVICE] Error creating order");
     await rabbitPub.publish_to_order_management({ id: order_info.order_id, status: DENIED });
     return;
   }
-    const dateRecords = await storage_db.getDateIdsForRange(new Date(order.from), new Date(order.to))
-    const dateIds = dateRecords.map((date: any) => date.id);
-    if (dateIds.length === 0) {
-      rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-      return;
-    }
-    const roomAvailable = await storage_db.areRoomsAvailable(dateIds, order.room);
-    if(!roomAvailable) {
-      console.log("[HOTEL SERVICE] Room is not available for the entire date range.");
-      order = await order_manager.update_status(order, DENIED);
-      rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-      return;
-    }
-    
-    await storage_db.updateRoomAvailability(dateIds, order.room);
-    console.log(`[HOTEL SERVICE] Room ${order.room} has been successfully booked.`);
-    order = await order_manager.update_status(order, APPROVED);
-    rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
+  const bookedDays = await getBookedDays(order);
+
+  if (!bookedDays) {
+    console.log("[HOTEL SERVICE] No dates found for the requested range.");
+    await updateStatus_and_publishEvent(order, DENIED);
     return;
+  }
+  const roomAvailable = await storage_db.areRoomsAvailable(bookedDays, order.room);
+  if (!roomAvailable) {
+    console.log("[HOTEL SERVICE] Room is not available for the entire date range.");
+    await updateStatus_and_publishEvent(order, DENIED);
+    return;
+  }
+  await storage_db.updateRoomAvailability(bookedDays, order.room);
+  await updateStatus_and_publishEvent(order, APPROVED);
+  return;
 }
+
+
 
 export async function handle_cancel_request(order_id: string) {
 
-  if (await order_manager.check_existance(order_id)) {
+  const orderExists = await order_manager.check_existance(order_id);
 
-    let order = await order_manager.get_order_info(order_id);
-
-    if (order && order.renting_status === APPROVED) {
-
-      let dateRecords = await storage_db.getDateIdsForRange(new Date(order.from), new Date(order.to))
-      const dateIds = dateRecords.map((date: any) => date.id);
-
-      if (dateIds.length === 0) {
-        console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
-        order = await order_manager.update_status(order, DENIED)
-        rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-        return;
-      }
-
-      if (await storage_db.restoreRoomAvailability(dateIds, order.room)) {
-        order = await order_manager.update_status(order, CANCELLED)
-        rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-      }
-      else {
-        order = await order_manager.update_status(order, DENIED)
-        rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-      }
-
-    }
-    else {
-      console.log("[HOTEL SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
-      rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
-    }
-  } else {
+  if (!orderExists) {
     console.log("[HOTEL SERVICE] Order with id: ", order_id, "does not exist");
     rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
+    return;
   }
+
+  let order = await order_manager.get_order_info(order_id)!;
+
+  if (order.status !== APPROVED) {
+    console.log("[HOTEL SERVICE] Order with id: ", order_id, "is not approved, cannot cancel");
+    rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
+  }
+
+  const bookedDays = await getBookedDays(order);
+
+  if (!bookedDays) {
+    console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
+    await updateStatus_and_publishEvent(order, DENIED);
+    return;
+  }
+
+  const roomAvailabilityRestored = await storage_db.restoreRoomAvailability(bookedDays, order.room);
+  if (!roomAvailabilityRestored) {
+    await updateStatus_and_publishEvent(order, DENIED);
+    return
+  }
+  await updateStatus_and_publishEvent(order, CANCELLED);
 }
 

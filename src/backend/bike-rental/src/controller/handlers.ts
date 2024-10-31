@@ -27,6 +27,7 @@ async function parse_request(msg: string, schema: any) {
     return schema.parse((JSON.parse(msg)));
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
+    rabbitPub.publish_to_order_management({ id: "", status: DENIED });
     return;
   }
 }
