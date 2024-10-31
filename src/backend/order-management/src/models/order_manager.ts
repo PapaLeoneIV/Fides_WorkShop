@@ -1,6 +1,6 @@
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import { PENDING } from "../config/status";
-import OrderRequestDTO from "../dtos/OrderRequest.dto";
+import {OrderRequestDTO} from "../dtos/OrderRequest.dto";
 import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();

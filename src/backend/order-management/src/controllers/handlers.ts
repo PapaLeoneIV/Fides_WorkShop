@@ -1,10 +1,12 @@
 import { order as OrderEntity } from "@prisma/client";
-
-import OrderRequestDTO from "../dtos/OrderRequest.dto";
 import { rabbitPub, orderManagerDB } from "../models/index";
 import { response_schema, order_info_schema } from "../zodschema/index";
 import { DENIED, APPROVED, ERROR, CANCELLED, PENDING } from "../config/status";
-
+import { BikeOrderDTO } from "../dtos/BikeOrder.dto";
+import { HotelOrderDTO } from "../dtos/HotelOrder.dto";
+import { PaymentOrderDTO } from "../dtos/PaymentOrder.dto";
+import { OrderRequestDTO } from "../dtos/OrderRequest.dto";
+import { OrderResponseDTO } from "../dtos/OrderResponse.dto";
 
 
 function parse_data_from_response(msg: string) {
@@ -23,11 +25,10 @@ export async function handle_req_from_frontend(msg: string) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
   }
-
-
+  
   const order = await orderManagerDB.create_order(data);
 
-  const bike_order = {
+  const bike_order : BikeOrderDTO = {
     order_id: order.id,
     road_bike_requested: order.road_bike_requested,
     dirt_bike_requested: order.dirt_bike_requested,
@@ -36,7 +37,7 @@ export async function handle_req_from_frontend(msg: string) {
     updated_at: order.updated_at
   };
 
-  const hotel_order = {
+  const hotel_order : HotelOrderDTO = {
     order_id: order.id,
     to: order.to,
     from: order.from,
@@ -46,13 +47,15 @@ export async function handle_req_from_frontend(msg: string) {
     updated_at: order.updated_at
   };
 
-  rabbitPub.publish_to_bike_orderEvent(JSON.stringify(bike_order));
-  rabbitPub.publish_to_hotel_orderEvent(JSON.stringify(hotel_order));
+
+  
+  rabbitPub.publish_to_bike_orderEvent(bike_order);
+  rabbitPub.publish_to_hotel_orderEvent(hotel_order);
 
 }
 
 export async function handle_res_from_bike(msg: string) {
-  let data: { id: string, status: string };
+  let data: OrderResponseDTO;
   let order: OrderEntity;
   try {
     data = parse_data_from_response(msg)
@@ -77,7 +80,7 @@ export async function handle_res_from_bike(msg: string) {
     }
     console.log(`[ORDER SERVICE] Bike service denied the request, cancelling hotel...`);
     await orderManagerDB.update_bike_status(order.id, CANCELLED);
-    rabbitPub.publish_cancel_bike_orderEvent(order.id);
+    rabbitPub.publish_cancel_hotel_orderEvent(order.id);
     return;
   }
 
@@ -86,7 +89,7 @@ export async function handle_res_from_bike(msg: string) {
 }
 
 export async function handle_res_from_hotel(msg: string) {
-  let data: { id: string, status: string };
+  let data: OrderResponseDTO;
   let order: OrderEntity;
   try {
     data = parse_data_from_response(msg)
@@ -109,7 +112,7 @@ export async function handle_res_from_hotel(msg: string) {
       console.log(`[ORDER SERVICE] Cancelling payment order...`);
       await orderManagerDB.update_payment_status(order.id, CANCELLED);
     }
-    rabbitPub.publish_bike_orderEvent(JSON.stringify(order.id));
+    rabbitPub.publish_cancel_bike_orderEvent(order.id);
     return;
   }
 
@@ -122,10 +125,9 @@ export async function handle_res_from_hotel(msg: string) {
 export async function handle_res_from_payment(msg: string) {
 
   console.log(`[ORDER SERVICE] Received Response from payment service:`, msg);
-  let data: { id: string, status: string };
+  let data: OrderResponseDTO;
   try {
     data = parse_data_from_response(msg)
-
   } catch (error) {
     console.error(`[ORDER SERVICE] Error while parsing bike response:`, error);
     return;
@@ -136,7 +138,7 @@ export async function handle_res_from_payment(msg: string) {
   order = await orderManagerDB.update_payment_status(data.id, data.status);
   if (order.payment_status !== APPROVED) {
     console.log(`[ORDER SERVICE] Payment failed, reverting bike and hotel orders`);
-    rabbitPub.publish_bike_orderEvent(data.id);
+    rabbitPub.publish_cancel_hotel_orderEvent(data.id);
     rabbitPub.publish_cancel_bike_orderEvent(data.id);
     return;
   }
@@ -163,10 +165,14 @@ export async function handle_order_status(order_id: string, retries = 0) {
   try {
     console.log("[ORDER SERVICE] Handling order status for order:", order_id);
 
-    let order: OrderEntity | null = await orderManagerDB.get_order(order_id);
+    let order: OrderEntity | null;
+    let payment_order: PaymentOrderDTO;
+    
+    order = await orderManagerDB.get_order(order_id);
 
     if (!order) {
       console.error(`[ORDER SERVICE] No order found with ID: ${order_id}`);
+      //TODO send response to UI
       return;
     }
 
@@ -179,8 +185,8 @@ export async function handle_order_status(order_id: string, retries = 0) {
         }, TIMEOUT);
       } else {
         console.log(`[ORDER SERVICE] Max retries reached for order: ${order_id}. Cancelling...`);
-        rabbitPub.publish_bike_orderEvent(JSON.stringify(order_id));
-        rabbitPub.publish_cancel_bike_orderEvent(JSON.stringify(order_id));
+        rabbitPub.publish_cancel_bike_orderEvent(order_id);
+        rabbitPub.publish_cancel_hotel_orderEvent(order_id);
       }
       return;
     }
@@ -200,14 +206,14 @@ export async function handle_order_status(order_id: string, retries = 0) {
     if (order.bike_status === APPROVED && order.hotel_status === APPROVED && order.payment_status === PENDING) {
       console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
 
-      const payment_order = {
+      payment_order = {
         id: order.id,
         amount: order.amount,
         created_at: order.created_at,
         updated_at: order.updated_at
       };
 
-      rabbitPub.publish_payment_orderEvent(JSON.stringify(payment_order));
+      rabbitPub.publish_payment_orderEvent(payment_order);
       console.log("[ORDER SERVICE] Sent order to payment service");
     }
 

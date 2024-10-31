@@ -3,6 +3,8 @@ import { handle_req_from_order_management, handle_cancel_request } from "../cont
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 import * as tsyringe from "tsyringe";
+import { OrderResponseDTO } from "../dtos/orderResponse.dto";
+
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
@@ -42,7 +44,7 @@ class RabbitClient {
       console.error(`[BIKE SERVICE] Error setting up event exchange:`, error);
     }
   }
-  async publishEvent(exchange: string, routingKey: string, message: any): Promise<boolean> {
+  async publishEvent(exchange: string, routingKey: string, message: OrderResponseDTO): Promise<boolean> {
 
     try {
       if (!this.channel) {
@@ -52,7 +54,7 @@ class RabbitClient {
       return this.channel.publish(
         exchange,
         routingKey, // No routing key needed for fanout
-        Buffer.from(message),
+        Buffer.from(JSON.stringify(message)),
         {
           //TODO se necessario continuare a customizzare il channel
           appId: "BikerService",
@@ -117,12 +119,12 @@ class RabbitPublisher extends RabbitClient {
   }
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
   //TODO muovere tutte le roouting key in un file di configurazione
-  publish_to_order_management = async (body: string): Promise<void> => {
+  publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
-  publish_to_order_managementSAGA = async (body: string): Promise<void> => {
+  publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "bike_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);

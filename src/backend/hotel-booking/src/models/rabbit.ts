@@ -3,6 +3,7 @@ import { handle_req_from_order_management, handle_cancel_request } from "../cont
 import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 import * as tsyringe from "tsyringe";
+import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
@@ -44,7 +45,7 @@ class RabbitClient {
       console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
     }
   }
-  async publishEvent(exchange: string, routingKey: string, message: any): Promise<boolean> {
+  async publishEvent(exchange: string, routingKey: string, message: OrderResponseDTO): Promise<boolean> {
 
     try {
       if (!this.channel) {
@@ -54,7 +55,7 @@ class RabbitClient {
       return this.channel.publish(
         exchange,
         routingKey, // No routing key needed for fanout
-        Buffer.from(message),
+        Buffer.from(JSON.stringify(message)),
         {
           //TODO se necessario continuare a customizzare il channel
           appId: "HotelService",
@@ -114,12 +115,12 @@ class RabbitClient {
 @tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   //----------------------SEND----------------------------------
-  publish_to_order_management = async (body: string): Promise<void> => {
+  publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "hotel_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
-  publish_to_order_managementSAGA = async (body: string): Promise<void> => {
+  publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service: ${body}`);
     const routingKey = "hotel_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);

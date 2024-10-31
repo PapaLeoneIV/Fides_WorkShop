@@ -1,4 +1,4 @@
-export default interface OrderRequestDTO {
+export interface OrderRequestDTO {
     from: string;
     to: string;
     room: string;
