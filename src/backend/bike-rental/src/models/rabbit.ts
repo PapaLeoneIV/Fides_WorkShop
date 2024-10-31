@@ -2,7 +2,8 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
+
 import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 
 
@@ -112,7 +113,7 @@ class RabbitClient {
 }
 
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   constructor() {
     super();
@@ -120,18 +121,18 @@ class RabbitPublisher extends RabbitClient {
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
   //TODO muovere tutte le roouting key in un file di configurazione
   publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
-    console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[BIKE SERVICE] Sending to Order Management Service: `, body);
     const routingKey = "bike_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
   publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
-    console.log(`[BIKE SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[BIKE SERVICE] Sending to Order Management Service:`,  body);
     const routingKey = "bike_saga_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   }
 }
 
-@tsyringe.singleton() 
+//@tsyringe.singleton() 
 class RabbitSubscriber extends RabbitClient {
   constructor() {
     super();

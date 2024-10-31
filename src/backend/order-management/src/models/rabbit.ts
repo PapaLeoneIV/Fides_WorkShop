@@ -2,7 +2,7 @@ import client, { Connection, Channel } from "amqplib";
 import * as queue from "../config/rabbit";
 import { handle_req_from_frontend, handle_res_from_bike, handle_res_from_hotel, handle_res_from_payment } from "../controllers/handlers";
 import { rmqUser, rmqPass, rmqhost, Exchange } from "../config/rabbit";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
 import { BikeOrderDTO } from "../dtos/BikeOrder.dto";
 import { HotelOrderDTO } from "../dtos/HotelOrder.dto";
 import { PaymentOrderDTO } from "../dtos/PaymentOrder.dto";
@@ -119,7 +119,7 @@ class RabbitClient {
 
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   constructor() {
     super();
@@ -160,7 +160,7 @@ class RabbitPublisher extends RabbitClient {
   }
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient {
   constructor() {
     super();

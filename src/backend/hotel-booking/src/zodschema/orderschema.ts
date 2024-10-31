@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-let hotel_info_schema = z.object({
+export const hotel_info_schema = z.object({
   order_id: z.string(),
   to: z.string(),
   from: z.string(),
@@ -9,5 +9,3 @@ let hotel_info_schema = z.object({
   created_at: z.string().transform((val) => new Date(val)),
   updated_at: z.string().transform((val) => new Date(val)),
 });
-
-export default hotel_info_schema;

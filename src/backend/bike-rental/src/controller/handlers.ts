@@ -4,6 +4,7 @@ import { bike_info_schema } from "../zodschema/bikeschema";
 import { cancel_req_schema } from "../zodschema/cancel_req_schema";
 import { APPROVED, CANCELLED, DENIED } from "../config/status";
 import { order as BikeEntity } from "@prisma/client";
+import { string } from "zod";
 
 
 
@@ -24,10 +25,13 @@ async function updateOrder_and_publishEvent(order: BikeEntity, status: string) {
 
 async function parse_request(msg: string, schema: any) {
   try {
-    return schema.parse((JSON.parse(msg)));
+    let parsedMessage = JSON.parse(msg);
+    if (typeof parsedMessage === "string") return parsedMessage;
+    else return schema.parse(parsedMessage);
   } catch (error) {
     console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    return;
+    rabbitPub.publish_to_order_management({ id: "", status: DENIED });
+    throw new Error("Error while parsing message");
   }
 }
 

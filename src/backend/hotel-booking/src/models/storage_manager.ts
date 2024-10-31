@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();
 
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class HotelDBRepository {
 
     async getDateIdsForRange (from: Date, to: Date): Promise<any> {

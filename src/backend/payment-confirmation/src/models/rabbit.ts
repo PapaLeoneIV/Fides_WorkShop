@@ -2,7 +2,7 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management } from "../controllers/handlers";
 import { PAYMENT_SERVICE_RESP_PAYMENT_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
-import * as tsyringe from "tsyringe";
+//import * as tsyringe from "tsyringe";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
@@ -110,20 +110,20 @@ class RabbitClient {
 
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient
 {
   constructor() {
     super();
   }
   publish_to_order_management = async (body: string): Promise<void> => {
-    console.log(`[PAYMENT SERVICE] Sending to Order Management Service: ${body}`);
+    console.log(`[PAYMENT SERVICE] Sending to Order Management Service: `, body);
     const routingKey = "payment_main_listener";
     this.publishEvent("OrderEventExchange", routingKey, body);
   };
 }
 
-@tsyringe.singleton()
+//@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient
 {
   constructor() {
