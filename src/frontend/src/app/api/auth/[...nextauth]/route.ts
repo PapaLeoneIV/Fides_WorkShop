@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
-const baseUrl = "http://localhost:6969" 
+const baseUrl = "http://localhost:/frontpage" 
 
 const authOptions: AuthOptions = {
     providers: [
