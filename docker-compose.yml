@@ -36,7 +36,7 @@ services:
       - ./src/backend/bike-rental:/app
       - ./src/backend/bike-rental/package.json:/app/package.json
     env_file:
-      - .env.temp
+      - .env
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_BIKE}
@@ -68,7 +68,7 @@ services:
       - ./src/backend/hotel-booking:/app
       - ./src/backend/hotel-booking/package.json:/app/package.json
     env_file:
-      - .env.temp
+      - .env
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_HOTEL}
@@ -97,7 +97,7 @@ services:
       - ./src/backend/payment-confirmation:/app
       - ./src/backend/payment-confirmation/package.json:/app/package.json
     env_file:
-      - .env.temp
+      - .env
     environment:
       NODE_ENV: ${NODE_ENV}
       POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
@@ -166,13 +166,29 @@ services:
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_PORT: ${RABBITMQ_PORT}
     env_file:
-      - .env.temp
+      - .env
     networks:
       - app_network
     ports:
       - "3004:3000"
       - "5559:5559" #prisma studio
     restart: always
+  congif-service:
+    container_name: config-service
+    build: ./src/backend/config
+    command: >
+      sh -c "npm install \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/config:/app
+      - ./src/backend/config/package.json:/app/package.json
+    networks:
+      - app_network
+    ports:
+      - "3005:3000"
+    restart: always
+    
+  
 #--------------------------------- -  -
 #----------------------------DATABASES
 #------------------------- -  - --  -  --
@@ -288,7 +304,7 @@ services:
     container_name: rabbitmq
     image: rabbitmq:3-management
     env_file:
-      - .env.temp
+      - .env
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
