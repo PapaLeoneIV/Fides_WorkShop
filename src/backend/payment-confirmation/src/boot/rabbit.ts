@@ -1,7 +1,7 @@
 import { rabbitPub, rabbitSub } from "../models/index";
 import { PAYMENT_SERVICE_RESP_PAYMENT_QUEUE } from "../config/rabbit";
 
-const paymentKeysUrl = "http://localhost:3000/config/paymentKeys";
+const paymentKeysUrl = "http://config-service:3000/config/paymentKeys";
 
 async function bootstrapRabbitConfig() {
 

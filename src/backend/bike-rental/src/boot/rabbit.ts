@@ -1,7 +1,7 @@
 import { rabbitSub, rabbitPub } from "../models";
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 
-const bikeKeysUrl = "http://localhost:3000/config/bikeKeys";
+const bikeKeysUrl = "http://config-service:3000/config/bikeKeys";
 
 
 async function bootstrapRabbitConfig() {

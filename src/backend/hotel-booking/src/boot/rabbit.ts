@@ -1,7 +1,7 @@
 import { rabbitPub, rabbitSub } from "../models/index";
 import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 
-const bikeKeysUrl = "http://localhost:3000/config/hotelKeys";
+const bikeKeysUrl = "http://config-service:3000/config/hotelKeys";
 
 
 

@@ -2,7 +2,7 @@ import {rabbitPub, rabbitSub} from "../models/";
 import { ORDER_SERVICE_BIKE_RESP, ORDER_SERVICE_HOTEL_RESP, ORDER_SERVICE_SAGA_BIKE_RESP, ORDER_SERVICE_SAGA_HOTEL_RESP, ORDER_SERVICE_RESP_PAYMENT, ORDER_SERVICE_REQ_BOOKING } from "../config/rabbit";
 
 
-const bindingKeysUrl = "http://localhost:3000/config/orderKeys";
+const bindingKeysUrl = "http://config-service:3000/config/orderKeys";
 
 async function bootstrapRabbitConfig() {
     
