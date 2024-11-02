@@ -1,12 +1,12 @@
 interface HotelBindingKey {
-    ConsumehotelOrder: string;
-    ConsumehotelSAGAOrder: string;
-    PublishhotelOrder: string;
+    ConsumeHotelOrder: string;
+    ConsumeHotelSAGAOrder: string;
+    PublishHotelOrder: string;
     PublishhotelSAGAOrder: string;
 }
 export const Hotelconfig: HotelBindingKey = {
-    ConsumehotelOrder: "BDhotel_request",
-    ConsumehotelSAGAOrder: "BDhotel_SAGA_request",
-    PublishhotelOrder: "hotel_main_listener",
+    ConsumeHotelOrder: "BDhotel_request",
+    ConsumeHotelSAGAOrder: "BDhotel_SAGA_request",
+    PublishHotelOrder: "hotel_main_listener",
     PublishhotelSAGAOrder: "hotel_saga_listener"
 };  

@@ -5,7 +5,7 @@ async function main() {
 
     await bootService();
     
-    rabbitSub.consumeBikeOrder();
+    rabbitSub.ConsumeBikeOrder();
     rabbitSub.consumecancelBikeOrder();
 }
 

@@ -1,7 +1,14 @@
 import {rabbitPub, rabbitSub} from "../models/";
-import { ORDER_SERVICE_BIKE_RESP_QUEUE, ORDER_SERVICE_HOTEL_RESP_QUEUE, ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE, ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE, ORDER_SERVICE_RESP_PAYMENT_QUEUE, ORDER_SERVICE_REQ_BOOKING_QUEUE } from "../config/rabbit";
+import { ORDER_SERVICE_BIKE_RESP, ORDER_SERVICE_HOTEL_RESP, ORDER_SERVICE_SAGA_BIKE_RESP, ORDER_SERVICE_SAGA_HOTEL_RESP, ORDER_SERVICE_RESP_PAYMENT, ORDER_SERVICE_REQ_BOOKING } from "../config/rabbit";
+
+
+const bindingKeysUrl = "http://localhost:3000/config/orderKeys";
 
 async function bootstrapRabbitConfig() {
+    
+    rabbitPub.bindKeys = await rabbitPub.requestBindingKeys(bindingKeysUrl);
+    rabbitSub.bindKeys = await rabbitSub.requestBindingKeys(bindingKeysUrl);
+    
     console.log("[ORDER SERVICE]PUB Connecting to RabbitMQ...");
     await rabbitPub.connect();
     console.log("[ORDER SERVICE]SUB Connecting to RabbitMQ...");
@@ -13,12 +20,12 @@ async function bootstrapRabbitConfig() {
 
     console.log("[ORDER SERVICE]Setting up queues");
     
-    await rabbitSub.createQueue(ORDER_SERVICE_BIKE_RESP_QUEUE);
-    await rabbitSub.createQueue(ORDER_SERVICE_HOTEL_RESP_QUEUE);
-    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_BIKE_RESP_QUEUE);
-    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_HOTEL_RESP_QUEUE);
-    await rabbitSub.createQueue(ORDER_SERVICE_RESP_PAYMENT_QUEUE);
-    await rabbitSub.createQueue(ORDER_SERVICE_REQ_BOOKING_QUEUE);
+    await rabbitSub.createQueue(ORDER_SERVICE_BIKE_RESP);
+    await rabbitSub.createQueue(ORDER_SERVICE_HOTEL_RESP);
+    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_BIKE_RESP);
+    await rabbitSub.createQueue(ORDER_SERVICE_SAGA_HOTEL_RESP);
+    await rabbitSub.createQueue(ORDER_SERVICE_RESP_PAYMENT);
+    await rabbitSub.createQueue(ORDER_SERVICE_REQ_BOOKING);
 }
 
 export {

@@ -1,9 +1,9 @@
 import express from 'express';
 import { handleBikeKeys, handleHotelKeys, handlePaymentKeys, handleOrderKeys } from '../controller/handlers';
 
-const router = express.Router();
-
 const app = express ();
+
+const router = express.Router();
 
 router.get('/bikeKeys', handleBikeKeys);
 

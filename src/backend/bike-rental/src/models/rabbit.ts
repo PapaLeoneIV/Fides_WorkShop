@@ -1,6 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
+import { RabbitBindingKeysDTO } from "../dtos/rabbitBindingKeys.dto";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 //import * as tsyringe from "tsyringe";
 
@@ -10,6 +11,7 @@ import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
 class RabbitClient {
+  bindKeys!:  RabbitBindingKeysDTO;
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -79,7 +81,6 @@ class RabbitClient {
     }
 
   }
-
   async createQueue(queue: string) {
     await this.channel.assertQueue(queue, {
       durable: true,
@@ -108,7 +109,11 @@ class RabbitClient {
       }
     );
   }
-
+  async requestBindingKeys(url: string): Promise<RabbitBindingKeysDTO> {
+    console.log(`[BIKE SERVICE] Requesting binding keys from: ${url}`);
+    const response = await fetch(url, {method: "GET"});
+    return await response.json();
+  }
 
 }
 
@@ -116,19 +121,18 @@ class RabbitClient {
 //@tsyringe.singleton()
 class RabbitPublisher extends RabbitClient {
   constructor() {
+    
     super();
   }
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
   //TODO muovere tutte le roouting key in un file di configurazione
   publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: `, body);
-    const routingKey = "bike_main_listener";
-    this.publishEvent("OrderEventExchange", routingKey, body);
+    this.publishEvent("OrderEventExchange", this.bindKeys.PublishBikeOrder, body);
   }
   publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service:`,  body);
-    const routingKey = "bike_saga_listener";
-    this.publishEvent("OrderEventExchange", routingKey, body);
+    this.publishEvent("OrderEventExchange", this.bindKeys.PublishbikeSAGAOrder, body);
   }
 }
 
@@ -140,16 +144,16 @@ class RabbitSubscriber extends RabbitClient {
 
   //---------------------------CONSUME--------------------------
 
-  consumeBikeOrder = async () => {
+  ConsumeBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
     const routingKey = "BDbike_request";
-    this.consume(BIKE_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", routingKey, (msg) => handle_req_from_order_management(msg));
+    this.consume(BIKE_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeBikeOrder, (msg) => handle_req_from_order_management(msg));
   };
 
   consumecancelBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders cancellation requests...");
     const routingKey = "BDbike_SAGA_request";
-    this.consume(BIKE_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", routingKey,(msg) => handle_cancel_request(msg));
+    this.consume(BIKE_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeBikeSAGAOrder,(msg) => handle_cancel_request(msg));
   }
 }
 

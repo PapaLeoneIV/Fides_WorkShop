@@ -6,7 +6,7 @@ async function main() {
  
     await bootService();
 
-    rabbitSub.consumeHotelOrder()
+    rabbitSub.ConsumeHotelOrder()
     rabbitSub.consumecancelHotelOrder()
 }
 
