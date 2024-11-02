@@ -1,38 +1,14 @@
 import { rabbitPub, orderManager, bikeDBManager } from "../models/index";
 import BikeOrderDTO from "../dtos/bikeOrder.dto";
-import { bike_info_schema } from "../zodschema/bikeschema";
-import { cancel_req_schema } from "../zodschema/cancel_req_schema";
+import { bike_info_schema } from "../parser/bikeschema";
+import { cancel_req_schema } from "../parser/cancel_req_schema";
 import { APPROVED, CANCELLED, DENIED } from "../config/status";
 import { order as BikeEntity } from "@prisma/client";
-import { string } from "zod";
-
-
-
-async function checkBikeAvailability(order: BikeEntity): Promise<boolean> {
-  const availableDirtBikes = await bikeDBManager.get_number_dirt_bikes();
-  const availableRoadBikes = await bikeDBManager.get_number_road_bikes();
-  return (
-    availableDirtBikes >= order.dirt_bike_requested &&
-    availableRoadBikes >= order.road_bike_requested
-  );
-}
+import { parse_request } from "../parser/helper";
 
 async function updateOrder_and_publishEvent(order: BikeEntity, status: string) {
   order = await orderManager.update_status(order, status);
   rabbitPub.publish_to_order_management({ id: order.order_id, status: order.renting_status });
-}
-
-
-async function parse_request(msg: string, schema: any) {
-  try {
-    let parsedMessage = JSON.parse(msg);
-    if (typeof parsedMessage === "string") return parsedMessage;
-    else return schema.parse(parsedMessage);
-  } catch (error) {
-    console.error(`[BIKE SERVICE] Error while parsing message:`, error);
-    rabbitPub.publish_to_order_management({ id: "", status: DENIED });
-    throw new Error("Error while parsing message");
-  }
 }
 
 export async function handle_req_from_order_management(msg: string) {
@@ -51,7 +27,7 @@ export async function handle_req_from_order_management(msg: string) {
 
   let order: BikeEntity = await orderManager.create_order(order_info);
 
-  const hasSufficientBikes = await checkBikeAvailability(order);
+  const hasSufficientBikes = await bikeDBManager.check_availability(order.road_bike_requested, order.dirt_bike_requested);
   if (hasSufficientBikes) 
   {
     await bikeDBManager.decrement_bike_count(order.road_bike_requested, order.dirt_bike_requested);

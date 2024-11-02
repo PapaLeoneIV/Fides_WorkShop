@@ -1,5 +1,5 @@
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
-import { PENDING } from "../config/status";
+import { PENDING, APPROVED, CANCELLED } from "../config/status";
 import {OrderRequestDTO} from "../dtos/OrderRequest.dto";
 //import * as tsyringe from "tsyringe";
 
@@ -116,6 +116,25 @@ class OrderManagerDB {
       },
     });
   }
+  async  order_still_pending(order: OrderEntity): Promise<boolean> {
+    return order.bike_status === PENDING || order.hotel_status === PENDING
+  }
+
+  async order_completed(order: OrderEntity): Promise<boolean> {
+    return order.bike_status === APPROVED && order.hotel_status === APPROVED && order.payment_status === PENDING
+  }
+
+  async order_needs_to_be_cancelled(order: OrderEntity): Promise<boolean> {
+    return order.bike_status === CANCELLED && order.hotel_status === CANCELLED && order.payment_status !== CANCELLED
+  }
+
+  async check_approval(order: OrderEntity): Promise<boolean> {
+    return order.bike_status === APPROVED && order.hotel_status === APPROVED && order.payment_status === APPROVED;
+  }
+
+
+
 }
 
 export default OrderManagerDB;
+

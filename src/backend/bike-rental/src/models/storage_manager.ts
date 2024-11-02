@@ -56,6 +56,16 @@ class BikeDBRepository {
       },
     });
   }
+
+  async check_availability(road_bikes: number, dirt_bikes: number): Promise<boolean> {
+    console.log("[BIKE SERVICE]", "Checking bike availability in the DB");
+    const availableDirtBikes = await this.get_number_dirt_bikes();
+    const availableRoadBikes = await this.get_number_road_bikes();
+    return (
+      availableDirtBikes >= dirt_bikes &&
+      availableRoadBikes >= road_bikes
+    );
+  }
 }
 
 export default BikeDBRepository;

@@ -3,25 +3,10 @@ import HotelOrderDTO from "../dtos/hotelOrder.dto";
 import { rabbitPub } from "../models";
 import { order_manager } from "../models";
 import { storage_db } from "../models";
-import { hotel_info_schema } from "../zodschema/orderschema";
+import { hotel_info_schema } from "../parser/orderschema";
 import { DENIED, APPROVED, CANCELLED } from "../config/status";
+import { parse_request } from "../parser/helpers";
 
-
-async function parse_request(msg: string, schema: any) {
-  try {
-    return schema.parse((JSON.parse(msg)));
-  } catch (error) {
-    console.error(`[HOTEL SERVICE] Error while parsing message:`, error);
-    await rabbitPub.publish_to_order_management({ id: "", status: DENIED });
-    return;
-  }
-
-}
-
-async function getBookedDays(order: HotelEntity): Promise<number[]> {
-  let bookedDaysID =  await storage_db.getDateIdsForRange(new Date(order.from), new Date(order.to));
-  return bookedDaysID.map((date: any) => date.id);
-}
 
 async function updateStatus_and_publishEvent(order: HotelEntity, status: string) {
   order = await order_manager.update_status(order, status);
@@ -47,7 +32,7 @@ export async function handle_req_from_order_management(msg: string) {
     await rabbitPub.publish_to_order_management({ id: order_info.order_id, status: DENIED });
     return;
   }
-  const n_bookedDays = await getBookedDays(order);
+  const n_bookedDays = await storage_db.getBookedDays(order);
 
   if (!n_bookedDays) {
     console.log("[HOTEL SERVICE] No dates found for the requested range.");
@@ -90,7 +75,7 @@ export async function handle_cancel_request(order_id: string) {
       rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
     }
 
-    const n_bookedDays = await getBookedDays(order)!;
+    const n_bookedDays = await await storage_db.getBookedDays(order)!;
 
     if (!n_bookedDays) {
       console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");

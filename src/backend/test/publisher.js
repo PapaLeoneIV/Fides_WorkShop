@@ -2,8 +2,8 @@ import amqp from 'amqplib';
 
 const QUEUE = 'order_service_booking_request';
 const EXCHANGE = 'OrderEventExchange';
-const TOTAL_MESSAGES = 10;  // Adjust the total number of messages as needed
-const DELAY = 50;  // Delay in milliseconds between messages to simulate load
+const TOTAL_MESSAGES = 2;  // Adjust the total number of messages as needed
+const DELAY = 1;  // Delay in milliseconds between messages to simulate load
 
 async function publishMessage() {
     try {

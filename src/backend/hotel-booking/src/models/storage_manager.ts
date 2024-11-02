@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { order as HotelEntity, PrismaClient } from "@prisma/client";
 //import * as tsyringe from "tsyringe";
 
 const prisma = new PrismaClient();
@@ -77,6 +77,11 @@ class HotelDBRepository {
       if(res)
         return true;
       return false;
+    }
+
+    async getBookedDays(order: HotelEntity): Promise<number[]> {
+      let bookedDaysID =  await this.getDateIdsForRange(new Date(order.from), new Date(order.to));
+      return bookedDaysID.map((date: any) => date.id);
     }
   }
   
