@@ -173,15 +173,15 @@ services:
       - "3004:3000"
       - "5559:5559" #prisma studio
     restart: always
-  congif-service:
+  config_service:
     container_name: config-service
-    build: ./src/backend/config
+    build: ./src/backend/config_service/
     command: >
       sh -c "npm install \
       && npx tsx src/index.ts"
     volumes:
-      - ./src/backend/config:/app
-      - ./src/backend/config/package.json:/app/package.json
+      - ./src/backend/config_service:/app
+      - ./src/backend/config_service/package.json:/app/package.json
     networks:
       - app_network
     ports:
