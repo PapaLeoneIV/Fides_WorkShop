@@ -15,6 +15,8 @@ export async function handle_req_from_frontend(msg: string) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
   }
+
+  /*TODO check JWT TOKEN with auth service and get back user info*/
   const order = await orderManagerDB.create_order(data);
   
   rabbitPub.publish_to_bike_orderEvent({

@@ -45,3 +45,14 @@ export async function handleOrderKeys(req: Request, res: Response) {
     }
 
 }
+
+export async function handleAuthKeys(req: Request, res: Response) {
+    try {
+        const keys = configManager.getAuthBindingKeys();
+        console.log("[CONFIG SERVICE] Auth binding keys requested"); 
+        res.status(200).send(keys);
+    } catch (error) {
+        res.status(500).send
+    }
+
+}
