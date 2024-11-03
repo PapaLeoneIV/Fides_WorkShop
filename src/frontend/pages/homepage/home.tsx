@@ -29,6 +29,7 @@ export default function Home() {
 
   const handleSend = () => {
     const data = {
+      /*TODO JWT TOKEN */
       city,
       dates: {
         start: value.start.toISODate(),
