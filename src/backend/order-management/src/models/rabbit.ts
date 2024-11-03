@@ -167,9 +167,9 @@ class RabbitPublisher extends RabbitClient {
     this.publishEvent(Exchange, this.bindKeys.ConsumeHotelSAGAOrder, body);
   }
 
-  publish_user_info_requestEvent = async (body: string): Promise<void> => {
+/*   publish_user_info_requestEvent = async (body: string): Promise<void> => {
     this.publishEvent(Exchange, this.bindKeys.ConsumeUserInformationReq, body);
-  }
+  } */
 }
 
 //@tsyringe.singleton()
@@ -201,10 +201,10 @@ class RabbitSubscriber extends RabbitClient {
     this.consume(queue.ORDER_SERVICE_RESP_PAYMENT, Exchange, this.bindKeys.PublishPaymentOrder, (msg) => handle_res_from_payment(msg));
   };
 
-  consumeUserInfoResponse = async () => {
+/*   consumeUserInfoResponse = async () => {
     console.log("[ORDER SERVICE] Listening for user info responses...");
     this.consume(queue.ORDER_SERVICE_USER_INFO_RESP, Exchange, this.bindKeys.PublishUserInformationResp, (msg) => console.log(msg));
-  }
+  } */
   //---------------------------SAGA(REVERSE ORDER)---------------
 
   consumeHotelSagaResponse = async () => {

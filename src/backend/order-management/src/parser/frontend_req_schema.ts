@@ -7,6 +7,7 @@ const dateSchema = z.preprocess((arg) => {
 
 const order_info_schema = z.object({
   /*TODO JWT TOKEN*/
+    userJWT: z.string(),
     from: z.string(),
     to: z.string(),
     room: z.string().refine((val) => {

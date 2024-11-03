@@ -1,10 +1,20 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload }from "jsonwebtoken";
 
+interface UserPayload extends JwtPayload {
+    email: string;
+}
 export function generateAccessToken(email: string): string {
     return jwt.sign({email}, process.env.TOKEN_SECRET as string, { expiresIn: 1 } as jwt.SignOptions);
 }
 
-export function authenticateToken(token: string): string | object {
-    return jwt.verify(token, process.env.TOKEN_SECRET as string);
+export function authenticateToken(token: string) {
+    try {
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET as string) as UserPayload;
+        return decoded;
+    } catch (error) {
+        console.error("[TOKEN SERVICE] Invalid JWT Token:", error);
+        return null;
+    }
 }
+
 

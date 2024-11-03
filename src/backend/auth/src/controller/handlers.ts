@@ -1,6 +1,7 @@
 import { loginManager, rabbitPub } from "../models/index";
 import { generateAccessToken, authenticateToken } from "../jwt/jwt";
 import { registration_schema, login_schema } from "../zodschema/index";
+import { Request, Response } from "express";
 
 interface LoginDTO {
     password: string;
@@ -84,6 +85,37 @@ export async function handle_login_req(msg: string) {
     return;
 }
 
-export async function handle_user_info_req(msg: string){
+export async function validate_and_return_user_info(req: Request, res: Response){
+    let info: {email: string, token: string} = { email: '', token: '' };
+    try {
+        const data = JSON.parse(req.body);
+        info.token = data.token;
+        info.email = data.email;
+    } catch (error) {
+        console.log("[AUTH SERVICE] Invalid data format");
+        return;
+    }
+    let isJWTValid  = authenticateToken(info.token);
+    if (!isJWTValid) {
+        console.error("[AUTH SERVICE] JWT Token is invalid");
+        return;
+    }
+
+    if (info.email !== isJWTValid.email) {
+        console.error("[AUTH SERVICE] JWT Token is invalid");
+        return;
+    }
+
+    let userExist = await loginManager.get_user(info.email);
+    if (!userExist) {
+        console.error("[AUTH SERVICE] User does not exist");
+        return;
+    }
+
+    res.status(200).json(userExist);
+
     
 }
+/* export async function handle_user_info_req(msg: string){
+    
+} */
