@@ -146,13 +146,11 @@ class RabbitSubscriber extends RabbitClient {
 
   ConsumeBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
-    const routingKey = "BDbike_request";
     this.consume(BIKE_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeBikeOrder, (msg) => handle_req_from_order_management(msg));
   };
 
   consumecancelBikeOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders cancellation requests...");
-    const routingKey = "BDbike_SAGA_request";
     this.consume(BIKE_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeBikeSAGAOrder,(msg) => handle_cancel_request(msg));
   }
 }

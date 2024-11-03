@@ -146,25 +146,25 @@ class RabbitPublisher extends RabbitClient {
 
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
   publish_to_bike_orderEvent = async (body: BikeOrderDTO): Promise<void> => {
-    console.log(`[ORDER SERVICE] Sending to Bike Service: ${body}`);
-    this.publishEvent(Exchange, this.bindKeys.PublishBikeOrder, body);
+    console.log(`[ORDER SERVICE] Sending to Bike Service: `, body);
+    this.publishEvent(Exchange, this.bindKeys.ConsumeBikeOrder, body);
   };
   publish_to_hotel_orderEvent = async (body: HotelOrderDTO): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
-    this.publishEvent(Exchange, this.bindKeys.PublishHotelOrder, body);
+    this.publishEvent(Exchange, this.bindKeys.ConsumeHotelOrder, body);
   };
   publish_payment_orderEvent = async (body: PaymentOrderDTO): Promise<void> => {
     console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
-    this.publishEvent(Exchange, this.bindKeys.PublishPaymentOrder, body);
+    this.publishEvent(Exchange, this.bindKeys.ConsumePaymentOrder, body);
   };
 
   //---------------------------SAGA(REVERSE ORDER)---------------
   publish_cancel_bike_orderEvent = async (body: string): Promise<void> => {
-    this.publishEvent(Exchange, this.bindKeys.PublishbikeSAGAOrder, body);
+    this.publishEvent(Exchange, this.bindKeys.ConsumeBikeSAGAOrder, body);
   }
 
   publish_cancel_hotel_orderEvent = async (body: string): Promise<void> => {
-    this.publishEvent(Exchange, this.bindKeys.PublishhotelSAGAOrder, body);
+    this.publishEvent(Exchange, this.bindKeys.ConsumeHotelSAGAOrder, body);
   }
 }
 
@@ -183,29 +183,29 @@ class RabbitSubscriber extends RabbitClient {
 
   consumeBikeResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike responses...");
-    this.consume(queue.ORDER_SERVICE_BIKE_RESP, Exchange, this.bindKeys.ConsumeBikeOrder, (msg) => handle_res_from_bike(msg));
+    this.consume(queue.ORDER_SERVICE_BIKE_RESP, Exchange, this.bindKeys.PublishBikeOrder, (msg) => handle_res_from_bike(msg));
   };
 
   consumeHotelResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel responses...");
-    this.consume(queue.ORDER_SERVICE_HOTEL_RESP, Exchange, this.bindKeys.ConsumeHotelOrder, (msg) => handle_res_from_hotel(msg));
+    this.consume(queue.ORDER_SERVICE_HOTEL_RESP, Exchange, this.bindKeys.PublishHotelOrder, (msg) => handle_res_from_hotel(msg));
   };
 
 
   consumePaymentResponse = async () => {
     console.log("[ORDER SERVICE] Listening for payment responses...");
-    this.consume(queue.ORDER_SERVICE_RESP_PAYMENT, Exchange, this.bindKeys.ConsumePaymentOrder, (msg) => handle_res_from_payment(msg));
+    this.consume(queue.ORDER_SERVICE_RESP_PAYMENT, Exchange, this.bindKeys.PublishPaymentOrder, (msg) => handle_res_from_payment(msg));
   };
   //---------------------------SAGA(REVERSE ORDER)---------------
 
   consumeHotelSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for hotel saga responses...");
-    this.consume(queue.ORDER_SERVICE_SAGA_HOTEL_RESP, Exchange, this.bindKeys.ConsumeHotelSAGAOrder, (msg) => handle_res_from_hotel(msg));
+    this.consume(queue.ORDER_SERVICE_SAGA_HOTEL_RESP, Exchange, this.bindKeys.PublishhotelSAGAOrder, (msg) => handle_res_from_hotel(msg));
   };
 
   consumeBikeSagaResponse = async () => {
     console.log("[ORDER SERVICE] Listening for bike saga responses...");
-    this.consume(queue.ORDER_SERVICE_SAGA_BIKE_RESP, Exchange, this.bindKeys.ConsumeBikeSAGAOrder, (msg) => handle_res_from_bike(msg));
+    this.consume(queue.ORDER_SERVICE_SAGA_BIKE_RESP, Exchange, this.bindKeys.PublishbikeSAGAOrder, (msg) => handle_res_from_bike(msg));
   }
 
 
