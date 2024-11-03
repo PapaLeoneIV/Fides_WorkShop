@@ -11,8 +11,50 @@ export default function Home() {
     end: today(getLocalTimeZone()).add({ weeks: 1 }),
   });
 
-  let selectedDateStart = new Date(value.start.year, value.start.month, value.start.day);
-  let selectedDateEnd = new Date(value.end.year, value.end.month, value.end.day);
+  let [city, setCity] = React.useState("London");
+  let [roadBikeValue, setRoadBikeValue] = React.useState("");
+  let [mountainBikeValue, setMountainBikeValue] = React.useState("");
+
+  const handleCityChange = (selectedCity) => {
+    setCity(selectedCity);
+  };
+
+  const handleRoadBikeChange = (event) => {
+    setRoadBikeValue(event.target.value);
+  };
+
+  const handleMountainBikeChange = (event) => {
+    setMountainBikeValue(event.target.value);
+  };
+
+  const handleSend = () => {
+    const data = {
+      city,
+      dates: {
+        start: value.start.toISODate(),
+        end: value.end.toISODate(),
+      },
+      bikes: {
+        roadBike: roadBikeValue,
+        mountainBike: mountainBikeValue,
+      },
+    };
+
+    fetch(/*qui ci devo mettere l url di order service*/ "", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        // Handle the response from the server
+      })
+      .catch((error) => {
+        // Handle any errors
+      });
+  };
 
   return (
     <main className="flex items-center justify-center h-screen bg-softbrown">
@@ -26,12 +68,12 @@ export default function Home() {
                 <Button className="bg-blue-500">Select city</Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>London</DropdownItem>
-                <DropdownItem>Paris</DropdownItem>
-                <DropdownItem>New York</DropdownItem>
-                <DropdownItem>Rome</DropdownItem>
-                <DropdownItem>Milan</DropdownItem>
-                <DropdownItem>Madrid</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("London")}>London</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("Paris")}>Paris</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("New York")}>New York</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("Rome")}>Rome</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("Milan")}>Milan</DropdownItem>
+                <DropdownItem onClick={() => handleCityChange("Madrid")}>Madrid</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -52,6 +94,8 @@ export default function Home() {
                   type="number"
                   placeholder="Enter value"
                   className="w-32 border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                  value={roadBikeValue}
+                  onChange={handleRoadBikeChange}
                 />
               </div>
               <div className="flex flex-col items-center space-y-2">
@@ -60,10 +104,12 @@ export default function Home() {
                   type="number"
                   placeholder="Enter value"
                   className="w-32 border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                  value={mountainBikeValue}
+                  onChange={handleMountainBikeChange}
                 />
               </div>
             </div>
-            <Button className="bg-green-500 text-white mt-4 w-32">SEND</Button>
+            <Button className="bg-green-500 text-white mt-4 w-32" onClick={handleSend}>SEND</Button>
           </div>
         </div>
 
