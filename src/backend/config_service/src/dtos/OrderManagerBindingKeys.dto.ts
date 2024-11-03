@@ -14,6 +14,8 @@ interface OrderManagerBindingKey {
     ConsumePaymentOrder: string;
     PublishPaymentOrder: string;
 
+    PublishUserInformationResp: string;
+    ConsumeUserInformationReq: string;
 }
 
 export const Orderconfig: OrderManagerBindingKey = {
@@ -27,6 +29,8 @@ export const Orderconfig: OrderManagerBindingKey = {
     PublishHotelOrder: "hotel_main_listener",
     PublishhotelSAGAOrder: "hotel_saga_listener",
     ConsumePaymentOrder: "BDpayment_request",
-    PublishPaymentOrder: "payment_main_listener"
+    PublishPaymentOrder: "payment_main_listener",
+    PublishUserInformationResp: "auth_user_information_response",
+    ConsumeUserInformationReq: "auth_user_information_request"
 
 };

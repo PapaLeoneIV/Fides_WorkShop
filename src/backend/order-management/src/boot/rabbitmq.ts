@@ -1,5 +1,5 @@
 import {rabbitPub, rabbitSub} from "../models/";
-import { ORDER_SERVICE_BIKE_RESP, ORDER_SERVICE_HOTEL_RESP, ORDER_SERVICE_SAGA_BIKE_RESP, ORDER_SERVICE_SAGA_HOTEL_RESP, ORDER_SERVICE_RESP_PAYMENT, ORDER_SERVICE_REQ_BOOKING } from "../config/rabbit";
+import { ORDER_SERVICE_BIKE_RESP, ORDER_SERVICE_HOTEL_RESP, ORDER_SERVICE_SAGA_BIKE_RESP, ORDER_SERVICE_SAGA_HOTEL_RESP, ORDER_SERVICE_RESP_PAYMENT, ORDER_SERVICE_REQ_BOOKING, ORDER_SERVICE_USER_INFO_RESP} from "../config/rabbit";
 
 
 const bindingKeysUrl = "http://config-service:3000/config/orderKeys";
@@ -26,6 +26,7 @@ async function bootstrapRabbitConfig() {
     await rabbitSub.createQueue(ORDER_SERVICE_SAGA_HOTEL_RESP);
     await rabbitSub.createQueue(ORDER_SERVICE_RESP_PAYMENT);
     await rabbitSub.createQueue(ORDER_SERVICE_REQ_BOOKING);
+    await rabbitSub.createQueue(ORDER_SERVICE_USER_INFO_RESP);
 }
 
 export {

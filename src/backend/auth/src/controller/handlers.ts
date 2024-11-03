@@ -1,6 +1,6 @@
-import {loginManager, rabbitPub} from "../models/index";
+import { loginManager, rabbitPub } from "../models/index";
 import { generateAccessToken, authenticateToken } from "../jwt/jwt";
-import  {registration_schema, login_schema}  from "../zodschema/index";
+import { registration_schema, login_schema } from "../zodschema/index";
 
 interface LoginDTO {
     password: string;
@@ -8,7 +8,7 @@ interface LoginDTO {
     jwtToken?: string;
 }
 export async function handle_registration_req(msg: string) {
-    let registration_info: {email: string, password: string, jwtToken?: string};
+    let registration_info: LoginDTO;
 
     try {
         const data = JSON.parse(msg);
@@ -36,53 +36,54 @@ export async function handle_registration_req(msg: string) {
     return;
 }
 
-
 export async function handle_login_req(msg: string) {
-    let login_info: {email: string, password: string, jwtToken?: string};
+    let req_info: LoginDTO;
     let token: string;
 
     try {
         const data = JSON.parse(msg);
-        login_info = login_schema.parse(data);
+        req_info = login_schema.parse(data);
     } catch (error) {
         console.log("[AUTH SERVICE] Invalid data format");
         rabbitPub.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Invalid data format" }));
         return;
     }
-
-    if (await loginManager.check_existance(login_info.email)) {
-        console.log("[AUTH SERVICE] User exists");
-        let hashedPassword = await loginManager.get_user_password(login_info.email);
-        if (hashedPassword) {
-            if (await loginManager.compare_passwords(login_info.password, hashedPassword)) {
-                console.log("[AUTH SERVICE] User logged in successfully");
-                if (login_info.jwtToken) {
-                    let jwtToken = authenticateToken(login_info.jwtToken);
-                    if (jwtToken) {
-                        console.log("[AUTH SERVICE] JWT Token is valid");
-                        rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", error: "" }));
-                        return;
-                    }
-                    else {
-                        console.error("[AUTH SERVICE] JWT Token is invalid");
-                        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "JWT Token is invalid" }));
-                        return;
-                    }
-                }
-                token = generateAccessToken(login_info.email);
-                rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
-                return;
-            }
-            else {
-                console.error("[AUTH SERVICE] Wrong password");
-                rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "Wrong password" }));
-                return;
-            }
-        }
-    }
-    else {
+    const emailExist = await loginManager.check_existance(req_info.email);
+    if (!emailExist) {
         console.error("[AUTH SERVICE] User does not exist");
         rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "User does not exist" }));
         return;
     }
+
+    console.log("[AUTH SERVICE] User was found");
+
+    let hashedPassword = await loginManager.get_user_password(req_info.email);
+
+    let passwordMatch = await loginManager.compare_passwords(req_info.password, hashedPassword);
+    if (!passwordMatch) {
+        console.error("[AUTH SERVICE] Wrong password");
+        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "Wrong password" }));
+        return;
+    }
+
+    console.log("[AUTH SERVICE] User logged in successfully");
+
+    if (!req_info.jwtToken) {
+        console.log("[AUTH SERVICE] JWT Token not provided");
+        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "JWT Token not provided" }));
+        return;
+    }
+    let isJWTValid = authenticateToken(req_info.jwtToken);
+    if (!isJWTValid) {
+        console.error("[AUTH SERVICE] JWT Token is invalid");
+        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "JWT Token is invalid" }));
+        return;
+    }
+    token = generateAccessToken(req_info.email);
+    rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
+    return;
+}
+
+export async function handle_user_info_req(msg: string){
+    
 }

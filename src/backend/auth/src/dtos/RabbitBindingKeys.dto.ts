@@ -3,4 +3,6 @@ export interface RabbitBindingKeysDTO {
     PublishRegistrationReq: string;
     ConsumeLoginReq: string;
     ConsumeRegistrationReq: string;
+    PublishUserInformationResp: string;
+    ConsumeUserInformationReq: string;
 }

@@ -7,6 +7,7 @@ async function main() {
 
    //CONSUME
    rabbitSub.consumeBookingOrder();
+   rabbitSub.consumeUserInfoResponse();
    rabbitSub.consumeBikeResponse();
    rabbitSub.consumeHotelResponse();
    rabbitSub.consumePaymentResponse();

@@ -13,4 +13,7 @@ export interface RabbitBindingKeysDTO {
     PublishPaymentOrder: string,
     
     ConsumeBookingOrder: string,
+
+    ConsumeUserInformationReq: string,
+    PublishUserInformationResp: string
 }

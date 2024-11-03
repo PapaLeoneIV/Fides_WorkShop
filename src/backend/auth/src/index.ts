@@ -7,6 +7,7 @@ async function main(){
 
     await rabbitSub.consumeLoginRequest();
     await rabbitSub.consumeRegistrationRequest();
+    await rabbitSub.consumeUserInformationRequest();
 
 }
 

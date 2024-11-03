@@ -1,6 +1,6 @@
 import client, { Connection, Channel } from "amqplib";
 import { handle_login_req, handle_registration_req } from "../controller/handlers";
-import { LOGIN_QUEUE_REQUEST, REGISTRATION_QUEUE_REQUEST } from "../config/rabbit";
+import { LOGIN_QUEUE_REQUEST, REGISTRATION_QUEUE_REQUEST, USER_INFO_QUEUE } from "../config/rabbit";
 import { RabbitBindingKeysDTO } from "../dtos/RabbitBindingKeys.dto";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
 import { OrderResponseDTO } from "../dtos/orderResponse.dto";
@@ -128,6 +128,10 @@ export class RabbitSub extends RabbitClient {
     await this.consume(REGISTRATION_QUEUE_REQUEST,"OrderEventExchange", this.bindKeys.ConsumeLoginReq, (msg) =>  handle_registration_req(msg));
   }
 
+  async consumeUserInformationRequest() {
+    console.log(`[Auth SERVICE] Consuming user information request`);
+    await this.consume(USER_INFO_QUEUE,"OrderEventExchange", this.bindKeys.ConsumeUserInformationReq, (msg) => console.log(msg));
+  }
 
 }
 
@@ -140,5 +144,9 @@ export class RabbitPub extends RabbitClient {
 
   async sendRegistrationResp(message: any) {
     await this.publishEvent("OrderEventExchange", this.bindKeys.PublishRegistrationReq, message);
+  }
+
+  async sendUserInformationResp(message: any) {
+    await this.publishEvent("OrderEventExchange", this.bindKeys.PublishUserInformationResp, message);
   }
 }
