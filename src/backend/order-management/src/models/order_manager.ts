@@ -132,7 +132,9 @@ class OrderManagerDB {
     return order.bike_status === APPROVED && order.hotel_status === APPROVED && order.payment_status === APPROVED;
   }
 
-
+  async check_cancellation(order: OrderEntity): Promise<boolean> {
+    return order.bike_status === CANCELLED && order.hotel_status === CANCELLED && order.payment_status === CANCELLED;
+  }
 
 }
 

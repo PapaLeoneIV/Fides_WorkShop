@@ -128,7 +128,6 @@ export async function handle_payment_request(order_id: string, retries = 0) {
     return;
   }
   
-  order = await orderManagerDB.update_order(order);
 
   if (await orderManagerDB.order_needs_to_be_cancelled(order)) {
     //TODO send responose to UI
@@ -138,7 +137,6 @@ export async function handle_payment_request(order_id: string, retries = 0) {
     return;
   }
 
-  order = await orderManagerDB.update_order(order);
 
   if (await orderManagerDB.order_completed(order)) {
     console.log(`[ORDER SERVICE] Order is completed, sending request to payment service`, order);
@@ -150,6 +148,11 @@ export async function handle_payment_request(order_id: string, retries = 0) {
     };
 
     rabbitPub.publish_payment_orderEvent(payment_order);
+  }
+
+  if(await orderManagerDB.check_cancellation(order)) {
+    console.log(`[ORDER SERVICE] Order is cancelled, sending response to frontend`);
+    return;
   }
 
 
