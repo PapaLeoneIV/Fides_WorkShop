@@ -1,5 +1,5 @@
 import express from 'express';
-import { handleBikeKeys, handleHotelKeys, handlePaymentKeys, handleOrderKeys } from '../controller/handlers';
+import { handleBikeKeys, handleHotelKeys, handlePaymentKeys, handleOrderKeys, handleAuthKeys } from '../controller/handlers';
 
 const app = express ();
 
@@ -12,6 +12,8 @@ router.get('/hotelKeys', handleHotelKeys);
 router.get('/paymentKeys', handlePaymentKeys)
 
 router.get('/orderKeys', handleOrderKeys);
+
+router.get('/authKeys', handleAuthKeys);
 
 app.use('/config', router);
 
