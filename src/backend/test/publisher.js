@@ -2,8 +2,8 @@ import amqp from 'amqplib';
 
 const QUEUE = 'order_service_booking_request';
 const EXCHANGE = 'OrderEventExchange';
-const TOTAL_MESSAGES = 2;  // Adjust the total number of messages as needed
-const DELAY = 1;  // Delay in milliseconds between messages to simulate load
+const TOTAL_MESSAGES = 1;  // Adjust the total number of messages as needed
+const DELAY = 100;  // Delay in milliseconds between messages to simulate load
 
 async function publishMessage() {
     try {
@@ -23,6 +23,8 @@ async function publishMessage() {
         // Function to publish a single message
         const sendSingleMessage = async (count) => {
             const message = {
+                userJWT : "eyJhbGci",
+                userEmail: "account@test.test",
                 from: new Date(2025, (3 + count) % 12, (3 + count) % 28),
                 to: new Date(2025, (3 + count) % 12, (3 + count) % 28 + 1),
                 room: "104",

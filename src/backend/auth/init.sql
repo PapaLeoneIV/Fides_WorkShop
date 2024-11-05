@@ -9,7 +9,7 @@ CREATE TABLE registered_users (
 );
 
 CREATE TABLE admins (
-    id SERIAL PRIMARY 
+    id SERIAL PRIMARY KEY,
     email VARCHAR(50) NOT NULL
 );
 

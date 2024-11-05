@@ -1,0 +1,34 @@
+===== Status Report =====
+===== Date: 2024-11-05:14:45:16 =====
+===== Docker Compose Version =====
+Docker Compose version v2.29.1
+===== Container Status =====
+NAME                              IMAGE                                COMMAND                  SERVICE                        CREATED          STATUS                       PORTS
+authentication-service            fides-authentication-service         "docker-entrypoint.s…"   authentication-service         5 minutes ago    Exited (137) 2 seconds ago   
+bike-rental-service               fides-bike-rental-service            "docker-entrypoint.s…"   bike-rental-service            5 minutes ago    Exited (137) 2 seconds ago   
+config-service                    fides-config_service                 "docker-entrypoint.s…"   config_service                 16 minutes ago   Up 16 minutes                0.0.0.0:3005->3000/tcp, :::3005->3000/tcp
+fides-db_auth-1                   postgres:13                          "docker-entrypoint.s…"   db_auth                        22 hours ago     Up 19 minutes (healthy)      0.0.0.0:5437->5432/tcp, :::5437->5432/tcp
+fides-db_bike_rental-1            postgres:13                          "docker-entrypoint.s…"   db_bike_rental                 22 hours ago     Up 19 minutes (healthy)      0.0.0.0:5433->5432/tcp, :::5433->5432/tcp
+fides-db_hotel_booking-1          postgres:13                          "docker-entrypoint.s…"   db_hotel_booking               22 hours ago     Up 19 minutes (healthy)      0.0.0.0:5434->5432/tcp, :::5434->5432/tcp
+fides-db_order_management-1       postgres:13                          "docker-entrypoint.s…"   db_order_management            22 hours ago     Up 19 minutes (healthy)      0.0.0.0:5436->5432/tcp, :::5436->5432/tcp
+fides-db_payment_confirmation-1   postgres:13                          "docker-entrypoint.s…"   db_payment_confirmation        22 hours ago     Up 19 minutes (healthy)      0.0.0.0:5435->5432/tcp, :::5435->5432/tcp
+hotel-booking-service             fides-hotel-booking-service          "docker-entrypoint.s…"   hotel-booking-service          5 minutes ago    Exited (137) 2 seconds ago   
+order-management-service          fides-order-management-service       "docker-entrypoint.s…"   order-management-service       5 minutes ago    Exited (137) 2 seconds ago   
+payment-confirmation-service      fides-payment-confirmation-service   "docker-entrypoint.s…"   payment-confirmation-service   5 minutes ago    Exited (137) 2 seconds ago   
+rabbitmq                          rabbitmq:3-management                "docker-entrypoint.s…"   rabbitmq                       22 hours ago     Up 17 minutes                4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp, :::5672->5672/tcp, 15671/tcp, 15691-15692/tcp, 25672/tcp, 0.0.0.0:15672->15672/tcp, :::15672->15672/tcp
+authentication-service is not running
+bike-rental-service is not running
+hotel-booking-service is not running
+payment-confirmation-service is not running
+order-management-service is not running
+===== Resource Usage =====
+CONTAINER ID   NAME                              CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O         PIDS
+cb1735f6e27e   config-service                    0.08%     145MiB / 9.708GiB     1.46%     6.4MB / 314kB     196MB / 42.4MB    47
+527638933af6   fides-db_auth-1                   0.00%     25.28MiB / 9.708GiB   0.25%     32kB / 8.25kB     27.9MB / 1.31MB   7
+35d6948c4e7e   fides-db_payment_confirmation-1   0.00%     27.26MiB / 9.708GiB   0.27%     31.8kB / 8.33kB   35.4MB / 1.31MB   7
+f11e51bf0ad2   fides-db_hotel_booking-1          0.00%     25.7MiB / 9.708GiB    0.26%     31.1kB / 7.76kB   30.6MB / 1.31MB   7
+5097a2631b63   fides-db_bike_rental-1            4.37%     24.54MiB / 9.708GiB   0.25%     31.2kB / 7.59kB   22.5MB / 1.31MB   7
+8470c4a8348e   fides-db_order_management-1       0.00%     24.03MiB / 9.708GiB   0.24%     35.1kB / 12kB     22.3MB / 1.31MB   7
+5f96182d8d08   rabbitmq                          0.31%     165.4MiB / 9.708GiB   1.66%     237kB / 225kB     180MB / 942kB     41
+===== Public Ports =====
+authentication-service: Not exposed

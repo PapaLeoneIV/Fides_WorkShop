@@ -88,9 +88,9 @@ export async function handle_login_req(msg: string) {
 export async function validate_and_return_user_info(req: Request, res: Response){
     let info: {email: string, token: string} = { email: '', token: '' };
     try {
-        const data = JSON.parse(req.body);
-        info.token = data.token;
-        info.email = data.email;
+
+        info.token = req.body.token;
+        info.email = req.body.email;
     } catch (error) {
         console.log("[AUTH SERVICE] Invalid data format");
         return;
