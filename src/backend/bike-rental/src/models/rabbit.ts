@@ -125,7 +125,6 @@ class RabbitPublisher extends RabbitClient {
     super();
   }
   //TODO aggiungere i vari meccanismi di retry and fallback in caso di errore
-  //TODO muovere tutte le roouting key in un file di configurazione
   publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[BIKE SERVICE] Sending to Order Management Service: `, body);
     this.publishEvent("OrderEventExchange", this.bindKeys.PublishBikeOrder, body);
