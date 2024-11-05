@@ -1,7 +1,7 @@
 import { order as OrderEntity } from "@prisma/client";
 import { rabbitPub, orderManagerDB } from "../models/index";
-import {  parse_data_from_response, order_info_schema } from "../parser/index";
-import {  APPROVED,  CANCELLED  } from "../config/status";
+import { parse_data_from_response, order_info_schema } from "../parser/index";
+import { APPROVED, CANCELLED } from "../config/status";
 import { PaymentOrderDTO } from "../dtos/PaymentOrder.dto";
 import { OrderRequestDTO } from "../dtos/OrderRequest.dto";
 import { OrderResponseDTO } from "../dtos/OrderResponse.dto";
@@ -16,12 +16,23 @@ export async function handle_req_from_frontend(msg: string) {
     return;
   }
 
-  /*TODO check JWT TOKEN with auth service and get back user info*/
-  const userInfo = await fetch("http://auth-service:3000/users/validateJWT");
+  const response = await fetch("http://authentication-service:3000/users/validateJWT", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: data.userJWT, email: data.userEmail })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to validate JWT");
+  }
+
+  const userInfo: { email: string; id: number; password: string } = await response.json();
 
   const order = await orderManagerDB.create_order(data);
-  
+
+  //TODO add user info to bike service
   rabbitPub.publish_to_bike_orderEvent({
+    userEmail: order.userEmail,
     order_id: order.id,
     road_bike_requested: order.road_bike_requested,
     dirt_bike_requested: order.dirt_bike_requested,
@@ -29,8 +40,10 @@ export async function handle_req_from_frontend(msg: string) {
     created_at: order.created_at,
     updated_at: order.updated_at
   });
-  
+
+  //TODO add user info to hotel service
   rabbitPub.publish_to_hotel_orderEvent({
+    userEmail: order.userEmail,
     order_id: order.id,
     to: order.to,
     from: order.from,
@@ -109,7 +122,7 @@ export async function handle_payment_request(order_id: string, retries = 0) {
   let payment_order: PaymentOrderDTO;
   const MAX_RETRIES = 5;
   const TIMEOUT = 10000;
-  
+
 
   order = await orderManagerDB.get_order(order_id);
 
@@ -120,7 +133,7 @@ export async function handle_payment_request(order_id: string, retries = 0) {
   }
 
   if (await orderManagerDB.order_still_pending(order)) {
-  
+
     console.log("[ORDER SERVICE] Still waiting for a response from one of the services");
     if (retries < MAX_RETRIES) {
       setTimeout(() => { handle_payment_request(order_id, retries + 1) }, TIMEOUT);
@@ -131,7 +144,7 @@ export async function handle_payment_request(order_id: string, retries = 0) {
     }
     return;
   }
-  
+
 
   if (await orderManagerDB.order_needs_to_be_cancelled(order)) {
     //TODO send responose to UI
@@ -154,7 +167,7 @@ export async function handle_payment_request(order_id: string, retries = 0) {
     rabbitPub.publish_payment_orderEvent(payment_order);
   }
 
-  if(await orderManagerDB.check_cancellation(order)) {
+  if (await orderManagerDB.check_cancellation(order)) {
     console.log(`[ORDER SERVICE] Order is cancelled, sending response to frontend`);
     return;
   }

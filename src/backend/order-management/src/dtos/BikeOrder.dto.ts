@@ -1,4 +1,5 @@
 export interface BikeOrderDTO {
+    userEmail: string,
     order_id : string,
     road_bike_requested: number,
     dirt_bike_requested: number,

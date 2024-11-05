@@ -15,6 +15,7 @@ datasource db {
 
 model order {
   id                  String   @id @default(uuid())
+  userEmail           String
   to                  String
   from                String
   room                String

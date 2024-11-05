@@ -1,5 +1,6 @@
 export interface OrderRequestDTO {
     userJWT: string;
+    userEmail: string;
     from: string;
     to: string;
     room: string;

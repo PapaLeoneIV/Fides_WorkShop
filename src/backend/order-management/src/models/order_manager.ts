@@ -15,6 +15,7 @@ class OrderManagerDB {
   async create_order(info: OrderRequestDTO): Promise<OrderEntity> {
     const x = await prisma.order.create({
       data : {
+        userEmail: info.userEmail,
         from: info.from,
         to: info.to,
         room: info.room,
@@ -98,6 +99,9 @@ class OrderManagerDB {
         id: info.id,
       },
       data: {
+        userEmail: info.userEmail,
+
+
         to: info.to,
         from: info.from,
         room: info.room,
