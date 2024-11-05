@@ -30,6 +30,7 @@ model room {
 }
 
 model order {
+  userEmail      String
   id             String   @id @default(uuid())
   order_id       String
   from           String
