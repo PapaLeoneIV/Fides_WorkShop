@@ -1,4 +1,4 @@
-import db from '../db/db';
+import db from '../database/db';
 
 async function bootstrapDBconfig() {
     console.log("[BIKE SERVICE] Trying to connect on db on port : ", process.env.POSTGRES_PORT)

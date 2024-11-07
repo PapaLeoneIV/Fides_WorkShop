@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 
 //@tsyringe.singleton()
-class BikeDBRepository {
+class BikeRepository {
 
 
   async get_number_road_bikes(): Promise<number> {
@@ -68,4 +68,4 @@ class BikeDBRepository {
   }
 }
 
-export default BikeDBRepository;
+export default BikeRepository;

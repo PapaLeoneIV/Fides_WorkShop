@@ -1,4 +1,4 @@
-import bootService from "./boot";
+import bootService from "./bootstrap";
 import {rabbitSub} from "./models/index";
 
 async function main() {
