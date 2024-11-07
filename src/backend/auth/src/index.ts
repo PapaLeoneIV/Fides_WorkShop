@@ -1,6 +1,6 @@
 import { bootService } from './boot/index';
 import { rabbitSub } from './models/index';
-import app from './router/userRouter';
+import app from './boot/router/userRouter';
 
 async function main(){
 
