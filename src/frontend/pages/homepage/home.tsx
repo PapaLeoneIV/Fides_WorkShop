@@ -4,6 +4,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/dropdown';
 import { Input } from '@nextui-org/react';
+import { create } from "domain";
 
 export default function Home() {
   let [value, setValue] = React.useState({
@@ -27,23 +28,42 @@ export default function Home() {
     setMountainBikeValue(event.target.value);
   };
 
+  const cookie = typeof window !== 'undefined' ? window.document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("jwt="))
+    ?.split("=")[1] : undefined;
   const handleSend = () => {
+    console.log("Sending data to the server...");
     const data = {
-      /*TODO JWT TOKEN */
-      city,
-      dates: {
-        start: value.start,
-        end: value.end,
-      },
-      bikes: {
-        roadBike: roadBikeValue,
-        mountainBike: mountainBikeValue,
-      },
+      userJWT : cookie,
+      //TODO hardcoded values
+      userEmail: "everonel@gmail.com",
+      city: city,
+      from: value.start.toDate(getLocalTimeZone()),
+      to: value.end.toDate(getLocalTimeZone()),
+      //TODO hardcoded values
+      room: "103",
+      road_bike_requested: parseInt(roadBikeValue,10),
+      dirt_bike_requested: parseInt(mountainBikeValue, 10),
+      //TODO hardcoded values
+      amount: "100",
+      //TODO hardcoded values
+      bike_status: "PENDING",
+      //TODO hardcoded values
+      hotel_status: "PENDING",
+      //TODO hardcoded values
+      payment_status: "PENDING",
+      //TODO hardcoded values
+      created_at: new Date(),
+      //TODO hardcoded values
+      updated_at: new Date()
     };
 
-    fetch(/*qui ci devo mettere l url di order service*/ "", {
+    //TODO set up route
+    fetch("http://localhost:3003/order/booking", {
       method: "POST",
       headers: {
+        "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),

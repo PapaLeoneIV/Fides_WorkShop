@@ -20,7 +20,7 @@ export default function LoginPage() {
 
 
     // Make the fetch post request
-    const response = await fetch('http://localhost:3004/auth', {
+    let response = await fetch('http://localhost:3004/auth/login', {
       method: 'POST',
       headers: {
       'Content-Type': 'application/json',
@@ -30,17 +30,32 @@ export default function LoginPage() {
     })
 
     // Check if the request was successful
-    if (!response.ok) {
-      // Redirect to dashboard or home page after successful login
-      console.log("Login failed")
+    if (response.ok) {
+      const data = await response.json()
+      console.log('User logged in:', data)
+      // Save the token in a cookie
+
+      // Check if token already exists
+      if (document.cookie.includes(`${data.token}=`)) {
+        console.log('Token already exists');
+        router.push('/homepage/home')   
+        return;
+      }
+
+      // Save the token in a cookie
+      document.cookie = `${data.token}=${data.token}; path=/;`;
+
+
+      router.push('/homepage/home')
+      
     } else {
       // Handle the error response
       const errorData = await response.json()
+      console.log("Login failed")
       setError(errorData.message)
     }
-
+   
     // Redirect to dashboard or home page after successful login
-    router.push('/homepage/home')
   }
 
   return (
