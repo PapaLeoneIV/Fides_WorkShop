@@ -1,11 +1,12 @@
-DATABASES = db_bike_rental db_hotel_booking db_payment_confirmation db_order_management
-SERVICES = bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
+DATABASES = db_bike_rental db_hotel_booking db_payment_confirmation db_order_management db_auth 
+SERVICES = authentication-service bike-rental-service hotel-booking-service payment-confirmation-service order-management-service
 ALL = $(DATABASES) $(SERVICES) rabbitmq
 DATE = $(shell date +%Y-%m-%d:%H:%M:%S)
 STATUS_LOG = .status.log
 STATUS_CNT_LOG = .status_cnt.log
 CURRENT_DIR = $(shell basename $(shell pwd))
 NETWORK = $(CURRENT_DIR)_app_network
+CONFIG_SERVICE = config_service
 
 # --- STATUS AND MONITORING --- #
 status:
@@ -92,6 +93,7 @@ up-rabbitmq:
 
 up-services:
 	@echo "Starting services..."
+	docker compose up -d $(CONFIG_SERVICE) && sleep 5
 	docker compose up $(SERVICES)
 
 up: up-db up-rabbitmq

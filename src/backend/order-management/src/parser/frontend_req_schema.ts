@@ -6,6 +6,8 @@ const dateSchema = z.preprocess((arg) => {
 }, z.date());
 
 const order_info_schema = z.object({
+    userJWT: z.string(),
+    userEmail: z.string(),
     from: z.string(),
     to: z.string(),
     room: z.string().refine((val) => {

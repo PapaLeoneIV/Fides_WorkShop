@@ -2,11 +2,14 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management } from "../controllers/handlers";
 import { PAYMENT_SERVICE_RESP_PAYMENT_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
+import { RabbitBindingKeysDTO } from "../dtos/RabbitBindingKeys.dto";
+
 //import * as tsyringe from "tsyringe";
 
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
 class RabbitClient {
+  bindKeys!: RabbitBindingKeysDTO;
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -106,6 +109,16 @@ class RabbitClient {
       }
     );
   }
+  async requestBindingKeys(url: string): Promise<RabbitBindingKeysDTO> {
+    try {
+      const response = await fetch(url, {method: "GET"});
+      return await response.json();
+    } catch (error) {
+      console.error(`[ORDER SERVICE] Error fetching binding keys:`, error);
+      throw error;
+    }
+  }
+
 
 
 }
@@ -118,8 +131,7 @@ class RabbitPublisher extends RabbitClient
   }
   publish_to_order_management = async (body: string): Promise<void> => {
     console.log(`[PAYMENT SERVICE] Sending to Order Management Service: `, body);
-    const routingKey = "payment_main_listener";
-    this.publishEvent("OrderEventExchange", routingKey, body);
+    this.publishEvent("OrderEventExchange", this.bindKeys.PublishPaymentOrder, body);
   };
 }
 
@@ -131,8 +143,7 @@ class RabbitSubscriber extends RabbitClient
   }
   consumePaymentgOrder = async () => {
     console.log("[PAYMENT SERVICE] Listening for booking orders...");
-    const routingKey = "BDpayment_request";
-    this.consume(PAYMENT_SERVICE_RESP_PAYMENT_QUEUE, "OrderEventExchange" ,  routingKey ,(msg) => handle_req_from_order_management(msg));
+    this.consume(PAYMENT_SERVICE_RESP_PAYMENT_QUEUE, "OrderEventExchange" ,  this.bindKeys.ConsumePaymentOrder ,(msg) => handle_req_from_order_management(msg));
   };
 }
 

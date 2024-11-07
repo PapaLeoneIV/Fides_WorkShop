@@ -3,7 +3,7 @@ const PORT = process.env.PORT || 3000;
 
 export async function main(){
     app.listen(PORT, () => {
-        console.log("Server Listening on PORT:", PORT);
+        console.log("[CONFIG SERVICE] Server Listening for config request on PORT:", PORT);
     });
 }
 

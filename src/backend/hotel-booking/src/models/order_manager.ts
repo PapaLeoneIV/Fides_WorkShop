@@ -13,6 +13,7 @@ class HotelOrdersRepository {
       console.log("[HOTEL SERVICE]", "Creating new hotel order with id: ", hotel_order.order_id);
       const hotel = await prisma.order.create({
         data: {
+          userEmail: hotel_order.userEmail,
           to: hotel_order.to,
           from: hotel_order.from,
           room: hotel_order.room,
@@ -63,6 +64,7 @@ class HotelOrdersRepository {
           id: hotel_order.id,
         },
         data: {
+          userEmail: hotel_order.userEmail,
           to: hotel_order.to,
           from: hotel_order.from,
           room: hotel_order.room,

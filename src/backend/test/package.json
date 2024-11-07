@@ -7,6 +7,11 @@
     "start": "node publisher.js"
   },
   "dependencies": {
-    "amqplib": "^0.10.0"
+    "amqplib": "^0.10.4"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   }
 }

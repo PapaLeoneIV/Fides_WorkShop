@@ -13,6 +13,7 @@ class BikeOrderRepository {
         );
         let new_bike_order = await prisma.order.create({
             data: {
+                userEmail: bike_order.userEmail,
                 road_bike_requested: bike_order.road_bike_requested,
                 dirt_bike_requested: bike_order.dirt_bike_requested,
                 order_id: bike_order.order_id,
@@ -31,6 +32,7 @@ class BikeOrderRepository {
                 id: bike_order.id,
             },
             data: {
+                userEmail: bike_order.userEmail,
                 road_bike_requested: bike_order.road_bike_requested,
                 dirt_bike_requested: bike_order.dirt_bike_requested,
                 order_id: bike_order.order_id,

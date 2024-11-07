@@ -2,6 +2,7 @@ import client, { Connection, Channel } from "amqplib";
 import { handle_req_from_order_management, handle_cancel_request } from "../controller/handlers";
 import { HOTEL_SERVICE_ORDER_REQ_QUEUE, HOTEL_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
+import { RabbitBindingKeysDTO } from "../dtos/rabbitBindingKeys.dto";
 //import * as tsyringe from "tsyringe";
 import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 
@@ -9,6 +10,7 @@ import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
 class RabbitClient {
+  bindKeys!:  RabbitBindingKeysDTO;
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
@@ -108,7 +110,10 @@ class RabbitClient {
       }
     );
   }
-
+  async requestBindingKeys(url: string): Promise<RabbitBindingKeysDTO> {
+    const response = await fetch(url, {method: "GET"});
+    return await response.json();
+  }
 
 }
 
@@ -117,28 +122,24 @@ class RabbitPublisher extends RabbitClient {
   //----------------------SEND----------------------------------
   publish_to_order_management = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service: `, body);
-    const routingKey = "hotel_main_listener";
-    this.publishEvent("OrderEventExchange", routingKey, body);
+    this.publishEvent("OrderEventExchange", this.bindKeys.PublishHotelOrder, body);
   }
   publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
     console.log(`[HOTEL SERVICE] Sending to Order Management Service:`, body);
-    const routingKey = "hotel_saga_listener";
-    this.publishEvent("OrderEventExchange", routingKey, body);
+    this.publishEvent("OrderEventExchange", this.bindKeys.PublishhotelSAGAOrder, body);
   }
 
 }
 
 //@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient {
-  consumeHotelOrder = async () => {
+  ConsumeHotelOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
-    const routingKey = "BDhotel_request";
-    this.consume(HOTEL_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", routingKey, (msg) => handle_req_from_order_management(msg));
+    this.consume(HOTEL_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeHotelOrder, (msg) => handle_req_from_order_management(msg));
   };
   consumecancelHotelOrder = async () => {
     console.log("[BIKE SERVICE] Listening for bike orders...");
-    const routingKey = "BDhotel_SAGA_request";
-    this.consume(HOTEL_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", routingKey, (msg) => handle_cancel_request(msg));
+    this.consume(HOTEL_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeHotelSAGAOrder, (msg) => handle_cancel_request(msg));
   };
 }
 
