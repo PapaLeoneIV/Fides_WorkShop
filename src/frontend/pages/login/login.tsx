@@ -18,15 +18,29 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
 
-    // Here you would typically make an API call to authenticate the user
-    // For this example, we'll just simulate a successful login
-    console.log('Logging in user:', email)
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Make the fetch post request
+    const response = await fetch('http://localhost:3004/auth', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+
+    // Check if the request was successful
+    if (!response.ok) {
+      // Redirect to dashboard or home page after successful login
+      console.log("Login failed")
+    } else {
+      // Handle the error response
+      const errorData = await response.json()
+      setError(errorData.message)
+    }
 
     // Redirect to dashboard or home page after successful login
-    router.push('/dashboard')
+    router.push('/homepage/home')
   }
 
   return (
