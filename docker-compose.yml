@@ -187,6 +187,32 @@ services:
     ports:
       - "3005:3000"
     restart: always
+  frontend:
+    container_name: frontend
+    build: ./src/frontend
+    command: >
+      sh -c "npm install \
+      ; npx prisma generate \
+      ; npm run dev -- -p 6969"
+    volumes:
+      - ./src/frontend:/app
+      - ./src/frontend/package.json:/app/package.json
+    environment:
+      NODE_ENV: $NODE_ENV
+      POSTGRES_DB: $POSTGRES_DB_AUTH
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PORT: $POSTGRES_PORT
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_frontend:${POSTGRES_PORT}/${POSTGRES_DB_FRONTEND}?schema=public
+      GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+      GOOGLE_CLIENT_SECRET: $GOOGLE_CLIENT_SECRET
+      GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
+      GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
+      NEXTAUTH_URL: $NEXTAUTH_URL
+    networks:
+      - app_network
+    ports:
+      - "6969:6969"
     
   
 #--------------------------------- -  -
