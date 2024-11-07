@@ -6,11 +6,63 @@ import { PaymentOrderDTO } from "../dtos/PaymentOrder.dto";
 import { OrderRequestDTO } from "../dtos/OrderRequest.dto";
 import { OrderResponseDTO } from "../dtos/OrderResponse.dto";
 import { handle_error_response, handle_response_general } from "./helpers";
+import {Request, Response} from 'express';
 
 export async function handle_req_from_frontend(msg: string) {
   let data: OrderRequestDTO;
   try {
     data = order_info_schema.parse(JSON.parse(msg));
+  } catch (err) {
+    console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
+    return;
+  }
+  console.log("[ORDER SERVICE] Verigying JWT token...");
+  const response = await fetch("http://authentication-service:3000/users/validateJWT", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: data.userJWT, email: data.userEmail })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to validate JWT");
+  }
+
+  const userInfo: { email: string; id: number; password: string } = await response.json();
+
+  const order = await orderManagerDB.create_order(data);
+
+  //TODO add user info to bike service
+  rabbitPub.publish_to_bike_orderEvent({
+    userEmail: order.userEmail,
+    order_id: order.id,
+    road_bike_requested: order.road_bike_requested,
+    dirt_bike_requested: order.dirt_bike_requested,
+    renting_status: order.bike_status,
+    created_at: order.created_at,
+    updated_at: order.updated_at
+  });
+
+  //TODO add user info to hotel service
+  rabbitPub.publish_to_hotel_orderEvent({
+    userEmail: order.userEmail,
+    order_id: order.id,
+    to: order.to,
+    from: order.from,
+    room: order.room,
+    renting_status: order.hotel_status,
+    created_at: order.created_at,
+    updated_at: order.updated_at
+  });
+
+}
+
+
+export async function HTTPhandle_req_from_frontend(req: Request, res: Response) {
+  let data: OrderRequestDTO;
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  try {
+    console.log(req.body);
+    data = order_info_schema.parse(req.body);
   } catch (err) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
