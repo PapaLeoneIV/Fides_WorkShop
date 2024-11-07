@@ -119,13 +119,21 @@ class RabbitClient {
 export class RabbitSub extends RabbitClient {
   //----------------------CONSUME------------------------------
   async consumeLoginRequest() {
-    console.log(`[Auth SERVICE] Consuming login request`);
-    await this.consume(LOGIN_QUEUE_REQUEST, "OrderEventExchange", this.bindKeys.ConsumeLoginReq,  (msg) => handle_login_req(msg));
+    console.log(`[Auth SERVICE] Consuming login request with key: ${this.bindKeys.ConsumeLoginReq}`);
+    await this.consume(LOGIN_QUEUE_REQUEST,
+                       "OrderEventExchange",
+                       this.bindKeys.ConsumeLoginReq,
+                       (msg) => handle_login_req(msg)
+                      );
   }
 
   async consumeRegistrationRequest() {
-    console.log(`[Auth SERVICE] Consuming registration request`);
-    await this.consume(REGISTRATION_QUEUE_REQUEST,"OrderEventExchange", this.bindKeys.ConsumeLoginReq, (msg) =>  handle_registration_req(msg));
+    console.log(`[Auth SERVICE] Consuming registration request with key: ${this.bindKeys.ConsumeRegistrationReq}`);
+    await this.consume(REGISTRATION_QUEUE_REQUEST,
+                       "OrderEventExchange",
+                       this.bindKeys.ConsumeRegistrationReq,
+                       (msg) =>  handle_registration_req(msg)
+                      );
   }
 
 /*   async consumeUserInformationRequest() {
@@ -139,11 +147,19 @@ export class RabbitPub extends RabbitClient {
   //----------------------SEND----------------------------------
 
   async sendLoginResp(message: any) {
-    await this.publishEvent("OrderEventExchange", this.bindKeys.PublishLoginResp, message);
+    console.log(`[Auth SERVICE] Sending login response with key: ${this.bindKeys.PublishLoginResp}`);
+    await this.publishEvent("OrderEventExchange",
+                            this.bindKeys.PublishLoginResp,
+                            message
+                           );
   }
 
   async sendRegistrationResp(message: any) {
-    await this.publishEvent("OrderEventExchange", this.bindKeys.PublishRegistrationReq, message);
+    console.log(`[Auth SERVICE] Sending registration response with key: ${this.bindKeys.PublishRegistrationReq}`);
+    await this.publishEvent("OrderEventExchange",
+                            this.bindKeys.PublishRegistrationReq,
+                            message
+                          );
   }
 
   /* async sendUserInformationResp(message: any) {

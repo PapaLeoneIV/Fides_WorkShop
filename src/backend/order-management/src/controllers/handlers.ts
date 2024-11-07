@@ -15,7 +15,7 @@ export async function handle_req_from_frontend(msg: string) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
     return;
   }
-
+  console.log("[ORDER SERVICE] Verigying JWT token...");
   const response = await fetch("http://authentication-service:3000/users/validateJWT", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
