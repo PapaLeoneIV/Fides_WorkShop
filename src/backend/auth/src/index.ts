@@ -10,7 +10,7 @@ async function main(){
     await rabbitSub.consumeRegistrationRequest();
 
     app.listen(3000, () => {
-        console.log('Authentication service started on port 3000');
+        console.log('[AUTH SERVICE] Service started on port 3000');
     });
     // await rabbitSub.consumeUserInformationRequest();
 
