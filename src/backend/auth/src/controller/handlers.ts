@@ -39,6 +39,36 @@ export async function handle_registration_req(msg: string) {
     return;
 }
 
+export async function HTTPhandle_registration_req(req: Request, res: Response) {
+    let registration_info: LoginDTO;
+
+    try {
+        const data = JSON.parse(req.body);
+        console.log("[AUTH SERVICE] Parsing data", "MSG", req.body, "DATA", data);
+        registration_info = registration_schema.parse(data);
+    } catch (error) {
+        console.log("[AUTH SERVICE] Invalid data format");
+        res.status(500).json({ status: "ERROR", error: "Invalid data format" });
+        return;
+    }
+
+    if (await loginManager.check_existance(registration_info.email)) {
+        console.error("[AUTH SERVICE] Registration denied User already exists");
+        res.status(500).json({ status: "ERROR", error: "Registration: User already exists" });
+        return;
+    }
+
+    let user = await loginManager.register_user(registration_info);
+    if (user) {
+        console.log("[AUTH SERVICE] User registered successfully");
+        res.status(200).json({ status: "APPROVED", error: "User registered successfully" });
+        return;
+    }
+    console.log("[AUTH SERVICE] Failed to register user");
+    res.status(500).json({status: "ERROR", error: "Failed to register user" });
+    return;
+}
+
 export async function handle_login_req(msg: string) {
     let req_info: LoginDTO;
     let token: string;

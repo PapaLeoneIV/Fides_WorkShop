@@ -1,14 +1,16 @@
 import express from 'express';
-import { validate_and_return_user_info  } from '../controller/handlers';
+import { validate_and_return_user_info, HTTPhandle_registration_req  } from '../controller/handlers';
 
 const app = express ();
 
 const router = express.Router();
 
+
+router.post('/register', HTTPhandle_registration_req);   
 router.post('/validateJWT', validate_and_return_user_info);
 app.use(express.json());
 app.use('/users', router);
-
+app.use("/auth", router);
 
 export default app;
 
