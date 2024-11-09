@@ -1,4 +1,4 @@
-export default interface HotelOrderDTO {
+export default interface IOrderRequestDTO {
     userEmail: string,
     order_id: string,
     to: string,
