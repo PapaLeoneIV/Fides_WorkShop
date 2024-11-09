@@ -3,8 +3,8 @@ import { OrderStatus as status } from "../config/OrderStatus";
 import { parseRequest } from "../utils/parsing-helper";
 import { OrderSchema } from "../utils/OrderSchema";
 import { CancelSchema } from "../utils/CancelSchema";
-import { handleCancellation, processOrderRequest, updateExchange } from "../service/bike-service";
 import { publisher } from "../models/RabbitmqPublisher";
+import { processCancellationRequest, processOrderRequest, updateExchange } from "../service/bike-service";
 
 export async function validateAndHandleOrderRequest( msg: string ) {
     let ORDER_BK = publisher.bindKeys.PublishBikeOrder;
