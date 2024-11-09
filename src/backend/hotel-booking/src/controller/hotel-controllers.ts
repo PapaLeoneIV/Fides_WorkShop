@@ -1,4 +1,4 @@
-import { Messages as lmsg } from "../config/log-messages";
+import { Messages as lmsg } from '../config/Messages';
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 import { parseRequest } from "../utils/parsing-helper";
 import { OrderSchema } from "../utils/OrderSchema";

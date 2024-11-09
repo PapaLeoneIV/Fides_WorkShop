@@ -1,4 +1,4 @@
-import { Messages as message } from "../config/log-messages";
+import { Messages as message } from "../config/Messages";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
 import { OrderStatus as status } from "../config/OrderStatus";

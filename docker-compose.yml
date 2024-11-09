@@ -35,6 +35,8 @@ services:
     volumes:
       - ./src/backend/bike-rental:/app
       - ./src/backend/bike-rental/package.json:/app/package.json
+      - ./config/Messages.ts:/app/src/config/Messages.ts
+      - ./config/OrderStatus.ts:/app/src/config/OrderStatus.ts
     env_file:
       - .env
     environment:
@@ -68,6 +70,8 @@ services:
     volumes:
       - ./src/backend/hotel-booking:/app
       - ./src/backend/hotel-booking/package.json:/app/package.json
+      - ./config/Messages.ts:/app/src/config/Messages.ts
+      - ./config/OrderStatus.ts:/app/src/config/OrderStatus.ts
     env_file:
       - .env
     environment:

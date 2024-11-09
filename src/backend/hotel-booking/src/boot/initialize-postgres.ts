@@ -1,4 +1,4 @@
-import { Messages as lmsg } from '../config/log-messages';
+import { Messages as lmsg } from '../config/Messages';
 import postgresClient from '../models/postgresClient';
 import { exit } from 'process'; 
 

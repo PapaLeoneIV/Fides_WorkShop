@@ -1,4 +1,4 @@
-import { Messages as message } from "../config/log-messages";
+import { Messages as message } from "../config/Messages";
 import { PrismaClient } from "@prisma/client";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 

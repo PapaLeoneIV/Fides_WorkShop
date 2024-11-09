@@ -1,4 +1,4 @@
-import { Messages as message } from './config/log-messages';
+import { Messages as message } from './config/Messages';
 import bootService from './boot/boot-service';
 import { subscriber } from './models/RabbitmqSubscriber';
 import { publisher } from './models/RabbitmqPublisher';

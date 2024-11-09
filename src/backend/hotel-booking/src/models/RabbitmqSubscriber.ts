@@ -1,4 +1,4 @@
-import { Messages as message } from "../config/log-messages";
+import { Messages as message } from "../config/Messages";
 import { RabbitmqClient } from "./RabbitmqClient";
 
 type HandlerCB = (msg: string, instance?: RabbitmqClient) => any;

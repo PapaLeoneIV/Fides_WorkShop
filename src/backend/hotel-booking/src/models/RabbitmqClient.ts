@@ -1,4 +1,4 @@
-import { Messages as message } from "../config/log-messages";
+import { Messages as message } from "../../../../../config/Messages";
 import client, { Connection, Channel } from "amqplib";
 import IBindingKeysDTO from "../dtos/IBindingKeysDTO";
 import { RABBITMQ_URL } from "../config/rabbit-config";

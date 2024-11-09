@@ -1,4 +1,4 @@
-import { Messages as message } from "../config/log-messages";
+import { Messages as message } from '../config/Messages';
 import { publisher } from "../models/RabbitmqPublisher";
 import { subscriber } from "../models/RabbitmqSubscriber";
 import { QueueNames as queue } from "../config/rabbit-config";
