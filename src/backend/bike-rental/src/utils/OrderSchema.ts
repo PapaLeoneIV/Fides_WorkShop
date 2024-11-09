@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export let bike_info_schema = z.object({
+export const OrderSchema = z.object({
     userEmail: z.string(),
     order_id: z.string(),
     road_bike_requested: z.number().refine((val) => val >= 0 && Number.isInteger(val)),
@@ -8,6 +8,4 @@ export let bike_info_schema = z.object({
     renting_status: z.string(),
     created_at: z.string().transform((val) => new Date(val)),
     updated_at: z.string().transform((val) => new Date(val)),
-  });
-
-  
+});

@@ -1,4 +1,4 @@
-export interface OrderResponseDTO {
+export interface IOrderResponseDTO {
     id: string;
     status: string;
 }

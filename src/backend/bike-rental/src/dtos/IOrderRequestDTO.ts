@@ -1,4 +1,4 @@
-export default interface BikeOrderDTO {
+export default interface IOrderRequestDTO {
     userEmail: string,
     order_id: string,
     road_bike_requested: number,

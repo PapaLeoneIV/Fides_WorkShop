@@ -1,4 +1,4 @@
-export interface RabbitBindingKeysDTO {
+export interface IBindingKeysDTO {
     ConsumeBikeOrder: string,
     ConsumeBikeSAGAOrder: string
     PublishBikeOrder: string,

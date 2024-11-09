@@ -44,6 +44,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
     networks:
       - app_network
     #TODO_PROD: update to serve only in the internal network
