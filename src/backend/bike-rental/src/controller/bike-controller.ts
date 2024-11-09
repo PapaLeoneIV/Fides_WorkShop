@@ -3,10 +3,10 @@ import { OrderStatus as status } from "../config/OrderStatus";
 import { parseRequest } from "../utils/parsing-helper";
 import { OrderSchema } from "../utils/OrderSchema";
 import { CancelSchema } from "../utils/CancelSchema";
-import { handleCancellation, handleRequest, updateExchange } from "../service/bike-service";
+import { handleCancellation, processOrderRequest, updateExchange } from "../service/bike-service";
 import { publisher } from "../models/RabbitmqPublisher";
 
-export async function handleOrderRequest( msg: string ) {
+export async function validateAndHandleOrderRequest( msg: string ) {
     let ORDER_BK = publisher.bindKeys.PublishBikeOrder;
 
     let order_info: IOrderRequestDTO;
@@ -17,10 +17,10 @@ export async function handleOrderRequest( msg: string ) {
         updateExchange(ORDER_BK, { id: "", status: status.DENIED });
         throw new Error("Error while parsing message");
     }
-    handleRequest(order_info);
+    processOrderRequest(order_info);
 }
 
-export async function handleOrderCancellation( msg: string ) {
+export async function validateAndHandleCancellationRequest( msg: string ) {
     let ORDER_BK = publisher.bindKeys.PublishBikeOrder;
 
     let order_id: string;
@@ -31,5 +31,5 @@ export async function handleOrderCancellation( msg: string ) {
         await updateExchange(ORDER_BK, { id: "", status: status.DENIED });
         return;
     }
-    handleCancellation(order_id);
+    processCancellationRequest(order_id);
 }

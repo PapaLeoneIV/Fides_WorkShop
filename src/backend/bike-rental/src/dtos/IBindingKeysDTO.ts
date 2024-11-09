@@ -1,4 +1,4 @@
-export interface IBindingKeysDTO {
+export default interface IBindingKeysDTO {
     ConsumeBikeOrder: string,
     ConsumeBikeSAGAOrder: string
     PublishBikeOrder: string,

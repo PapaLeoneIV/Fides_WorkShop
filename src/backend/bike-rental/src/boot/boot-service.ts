@@ -1,5 +1,5 @@
-import  initializePostgresConnection  from "./initialize-postgres";
-import  initializeRabbitmqConnection  from "./initialize-rabbitmq";
+import initializePostgresConnection from "./initialize-postgres";
+import initializeRabbitmqConnection from "./initialize-rabbitmq";
 
 async function bootService() {
     await initializePostgresConnection();
