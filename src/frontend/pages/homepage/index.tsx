@@ -4,7 +4,9 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/dropdown';
 import { Input } from '@nextui-org/react';
-import { create } from "domain";
+import { useState, useEffect } from "react";
+import { handleEmailAndCookie, retrieveEmail, createBookingData, fetchBookingData } from "./homepage.helpers";
+
 
 export default function Home() {
   let [value, setValue] = React.useState({
@@ -13,8 +15,14 @@ export default function Home() {
   });
 
   let [city, setCity] = React.useState("London");
-  let [roadBikeValue, setRoadBikeValue] = React.useState("");
+  let [roadBikeValue , setRoadBikeValue] = React.useState("");
   let [mountainBikeValue, setMountainBikeValue] = React.useState("");
+  const [email, setEmail] = useState<string | null>(null); 
+ 
+
+  useEffect(() => {
+    handleEmailAndCookie(setEmail);
+  }, []);
 
   const handleCityChange = (selectedCity : any) => {
     setCity(selectedCity);
@@ -28,47 +36,13 @@ export default function Home() {
     setMountainBikeValue(event.target.value);
   };
 
-  const cookie = typeof window !== 'undefined' ? window.document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("jwt="))
-    ?.split("=")[1] : undefined;
+  const cookie = retrieveEmail(`${email}`);
+  
   const handleSend = () => {
     console.log("Sending data to the server...");
-    const data = {
-      userJWT : cookie,
-      //TODO hardcoded values
-      userEmail: "everonel@gmail.com",
-      city: city,
-      from: value.start.toDate(getLocalTimeZone()),
-      to: value.end.toDate(getLocalTimeZone()),
-      //TODO hardcoded values
-      room: "103",
-      road_bike_requested: parseInt(roadBikeValue,10),
-      dirt_bike_requested: parseInt(mountainBikeValue, 10),
-      //TODO hardcoded values
-      amount: "100",
-      //TODO hardcoded values
-      bike_status: "PENDING",
-      //TODO hardcoded values
-      hotel_status: "PENDING",
-      //TODO hardcoded values
-      payment_status: "PENDING",
-      //TODO hardcoded values
-      created_at: new Date(),
-      //TODO hardcoded values
-      updated_at: new Date()
-    };
-
-    //TODO set up route
-    fetch("http://localhost:3003/order/booking", {
-      method: "POST",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
+    const data = createBookingData(value, city, email!, cookie!, roadBikeValue, mountainBikeValue);
+    
+    fetchBookingData(data)
       .then((result) => {
         // Handle the response from the server
       })
@@ -77,8 +51,14 @@ export default function Home() {
       });
   };
 
+
+
+
   return (
     <main className="flex items-center justify-center h-screen bg-softbrown">
+      <div className="absolute top-0 right-0 p-5 bg-white rounded-md">
+          <p className="text-sm">{email}</p>
+        </div>
       <div className="flex flex-col items-center w-screen h-screen rounded-lg shadow-lg">
         <img src="/logo.png" alt="logo" className="w-100 h-60" />
 
@@ -86,7 +66,7 @@ export default function Home() {
           <div className="flex justify-center">
             <Dropdown>
               <DropdownTrigger>
-                <Button className="bg-blue-500">Select city</Button>
+                <Button className="bg-blue-500">{city}</Button>
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem onClick={() => handleCityChange("London")}>London</DropdownItem>
@@ -134,6 +114,7 @@ export default function Home() {
           </div>
         </div>
 
+        
       </div>
     </main>
   );

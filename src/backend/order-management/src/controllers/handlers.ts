@@ -13,7 +13,7 @@ export async function handle_req_from_frontend(msg: string) {
   try {
     data = order_info_schema.parse(JSON.parse(msg));
   } catch (err) {
-    console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
+    console.log("[ORDER SERVICE] Error while parsing frontend request, some of the fields are missing or invalid:");
     return;
   }
   console.log("[ORDER SERVICE] Verigying JWT token...");
@@ -65,6 +65,7 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
     data = order_info_schema.parse(req.body);
   } catch (err) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
+    res.status(400).send("Error while parsing frontend request, some of the fields are missing or invalid:");
     return;
   }
   console.log("[ORDER SERVICE] Verigying JWT token...");
@@ -75,7 +76,9 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
   });
 
   if (!response.ok) {
+    res.status(401).send("[ORDER SERVICE] Authentication Error: Failed to validate JWT");
     throw new Error("Failed to validate JWT");
+    return;
   }
 
   const userInfo: { email: string; id: number; password: string } = await response.json();
@@ -104,7 +107,8 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
     created_at: order.created_at,
     updated_at: order.updated_at
   });
-
+  
+  res.status(200).send("Order created successfully, processing...");
 }
 
 export async function handle_res_from_bike(msg: string) {
@@ -165,8 +169,6 @@ export async function handle_res_from_payment(msg: string) {
     console.log(`[ORDER SERVICE] Order is completed, sending response to frontend`);
     return;
   }
-
-
 }
 
 export async function handle_payment_request(order_id: string, retries = 0) {

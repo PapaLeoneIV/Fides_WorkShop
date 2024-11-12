@@ -209,6 +209,7 @@ services:
       GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
       GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
       NEXTAUTH_URL: $NEXTAUTH_URL
+      TOKEN_SECRET: $TOKEN_SECRET
     networks:
       - app_network
     ports:

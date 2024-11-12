@@ -2,6 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE "order" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "userEmail" TEXT NOT NULL,
 
     "to" TEXT NOT NULL,
     "from" TEXT NOT NULL,

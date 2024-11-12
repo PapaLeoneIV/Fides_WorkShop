@@ -48,11 +48,11 @@ export default function RegisterPage() {
 
 
     // Redirect to login page after successful registration
-    router.push('/login/login')
+    router.push('/auth/login')
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-softbrown">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Register</CardTitle>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
             {error && <p className="text-red-500 mt-2">{error}</p>}
             <p className="mt-4 text-sm text-center">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-500 hover:underline">
+              <Link href="/auth/login" className="text-blue-500 hover:underline">
                 Login
               </Link>
             </p>

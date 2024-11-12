@@ -65,7 +65,7 @@ export async function HTTPhandle_registration_req(req: Request, res: Response) {
         return;
     }
     console.log("[AUTH SERVICE] Failed to register user");
-    res.status(500).json({status: "ERROR", error: "Failed to register user" });
+    res.status(500).json({ status: "ERROR", error: "Failed to register user" });
     return;
 }
 
@@ -74,7 +74,7 @@ export async function handle_login_req(msg: string) {
     let token: string;
     try {
         const data = JSON.parse(msg);
-        
+
         req_info = login_schema.parse(data);
     } catch (error) {
         throw new Error('login Invalid data format');
@@ -104,8 +104,7 @@ export async function handle_login_req(msg: string) {
     console.log("[AUTH SERVICE] User logged in successfully");
 
     if (!req_info.jwtToken) {
-        console.log("[AUTH SERVICE] First time login");
-        console.log("[AUTH SERVICE] Generating JWT Token");
+        console.log("[AUTH SERVICE] First time login, Generating JWT Token");
         token = generateAccessToken(req_info.email);
         rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
         return;
@@ -121,17 +120,46 @@ export async function handle_login_req(msg: string) {
     return;
 }
 
+export async function HTTPhandle_refresh_req(req: Request, res: Response){
+    let req_info: LoginDTO;
+    let token: string;
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    try {
+        const data = req.body.msg;
+        console.log(data);
+        req_info = login_schema.parse(data);
+    } catch (error) {
+        console.log("[AUTH SERVICE] Login Invalid data format");
+        res.status(500).json({ status: "ERROR", error: "Invalid data format" });
+        return;
+    }
+    if(!req_info.jwtToken){
+        console.error("[AUTH SERVICE] JWT Token is missing");
+        res.status(500).json({ status: "ERROR", error: "JWT Token is missing" });
+        return;
+    }
+    let isJWTValid = authenticateToken(req_info.jwtToken);
+    if (!isJWTValid) {
+        console.error("[AUTH SERVICE] JWT Token is invalid");
+        res.status(500).json({ status: "ERROR", error: "JWT Token is invalid" });
+        return;
+    }
+    token = generateAccessToken(req_info.email);
+    res.status(500).json({ status: "APPROVED", token: token });
+
+}
+
 export async function HTTPhandle_login_req(req: Request, res: Response) {
     let req_info: LoginDTO;
     let token: string;
     res.setHeader("Access-Control-Allow-Origin", "*");
     try {
-        const data = req.body;
-        
+        const data = req.body.msg;
+        console.log(data);
         req_info = login_schema.parse(data);
     } catch (error) {
 
-        console.log("[AUTH SERVICE] Invalid data format");
+        console.log("[AUTH SERVICE] Login Invalid data format");
         res.status(500).json({ status: "ERROR", error: "Invalid data format" });
         return;
     }
@@ -156,13 +184,14 @@ export async function HTTPhandle_login_req(req: Request, res: Response) {
     console.log("[AUTH SERVICE] User logged in successfully");
 
     if (!req_info.jwtToken) {
-        console.log("[AUTH SERVICE] First time login");
-        console.log("[AUTH SERVICE] Generating JWT Token");
+        console.log("[AUTH SERVICE] First time login, Generating JWT Token");
         token = generateAccessToken(req_info.email);
         res.status(200).json({ status: "APPROVED", token: token });
         return;
     }
-    let isJWTValid = authenticateToken(req_info.jwtToken);
+
+    
+  /*   let isJWTValid = authenticateToken(req_info.jwtToken);
     if (!isJWTValid) {
         console.error("[AUTH SERVICE] JWT Token is invalid");
         res.status(500).json({ status: "ERROR", error: "JWT Token is invalid" });
@@ -170,11 +199,11 @@ export async function HTTPhandle_login_req(req: Request, res: Response) {
     }
     token = generateAccessToken(req_info.email);
     res.status(500).json({ status: "APPROVED", token: token });
-    return;
+    return; */
 }
 
-export async function validate_and_return_user_info(req: Request, res: Response){
-    let info: {email: string, token: string} = { email: '', token: '' };
+export async function validate_and_return_user_info(req: Request, res: Response) {
+    let info: { email: string, token: string } = { email: '', token: '' };
     try {
 
         info.token = req.body.token;
@@ -183,7 +212,7 @@ export async function validate_and_return_user_info(req: Request, res: Response)
         console.log("[AUTH SERVICE] Invalid data format");
         return;
     }
-    let isJWTValid  = authenticateToken(info.token);
+    let isJWTValid = authenticateToken(info.token);
     if (!isJWTValid) {
         console.error("[AUTH SERVICE] JWT Token is invalid");
         return;
@@ -202,7 +231,7 @@ export async function validate_and_return_user_info(req: Request, res: Response)
 
     res.status(200).json(userExist);
 
-    
+
 }
 /* export async function handle_user_info_req(msg: string){
     
