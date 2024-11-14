@@ -3,7 +3,6 @@ import { handle_req_from_order_management, handle_cancel_request } from "../cont
 import { BIKE_SERVICE_ORDER_REQ_QUEUE, BIKE_SERVICE_SAGA_REQ_QUEUE } from "../config/rabbit";
 import { RabbitBindingKeysDTO } from "../dtos/rabbitBindingKeys.dto";
 import { rmqPass, rmqUser, rmqhost } from "../config/rabbit";
-//import * as tsyringe from "tsyringe";
 
 import { OrderResponseDTO } from "../dtos/orderResponse.dto";
 

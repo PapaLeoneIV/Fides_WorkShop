@@ -10,7 +10,7 @@ class BikeDBRepository {
 
 
   async get_number_road_bikes(): Promise<number> {
-    console.log("[BIKE SERVICE]", "Requesting number of road bikes from DB");
+    console.log("[BIKE SERVICE]", "Requesting number of road bikes from database");
     const road_bikes_count = await prisma.bikes.aggregate({
       _sum: {
         road: true,
@@ -30,7 +30,7 @@ class BikeDBRepository {
   }
 
   async increment_bike_count(road_bikes: number, dirt_bikes: number) {
-    console.log("[BIKE SERVICE]", "Incrementing the bike count in the DB");
+    console.log("[BIKE SERVICE]", "Incrementing the bike count in the database");
     await prisma.bikes.updateMany({
       data: {
         road: {
@@ -44,7 +44,7 @@ class BikeDBRepository {
   }
 
   async decrement_bike_count(road_bikes: number, dirt_bikes: number) {
-    console.log("[BIKE SERVICE]", "Decrementing bike count in the DB");
+    console.log("[BIKE SERVICE]", "Decrementing bike count in the database");
     await prisma.bikes.updateMany({
       data: {
         road: {
@@ -58,7 +58,7 @@ class BikeDBRepository {
   }
 
   async check_availability(road_bikes: number, dirt_bikes: number): Promise<boolean> {
-    console.log("[BIKE SERVICE]", "Checking bike availability in the DB");
+    console.log("[BIKE SERVICE]", "Checking bike availability in the database");
     const availableDirtBikes = await this.get_number_dirt_bikes();
     const availableRoadBikes = await this.get_number_road_bikes();
     return (

@@ -109,7 +109,6 @@ class RabbitClient {
     );
   }
   async requestBindingKeys(url: string): Promise<RabbitBindingKeysDTO> {
-    console.log(`[AUTH SERVICE] Requesting binding keys from: ${url}`);
     const response = await fetch(url, { method: "GET" });
     return await response.json();
   }
@@ -119,7 +118,6 @@ class RabbitClient {
 export class RabbitSub extends RabbitClient {
   //----------------------CONSUME------------------------------
   async consumeLoginRequest() {
-    console.log(`[AUTH SERVICE] Consuming login request with key: ${this.bindKeys.ConsumeLoginReq}`);
     await this.consume(LOGIN_QUEUE_REQUEST,
                        "OrderEventExchange",
                        this.bindKeys.ConsumeLoginReq,
@@ -128,7 +126,6 @@ export class RabbitSub extends RabbitClient {
   }
 
   async consumeRegistrationRequest() {
-    console.log(`[AUTH SERVICE] Consuming registration request with key: ${this.bindKeys.ConsumeRegistrationReq}`);
     await this.consume(REGISTRATION_QUEUE_REQUEST,
                        "OrderEventExchange",
                        this.bindKeys.ConsumeRegistrationReq,
@@ -147,7 +144,6 @@ export class RabbitPub extends RabbitClient {
   //----------------------SEND----------------------------------
 
   async sendLoginResp(message: any) {
-    console.log(`[AUTH SERVICE] Sending login response with key: ${this.bindKeys.PublishLoginResp}`);
     await this.publishEvent("OrderEventExchange",
                             this.bindKeys.PublishLoginResp,
                             message
@@ -155,7 +151,6 @@ export class RabbitPub extends RabbitClient {
   }
 
   async sendRegistrationResp(message: any) {
-    console.log(`[AUTH SERVICE] Sending registration response with key: ${this.bindKeys.PublishRegistrationReq}`);
     await this.publishEvent("OrderEventExchange",
                             this.bindKeys.PublishRegistrationReq,
                             message

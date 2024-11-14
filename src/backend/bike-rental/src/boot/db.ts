@@ -6,7 +6,7 @@ async function bootstrapDBconfig() {
         await db.connect();
         console.log('[BIKE SERVICE] Postgres connected on port', process.env.POSTGRES_PORT);
     } catch (error) {
-        console.log('[ERROR] Error connecting to Postgres', error);
+        console.log('[BIKE SERVICE][ERROR] Error connecting to Postgres', error);
         throw error;
     }
 }

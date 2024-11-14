@@ -13,29 +13,27 @@ export async function handle_registration_req(msg: string) {
 
     try {
         const data = JSON.parse(msg);
-        console.log("[AUTH SERVICE] Parsing data", "MSG", msg, "DATA", data);
         registration_info = registration_schema.parse(data);
     } catch (error) {
-        throw new Error('registration Invalid data format');
-        console.log("[AUTH SERVICE] Invalid data format");
-        rabbitPub.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Invalid data format" }));
+        console.log("[AUTH SERVICE] Invalid data format, cannot parse request!");
+        rabbitPub.sendRegistrationResp({ status: "ERROR", error: "Invalid data format" });
         return;
     }
 
     if (await loginManager.check_existance(registration_info.email)) {
         console.error("[AUTH SERVICE] Registration denied User already exists");
-        rabbitPub.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Registration: User already exists" }));
+        rabbitPub.sendRegistrationResp({ status: "ERROR", error: "Registration: User already exists" });
         return;
     }
 
     let user = await loginManager.register_user(registration_info);
     if (user) {
         console.log("[AUTH SERVICE] User registered successfully");
-        rabbitPub.sendRegistrationResp(JSON.stringify({ status: "APPROVED", error: "User registered successfully" }));
+        rabbitPub.sendRegistrationResp({ status: "APPROVED", error: "User registered successfully" });
         return;
     }
     console.log("[AUTH SERVICE] Failed to register user");
-    rabbitPub.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Failed to register user" }));
+    rabbitPub.sendRegistrationResp({ status: "ERROR", error: "Failed to register user" });
     return;
 }
 
@@ -43,9 +41,7 @@ export async function HTTPhandle_registration_req(req: Request, res: Response) {
     let registration_info: LoginDTO;
     res.setHeader("Access-Control-Allow-Origin", "*");
     try {
-        console.log("[AUTH SERVICE] Parsing data", "MSG", req.body, "DATA", undefined);
-        const data = req.body;
-        registration_info = registration_schema.parse(data);
+        registration_info = registration_schema.parse(req.body);
     } catch (error) {
         console.log("[AUTH SERVICE] Invalid data format");
         res.status(500).json({ status: "ERROR", error: "Invalid data format" });
@@ -80,13 +76,13 @@ export async function handle_login_req(msg: string) {
         throw new Error('login Invalid data format');
 
         console.log("[AUTH SERVICE] Invalid data format");
-        rabbitPub.sendRegistrationResp(JSON.stringify({ status: "ERROR", error: "Invalid data format" }));
+        rabbitPub.sendRegistrationResp({ status: "ERROR", error: "Invalid data format" });
         return;
     }
     const emailExist = await loginManager.check_existance(req_info.email);
     if (!emailExist) {
         console.error("[AUTH SERVICE] User does not exist");
-        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "User does not exist" }));
+        rabbitPub.sendLoginResp({ status: "ERROR", error: "User does not exist" });
         return;
     }
 
@@ -97,7 +93,7 @@ export async function handle_login_req(msg: string) {
     let passwordMatch = await loginManager.compare_passwords(req_info.password, hashedPassword);
     if (!passwordMatch) {
         console.error("[AUTH SERVICE] Wrong password");
-        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "Wrong password" }));
+        rabbitPub.sendLoginResp({ status: "ERROR", error: "Wrong password" });
         return;
     }
 
@@ -106,17 +102,17 @@ export async function handle_login_req(msg: string) {
     if (!req_info.jwtToken) {
         console.log("[AUTH SERVICE] First time login, Generating JWT Token");
         token = generateAccessToken(req_info.email);
-        rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
+        rabbitPub.sendLoginResp({ status: "APPROVED", token: token });
         return;
     }
     let isJWTValid = authenticateToken(req_info.jwtToken);
     if (!isJWTValid) {
         console.error("[AUTH SERVICE] JWT Token is invalid");
-        rabbitPub.sendLoginResp(JSON.stringify({ status: "ERROR", error: "JWT Token is invalid" }));
+        rabbitPub.sendLoginResp({ status: "ERROR", error: "JWT Token is invalid" });
         return;
     }
     token = generateAccessToken(req_info.email);
-    rabbitPub.sendLoginResp(JSON.stringify({ status: "APPROVED", token: token }));
+    rabbitPub.sendLoginResp({ status: "APPROVED", token: token });
     return;
 }
 
@@ -125,9 +121,7 @@ export async function HTTPhandle_refresh_req(req: Request, res: Response){
     let token: string;
     res.setHeader("Access-Control-Allow-Origin", "*");
     try {
-        const data = req.body.msg;
-        console.log(data);
-        req_info = login_schema.parse(data);
+        req_info = login_schema.parse(req.body.msg);
     } catch (error) {
         console.log("[AUTH SERVICE] Login Invalid data format");
         res.status(500).json({ status: "ERROR", error: "Invalid data format" });
@@ -155,7 +149,6 @@ export async function HTTPhandle_login_req(req: Request, res: Response) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     try {
         const data = req.body.msg;
-        console.log(data);
         req_info = login_schema.parse(data);
     } catch (error) {
 

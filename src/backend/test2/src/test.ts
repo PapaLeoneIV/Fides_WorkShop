@@ -85,7 +85,7 @@ class RabbitClient {
                 }
             );
         } catch (error) {
-            console.error("[ORDER SERVICE] Error publishing event:", error);
+            console.error("[TEST SERVICE] Error publishing event:", error);
             throw error;
         }
     }
@@ -97,7 +97,7 @@ class RabbitClient {
 
             return this.channel.sendToQueue(queue, Buffer.from(message));
         } catch (error) {
-            console.error("[ORDER SERVICE]", error);
+            console.error("[TEST SERVICE]", error);
             throw error;
         }
 

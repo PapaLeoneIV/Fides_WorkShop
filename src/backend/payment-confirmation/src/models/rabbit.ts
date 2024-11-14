@@ -63,7 +63,7 @@ class RabbitClient {
         }
       );
     } catch (error) {
-      console.error("[ORDER SERVICE] Error publishing event:", error);
+      console.error("[PAYMENT SERVICE] Error publishing event:", error);
       throw error;
     }
   }
@@ -75,7 +75,7 @@ class RabbitClient {
 
       return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      console.error("[PAYMENT SERVICE]", error);
       throw error;
     }
 
@@ -114,7 +114,7 @@ class RabbitClient {
       const response = await fetch(url, {method: "GET"});
       return await response.json();
     } catch (error) {
-      console.error(`[ORDER SERVICE] Error fetching binding keys:`, error);
+      console.error(`[PAYMENT SERVICE] Error fetching binding keys:`, error);
       throw error;
     }
   }

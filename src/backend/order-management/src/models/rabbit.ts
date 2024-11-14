@@ -150,11 +150,11 @@ class RabbitPublisher extends RabbitClient {
     this.publishEvent(Exchange, this.bindKeys.ConsumeBikeOrder, body);
   };
   publish_to_hotel_orderEvent = async (body: HotelOrderDTO): Promise<void> => {
-    console.log(`[ORDER SERVICE] Sending to Hotel Service: ${body}`);
+    console.log(`[ORDER SERVICE] Sending to Hotel Service: `, body);
     this.publishEvent(Exchange, this.bindKeys.ConsumeHotelOrder, body);
   };
   publish_payment_orderEvent = async (body: PaymentOrderDTO): Promise<void> => {
-    console.log(`[ORDER SERVICE] Sending to Payment Service: ${body}`);
+    console.log(`[ORDER SERVICE] Sending to Payment Service: `, body);
     this.publishEvent(Exchange, this.bindKeys.ConsumePaymentOrder, body);
   };
 

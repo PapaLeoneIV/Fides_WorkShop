@@ -9,9 +9,7 @@ async function bootstrapRabbitConfig() {
     rabbitPub.bindKeys = await rabbitPub.requestBindingKeys(bikeKeysUrl);
     rabbitSub.bindKeys = await rabbitSub.requestBindingKeys(bikeKeysUrl);
     
-    console.log("[BIKE SERVICE] PUB Connecting to RabbitMQ...");
     await rabbitPub.connect();
-    console.log("[BIKE SERVICE] SUB Connecting to RabbitMQ...");
 
     await rabbitSub.connect();
     console.log("[BIKE SERVICE] Connected to RabbitMQ");

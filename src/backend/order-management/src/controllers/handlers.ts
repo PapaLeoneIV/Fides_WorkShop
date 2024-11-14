@@ -61,7 +61,6 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
   let data: OrderRequestDTO;
   res.setHeader("Access-Control-Allow-Origin", "*");
   try {
-    console.log(req.body);
     data = order_info_schema.parse(req.body);
   } catch (err) {
     console.log("[ORDER SERVICE] Error while parsing frontend request:", err);
@@ -76,7 +75,7 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
   });
 
   if (!response.ok) {
-    res.status(401).send("[ORDER SERVICE] Authentication Error: Failed to validate JWT");
+    res.status(401).json("[ORDER SERVICE] Authentication Error: Failed to validate JWT");
     throw new Error("Failed to validate JWT");
     return;
   }
@@ -85,7 +84,6 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
 
   const order = await orderManagerDB.create_order(data);
 
-  //TODO add user info to bike service
   rabbitPub.publish_to_bike_orderEvent({
     userEmail: order.userEmail,
     order_id: order.id,
@@ -96,7 +94,6 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
     updated_at: order.updated_at
   });
 
-  //TODO add user info to hotel service
   rabbitPub.publish_to_hotel_orderEvent({
     userEmail: order.userEmail,
     order_id: order.id,
@@ -108,7 +105,7 @@ export async function HTTPhandle_req_from_frontend(req: Request, res: Response) 
     updated_at: order.updated_at
   });
   
-  res.status(200).send("Order created successfully, processing...");
+  res.status(200).json({order_id : order.id, status : "Order created successfully, processing..."});
 }
 
 export async function handle_res_from_bike(msg: string) {
@@ -135,6 +132,7 @@ export async function handle_res_from_hotel(msg: string) {
 
   const error = handle_error_response(data);
   if (error) return;
+
 
   order = await orderManagerDB.update_hotel_status(data.id, data.status);
 
@@ -217,7 +215,7 @@ export async function handle_payment_request(order_id: string, retries = 0) {
       created_at: order.created_at,
       updated_at: order.updated_at
     };
-
+    //TODO inform the frontend and redirect to payment
     rabbitPub.publish_payment_orderEvent(payment_order);
   }
 

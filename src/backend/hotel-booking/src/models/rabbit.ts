@@ -20,19 +20,19 @@ class RabbitClient {
     else this.connected = true;
 
     try {
-      console.log(`[ORDER SERVICE] Connecting to Rabbit-MQ Server`);
+      console.log(`[HOTEL SERVICE] Connecting to Rabbit-MQ Server`);
       this.connection = await client.connect(
         `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
       );
 
-      console.log(`[ORDER SERVICE] Rabbit MQ Connection is ready`);
+      console.log(`[HOTEL SERVICE] Rabbit MQ Connection is ready`);
 
       this.channel = await this.connection.createChannel();
 
-      console.log(`[ORDER SERVICE] Created RabbitMQ Channel successfully`);
+      console.log(`[HOTEL SERVICE] Created RabbitMQ Channel successfully`);
     } catch (error) {
       console.error(error);
-      console.error(`[ORDER SERVICE]Not connected to MQ Server`);
+      console.error(`[HOTEL SERVICE]Not connected to MQ Server`);
     }
   }
   async setupExchange(exchange: string, exchangeType: string) {
@@ -42,9 +42,9 @@ class RabbitClient {
       await this.channel.assertExchange(exchange, exchangeType, {
         durable: true,
       });
-      console.log(`[ORDER SERVICE] Event Exchange '${exchange}' declared`);
+      console.log(`[HOTEL SERVICE] Event Exchange '${exchange}' declared`);
     } catch (error) {
-      console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
+      console.error(`[HOTEL SERVICE] Error setting up event exchange:`, error);
     }
   }
   async publishEvent(exchange: string, routingKey: string, message: OrderResponseDTO): Promise<boolean> {
@@ -64,7 +64,7 @@ class RabbitClient {
         }
       );
     } catch (error) {
-      console.error("[ORDER SERVICE] Error publishing event:", error);
+      console.error("[HOTEL SERVICE] Error publishing event:", error);
       throw error;
     }
   }
@@ -76,7 +76,7 @@ class RabbitClient {
 
       return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      console.error("[HOTEL SERVICE]", error);
       throw error;
     }
 
@@ -125,7 +125,7 @@ class RabbitPublisher extends RabbitClient {
     this.publishEvent("OrderEventExchange", this.bindKeys.PublishHotelOrder, body);
   }
   publish_to_order_managementSAGA = async (body: OrderResponseDTO): Promise<void> => {
-    console.log(`[HOTEL SERVICE] Sending to Order Management Service:`, body);
+    console.log(`[HOTEL SERVICE] SAGA Sending to Order Management Service:`, body);
     this.publishEvent("OrderEventExchange", this.bindKeys.PublishhotelSAGAOrder, body);
   }
 
@@ -134,11 +134,11 @@ class RabbitPublisher extends RabbitClient {
 //@tsyringe.singleton()
 class RabbitSubscriber extends RabbitClient {
   ConsumeHotelOrder = async () => {
-    console.log("[BIKE SERVICE] Listening for bike orders...");
+    console.log("[HOTEL SERVICE] Listening for hotel orders...");
     this.consume(HOTEL_SERVICE_ORDER_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeHotelOrder, (msg) => handle_req_from_order_management(msg));
   };
   consumecancelHotelOrder = async () => {
-    console.log("[BIKE SERVICE] Listening for bike orders...");
+    console.log("[HOTEL SERVICE] SAGA Listening for hotel orders...");
     this.consume(HOTEL_SERVICE_SAGA_REQ_QUEUE, "OrderEventExchange", this.bindKeys.ConsumeHotelSAGAOrder, (msg) => handle_cancel_request(msg));
   };
 }

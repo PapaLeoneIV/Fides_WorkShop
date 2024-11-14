@@ -18,14 +18,13 @@ export async function handle_response_general(order: OrderEntity, req_type: "bik
     const status = req_type === "bike" ? order.bike_status : order.hotel_status;
     const statusUpdate = req_type === "bike" ? orderManagerDB.update_bike_status : orderManagerDB.update_hotel_status;
     const eventPublish = req_type === "bike" ? rabbitPub.publish_cancel_hotel_orderEvent : rabbitPub.publish_cancel_bike_orderEvent;
-
     if (status === DENIED) {
         await statusUpdate(order.id, CANCELLED);
         if (order.payment_status === PENDING) {
             console.log(`[ORDER SERVICE] Cancelling payment order...`);
             await orderManagerDB.update_payment_status(order.id, CANCELLED);
         }
-        console.log(`[ORDER SERVICE] ${req_type} service denied the request, cancelling hotel...`);
+        console.log(`[ORDER SERVICE] ${req_type} service denied the request, cancelling other service...`);
         eventPublish(order.id);
         return true;
     }

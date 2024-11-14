@@ -9,7 +9,6 @@ export function generateAccessToken(email: string): string {
 
 export function authenticateToken(token: string) {
     try {
-        console.log("Token secret:" , process.env.TOKEN_SECRET);
         let decoded = jwt.verify(token, process.env.TOKEN_SECRET as string) as UserPayload;
         return decoded;
     } catch (error) {
