@@ -19,166 +19,7 @@ services:
 #--------------------------------- -  -
 #---------------------------BACKEND SERVICES
 #------------------------- -  - --  -  --
-  #--------------------------BIKE RENTAL
-  bike-rental-service:
-    container_name: bike-rental-service
-    build: ./src/backend/bike-rental
-    depends_on:
-      db_bike_rental:
-        condition: service_healthy # ensures that the database is completely running
-    #TODO_PROD: remove in production we'll rely on the npm build in the Dockerfile
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    #TODO_PROD: remove in production
-    volumes:
-      - ./src/backend/bike-rental:/app
-      - ./src/backend/bike-rental/package.json:/app/package.json
-      - ./config/Messages.ts:/app/src/config/Messages.ts
-      - ./config/OrderStatus.ts:/app/src/config/OrderStatus.ts
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_BIKE}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
-      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
-    networks:
-      - app_network
-    #TODO_PROD: update to serve only in the internal network
-    ports:
-      - "3000:3000"
-      - "5555:5555" #prisma studio
-    # expose:
-    #   - "3000"
-    restart: always
-  #--------------------------HOTEL BOOKING
-  hotel-booking-service:
-    container_name: hotel-booking-service
-    build: ./src/backend/hotel-booking
-    depends_on:
-      db_hotel_booking:
-        condition: service_healthy # ensures that the database is completely running
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/hotel-booking:/app
-      - ./src/backend/hotel-booking/package.json:/app/package.json
-      - ./config/Messages.ts:/app/src/config/Messages.ts
-      - ./config/OrderStatus.ts:/app/src/config/OrderStatus.ts
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_HOTEL}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}?schema=public
-      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
-    networks:
-      - app_network
-    ports: 
-      - "3001:3000"
-      - "5556:5556" #prisma studio
-    restart: always
-
-  #--------------------------PAYMENT CONFIRMATION
-  payment-confirmation-service:
-    container_name: payment-confirmation-service
-    build: ./src/backend/payment-confirmation
-    depends_on:
-      db_payment_confirmation:
-        condition: service_healthy # ensures that the database is completely running
-    command: >
-      sh -c "npm install \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/payment-confirmation:/app
-      - ./src/backend/payment-confirmation/package.json:/app/package.json
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}?schema=public
-    networks:
-      - app_network
-    ports:
-      - "3002:3000"
-      - "5557:5557" #prisma studio
-    restart: always
-  #--------------------------ORDER MANAGEMENT
-  order-management-service:
-    container_name: order-management-service
-    build: ./src/backend/order-management
-    depends_on:
-      db_order_management: # ensures that the database is completely running
-        condition: service_healthy
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/order-management:/app
-      - ./src/backend/order-management/package.json:/app/package.json
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_ORDER}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}?schema=public
-    networks:
-      - app_network
-    ports:
-      - "3003:3000"
-      - "5558:5558" #prisma studio
-    restart: always
-  #--------------------------AUTHENTICATION
-  authentication-service:
-    container_name: authentication-service
-    build: ./src/backend/auth
-    depends_on:
-      db_auth:
-        condition: service_healthy
-    command: >
-      sh -c "npm install \
-      && npx prisma generate --schema ./prisma/schema.prisma \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/auth:/app
-      - ./src/backend/auth/package.json:/app/package.json
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      POSTGRES_DB: ${POSTGRES_DB_AUTH}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_auth:${POSTGRES_PORT}/${POSTGRES_DB_AUTH}?schema=public
-      BYCRYPT_SALT: ${BYCRYPT_HASH_SEED}
-      TOKEN_SECRET: ${TOKEN_SECRET}
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_HOST: ${RABBITMQ_HOST}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-    env_file:
-      - .env
-    networks:
-      - app_network
-    ports:
-      - "3004:3000"
-      - "5559:5559" #prisma studio
-    restart: always
+  #--------------------------CONFIG SERVICE
   config_service:
     container_name: config-service
     build: ./src/backend/config_service/
@@ -219,6 +60,169 @@ services:
       - app_network
     ports:
       - "6969:6969"
+  #--------------------------AUTHENTICATION
+  authentication-service:
+    container_name: authentication-service
+    build: ./src/backend/auth
+    depends_on:
+      db_auth:
+        condition: service_healthy
+    command: >
+      sh -c "npm install \
+      && npx prisma generate --schema ./prisma/schema.prisma \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/auth:/app
+      - ./src/backend/auth/package.json:/app/package.json
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_DB: ${POSTGRES_DB_AUTH}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: db_auth
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_auth:${POSTGRES_PORT}/${POSTGRES_DB_AUTH}?schema=public
+      BYCRYPT_SALT: ${BYCRYPT_HASH_SEED}
+      TOKEN_SECRET: ${TOKEN_SECRET}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+    env_file:
+      - .env
+    networks:
+      - app_network
+    ports:
+      - "3004:3000"
+      - "5559:5559" #prisma studio
+    restart: always
+  #--------------------------ORDER MANAGEMENT
+  order-management-service:
+    container_name: order-management-service
+    build: ./src/backend/order-management
+    depends_on:
+      db_order_management: # ensures that the database is completely running
+        condition: service_healthy
+    command: >
+      sh -c "npm install \
+      && npx prisma generate --schema ./prisma/schema.prisma \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/order-management:/app
+      - ./src/backend/order-management/package.json:/app/package.json
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_DB: ${POSTGRES_DB_ORDER}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: db_order_management
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+    networks:
+      - app_network
+    ports:
+      - "3003:3000"
+      - "5558:5558" #prisma studio
+    restart: always
+  #--------------------------BIKE RENTAL
+  bike-rental-service:
+    container_name: bike-rental-service
+    build: ./src/backend/bike-rental
+    depends_on:
+      db_bike_rental:
+        condition: service_healthy # ensures that the database is completely running
+    #TODO_PROD: remove in production we'll rely on the npm build in the Dockerfile
+    command: >
+      sh -c "npm install \
+      && npx prisma generate --schema ./prisma/schema.prisma \
+      && npx tsx src/index.ts"
+    #TODO_PROD: remove in production
+    volumes:
+      - ./src/backend/bike-rental:/app
+      - ./src/backend/bike-rental/package.json:/app/package.json
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_DB: ${POSTGRES_DB_BIKE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      DB_HOST: db_bike_rental
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+    networks:
+      - app_network
+    #TODO_PROD: update to serve only in the internal network
+    ports:
+      - "3000:3000"
+      - "5555:5555" #prisma studio
+    # expose:
+    #   - "3000"
+    restart: always
+  #--------------------------HOTEL BOOKING
+  hotel-booking-service:
+    container_name: hotel-booking-service
+    build: ./src/backend/hotel-booking
+    depends_on:
+      db_hotel_booking:
+        condition: service_healthy # ensures that the database is completely running
+    command: >
+      sh -c "npm install \
+      && npx prisma generate --schema ./prisma/schema.prisma \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/hotel-booking:/app
+      - ./src/backend/hotel-booking/package.json:/app/package.json
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_DB: ${POSTGRES_DB_HOTEL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTFRES_HOST: db_hotel_booking
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+    networks:
+      - app_network
+    ports: 
+      - "3001:3000"
+      - "5556:5556" #prisma studio
+    restart: always
+
+  #--------------------------PAYMENT CONFIRMATION
+  payment-confirmation-service:
+    container_name: payment-confirmation-service
+    build: ./src/backend/payment-confirmation
+    depends_on:
+      db_payment_confirmation:
+        condition: service_healthy # ensures that the database is completely running
+    command: >
+      sh -c "npm install \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/payment-confirmation:/app
+      - ./src/backend/payment-confirmation/package.json:/app/package.json
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_DB: ${POSTGRES_DB_PAYMENT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: db_payment_confirmation
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+    networks:
+      - app_network
+    ports:
+      - "3002:3000"
+      - "5557:5557" #prisma studio
+    restart: always
     
   
 #--------------------------------- -  -
