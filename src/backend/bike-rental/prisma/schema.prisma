@@ -14,9 +14,9 @@ datasource db {
 }
 
 model order {
-  userEmail           String
   id                  String   @id @default(uuid())
   order_id            String
+  userEmail           String
   road_bike_requested Int
   dirt_bike_requested Int
   renting_status      String

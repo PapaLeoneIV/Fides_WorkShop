@@ -1,15 +1,14 @@
-import postgresClient from '../models/postgresClient';
-import { exit } from 'process';
+import { Messages as log } from "../config/Messages";
+import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
+import postgresClient from "../models/postgresClient";
 
 async function initializePostgresConnection() {
-    console.log("[boot] Trying to connect on db on port : ", process.env.POSTGRES_PORT)
-    try {
-        await postgresClient.connect();
-        console.log('[boot] Postgres connected on port', process.env.POSTGRES_PORT);
-    } catch (error) {
-        console.log('[boot] Error connecting to Postgres', error);
-        exit(1);
-    }
+  try {
+    await postgresClient.connect();
+    console.log(log.BOOT.INFO.CONNECTING(`Postgres on port ${process.env.POSTGRES_PORT}`));
+  } catch (error) {
+    console.log(log.BOOT.ERROR.CONNECTING("Postgres", { error }));
+  }
 }
 
 export default initializePostgresConnection;

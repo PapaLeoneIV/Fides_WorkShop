@@ -1,5 +1,5 @@
+import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
 import { RabbitmqClient } from "./RabbitmqClient";
-import { IOrderResponseDTO } from "../dtos/IOrderResponseDTO";
 
 class RabbitmqPublisher extends RabbitmqClient {
     constructor() { super(); }

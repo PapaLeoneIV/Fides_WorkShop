@@ -1,8 +1,8 @@
-import bootService from "./boot/boot-service";
 import { EXCHANGE, QueueNames as queue } from "./config/rabbit-config"
+import bootService from "./boot/bootService";
 import { subscriber } from "./models/RabbitmqSubscriber"
-import { validateAndHandleOrderRequest, validateAndHandleCancellationRequest } from "./controller/bike-controller";
 import { publisher } from "./models/RabbitmqPublisher";
+import { validateAndHandleOrderRequest, validateAndHandleCancellationRequest } from "./controller/request-controller";
 
 async function main() {
 
@@ -12,8 +12,8 @@ async function main() {
     let CONSUME_ORDER_SAGA_BK = publisher.bindKeys.ConsumeBikeSAGAOrder;
 
     console.log(`[boot] Setting up consumer`);
-    subscriber.consume(queue.ORDER_REQUEST, EXCHANGE, CONSUME_ORDER_BK, (msg) => validateAndHandleOrderRequest(msg));
-    subscriber.consume(queue.SAGA_REQUEST, EXCHANGE, CONSUME_ORDER_SAGA_BK, (msg) => validateAndHandleCancellationRequest(msg));
+    subscriber.consume(queue.ORDER_REQ, EXCHANGE, CONSUME_ORDER_BK, (msg) => validateAndHandleOrderRequest(msg));
+    subscriber.consume(queue.SAGA_REQ, EXCHANGE, CONSUME_ORDER_SAGA_BK, (msg) => validateAndHandleCancellationRequest(msg));
     console.log(`[boot] Consumer set up`);
 }
 

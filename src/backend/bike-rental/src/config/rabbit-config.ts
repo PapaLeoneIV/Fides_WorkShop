@@ -1,10 +1,9 @@
-
 const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
 
 const QueueNames = {
-    ORDER_REQUEST: "bike_service_bike_request",
-    SAGA_REQUEST: "bike_service_saga_bike_request",
-}
+  ORDER_REQ: "bike_service_bike_request",
+  SAGA_REQ: "bike_service_saga_bike_request",
+};
 
 const EXCHANGE = "OrderEventExchange";
 

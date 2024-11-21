@@ -1,3 +1,4 @@
+import { Messages as log } from "../config/Messages";
 import { PrismaClient } from "@prisma/client";
 
 class ReadBikeRepository {
@@ -7,34 +8,56 @@ class ReadBikeRepository {
     this.prisma = prisma;
   }
 
-  async getNumberDirtBikes(): Promise<number> {
-    console.log("[repository]", "Requesting number of dirt bikes from database");
-    const dirtBikesCount = await this.prisma.bikes.aggregate({
-      _sum: {
-        dirt: true,
-      },
-    });
-    return dirtBikesCount._sum.dirt ?? 0;
+  private async getNumberDirtBikes(): Promise<number> {
+    let dirtBikesCount: any;
+
+    try {
+      dirtBikesCount = await this.prisma.bikes.aggregate({
+        _sum: {
+          dirt: true,
+        },
+      });
+    
+      console.log(log.REPOSITORY.INFO.READING(`Number of dirt bikes: ${dirtBikesCount._sum.dirt}`, ""));
+      return dirtBikesCount._sum.dirt ?? 0;
+    
+    } catch (error) {
+      console.error(log.REPOSITORY.ERROR.READING(`Error reading number of dirt bikes: ${error}`, "", { error }));
+      throw error;
+    }
   }
 
-  async getNumberRoadBikes(): Promise<number> {
-    console.log("[repository]", "Requesting number of road bikes from DB");
-    const roadBikesCount = await this.prisma.bikes.aggregate({
-      _sum: {
-        road: true,
-      },
-    });
-    return roadBikesCount._sum.road ?? 0;
+  private async getNumberRoadBikes(): Promise<number> {
+    let roadBikesCount: any;
+
+    try {
+      roadBikesCount = await this.prisma.bikes.aggregate({
+        _sum: {
+          road: true,
+        },
+      });
+     
+      console.log(log.REPOSITORY.INFO.READING(`Number of road bikes: ${roadBikesCount._sum.road}`, ""));
+      return roadBikesCount._sum.road ?? 0;
+    
+    } catch (error) {
+      console.error(log.REPOSITORY.ERROR.READING(`Error reading number of road bikes: ${error}`, "", { error }));
+      throw error;
+    }
   }
 
   async checkAvailability(road_bikes: number, dirt_bikes: number): Promise<boolean> {
-    console.log("[repository]", "Checking bike availability in the DB");
-    const availableDirtBikes = await this.getNumberDirtBikes();
-    const availableRoadBikes = await this.getNumberRoadBikes();
-    return (
-      availableDirtBikes >= dirt_bikes &&
-      availableRoadBikes >= road_bikes
-    );
+    //TODO: do I really need a try catch here?
+    try {
+      const availableDirtBikes = await this.getNumberDirtBikes();
+      const availableRoadBikes = await this.getNumberRoadBikes();
+      return (
+        availableDirtBikes >= dirt_bikes &&
+        availableRoadBikes >= road_bikes
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
@@ -46,31 +69,41 @@ class WriteBikeRepository {
   }
 
   async incrementBikeCount(roadBikes: number, dirtBikes: number) {
-    console.log("[repository]", "Incrementing the bike count in the DB");
-    await this.prisma.bikes.updateMany({
-      data: {
-        road: {
-          increment: roadBikes,
+    try {
+      await this.prisma.bikes.updateMany({
+        data: {
+          road: {
+            increment: roadBikes,
+          },
+          dirt: {
+            increment: dirtBikes,
+          },
         },
-        dirt: {
-          increment: dirtBikes,
-        },
-      },
-    });
+      });
+      console.log(log.REPOSITORY.INFO.WRITING(`Incremented bike count in the DB`, ""));
+    } catch (error) {
+      console.error(log.REPOSITORY.ERROR.WRITING(`Error incrementing bike count in the DB`, "", error));
+      throw error;
+    }
   }
 
   async decrementBikeCount(roadBikes: number, dirtBikes: number) {
-    console.log("[repository]", "Decrementing bike count in the DB");
-    await this.prisma.bikes.updateMany({
-      data: {
-        road: {
-          decrement: roadBikes,
+    try {
+      await this.prisma.bikes.updateMany({
+        data: {
+          road: {
+            decrement: roadBikes,
+          },
+          dirt: {
+            decrement: dirtBikes,
+          },
         },
-        dirt: {
-          decrement: dirtBikes,
-        },
-      },
-    });
+      });
+      console.log(log.REPOSITORY.INFO.WRITING(`Decremented bike count in the DB`, ""));
+    } catch (error) {
+      console.error(log.REPOSITORY.ERROR.WRITING(`Error decrementing bike count in the DB`, "", error));
+      throw error;
+    }
   }
 }
 
