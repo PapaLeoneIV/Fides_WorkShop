@@ -1,4 +1,4 @@
-export interface PaymentOrderDTO {
+export interface IOrderToPaymentRequestDTO {
     id: string,
     amount: string,
     created_at: Date,
