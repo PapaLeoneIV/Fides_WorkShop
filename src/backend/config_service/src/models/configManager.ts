@@ -1,8 +1,8 @@
-import {Bikeconfig} from '../dtos/BikeBindingKeys.dto';
-import {Hotelconfig} from '../dtos/HotelBindingKeys.dto';
+import {Bikeconfig} from '../dtos/IBikeBindingKeysDTO';
+import {Hotelconfig} from '../dtos/IHotelBindingKeysDTO';
 import {Paymentconfig} from '../dtos/PaymentBindingKeys.dto';
-import {Orderconfig} from '../dtos/OrderManagerBindingKeys.dto';
-import {Authconfig} from '../dtos/AuthBindingKeys.dto';
+import {Orderconfig} from '../dtos/IOrderManagerBindingKeysDTO';
+import {Authconfig} from '../dtos/IAuthBindingKeysDTO';
 
 
 export class ConfigManager {

@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const OrderSchema = z.object({
-  userEmail: z.string(),
+const OrderRequestSchema = z.object({
   order_id: z.string(),
+  userEmail: z.string(),
   to: z.string(),
   from: z.string(),
   room: z.string(),
@@ -10,3 +10,5 @@ export const OrderSchema = z.object({
   created_at: z.string().transform((val) => new Date(val)),
   updated_at: z.string().transform((val) => new Date(val)),
 });
+
+export default OrderRequestSchema;

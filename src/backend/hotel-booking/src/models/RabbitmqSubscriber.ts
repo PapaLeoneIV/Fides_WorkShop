@@ -20,7 +20,7 @@ class RabbitSubscriber extends RabbitmqClient {
       (msg) => {
         {
           if (!msg) {
-            return console.error(message.CLIENT.ERROR.NULL_OCCURED("Message is null", "", msg).message);
+            return console.error(message.CLIENT.ERROR.FETCHING("Message is empty"));
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);
