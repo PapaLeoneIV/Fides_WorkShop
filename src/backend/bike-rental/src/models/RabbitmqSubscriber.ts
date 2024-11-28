@@ -1,4 +1,4 @@
-import { RabbitmqClient } from "./RabbitmqClient"
+import { RabbitmqClient } from "./RabbitmqClient";
 
 type HandlerCB = (msg: string, instance?: RabbitmqClient) => any;
 
@@ -8,7 +8,6 @@ class RabbitSubscriber extends RabbitmqClient {
   }
 
   async consume(queue: string, exchange: string, routingKey: string, handlerFunc: HandlerCB) {
-
     if (!this.channel) {
       await this.connect();
     }
@@ -32,4 +31,4 @@ class RabbitSubscriber extends RabbitmqClient {
   }
 }
 
-export const subscriber = new RabbitSubscriber;
+export const subscriber = new RabbitSubscriber();

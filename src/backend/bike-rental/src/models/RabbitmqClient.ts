@@ -12,9 +12,7 @@ export class RabbitmqClient {
 
   async connect() {
     if (this.connected && this.channel)
-      return console.log(
-        log.CLIENT.WARNING.CONNECTING("Already connected to RabbitMQ")
-      );
+      return console.log(log.CLIENT.WARNING.CONNECTING("Already connected to RabbitMQ"));
     else this.connected = true;
 
     try {
@@ -34,9 +32,7 @@ export class RabbitmqClient {
       await this.channel.assertQueue(queue, {
         durable: true,
       });
-      console.log(
-        log.CLIENT.INFO.CONFIGURING(`Queue ${queue} created`, { queue })
-      );
+      console.log(log.CLIENT.INFO.CONFIGURING(`Queue ${queue} created`, { queue }));
     } catch (error) {
       console.error(log.CLIENT.ERROR.CONFIGURING(`Queue ${queue}`, error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
@@ -47,14 +43,10 @@ export class RabbitmqClient {
     try {
       const response = await fetch(url, { method: "GET" });
       const data = await response.json();
-      console.log(
-        log.CLIENT.INFO.FETCHING(`Binding keys from ${url}`, { data })
-      );
+      console.log(log.CLIENT.INFO.FETCHING(`Binding keys from ${url}`, { data }));
       return data as IBindingKeysDTO;
     } catch (error) {
-      console.error(
-        log.CLIENT.ERROR.FETCHING(`Binding keys from ${url}`, error)
-      );
+      console.error(log.CLIENT.ERROR.FETCHING(`Binding keys from ${url}`, error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }

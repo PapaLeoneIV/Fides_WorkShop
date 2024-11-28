@@ -3,9 +3,12 @@ import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { QueueNames as queue } from "../config/rabbit-config";
 import { publisher } from "../models/RabbitmqPublisher";
 import { subscriber } from "../models/RabbitmqSubscriber";
+import ConfigFetcher from "./ConfigFetcher";
 
+//TODO: pass them through env variables 
 const bikeKeysUrl = "http://config-service:3000/config/bikeKeys";
-
+// const rabbitConfigUrl = "http://config-service:3000/config/bikeConfig";
+ 
 async function initializeRabbitmqConnection() {
   try {
     //TODO: move fetching to a separate file
