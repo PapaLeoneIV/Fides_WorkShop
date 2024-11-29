@@ -12,7 +12,7 @@ export function authenticateToken(token: string) {
         let decoded = jwt.verify(token, process.env.TOKEN_SECRET as string) as UserPayload;
         return decoded;
     } catch (error) {
-        console.error("[TOKEN SERVICE] Invalid JWT Token:", error);
+        console.error("[AUTH SERVICE] Invalid JWT Token:", error);
         return null;
     }
 }

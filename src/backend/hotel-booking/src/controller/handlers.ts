@@ -54,8 +54,10 @@ export async function handle_req_from_order_management(msg: string) {
 
 export async function handle_cancel_request(order_id: string) {
 
+  order_id = JSON.parse(order_id);
+  
   const orderExists = await order_manager.check_existance(order_id);
-
+  
   if (!orderExists) {
     console.log("[HOTEL SERVICE] Order with id: ", order_id, "does not exist");
     rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
@@ -75,10 +77,10 @@ export async function handle_cancel_request(order_id: string) {
       rabbitPub.publish_to_order_management({ id: order_id, status: DENIED });
     }
 
-    const n_bookedDays = await await storage_db.getBookedDays(order)!;
+    const n_bookedDays =  await storage_db.getBookedDays(order)!;
 
     if (!n_bookedDays) {
-      console.log('\x1b[32m%s\x1b[0m', "[HOTEL SERVICE]", "No dates found for the requested range.");
+      console.log("[HOTEL SERVICE]", "No dates found for the requested range.");
       await updateStatus_and_publishEvent(order, DENIED);
       return;
     }

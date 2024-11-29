@@ -120,6 +120,7 @@ export async function HTTPhandle_refresh_req(req: Request, res: Response){
     let req_info: LoginDTO;
     let token: string;
     res.setHeader("Access-Control-Allow-Origin", "*");
+    console.log("REFRESSSSHSHHSHSHSHSH")
     try {
         req_info = login_schema.parse(req.body.msg);
     } catch (error) {
@@ -134,12 +135,11 @@ export async function HTTPhandle_refresh_req(req: Request, res: Response){
     }
     let isJWTValid = authenticateToken(req_info.jwtToken);
     if (!isJWTValid) {
-        console.error("[AUTH SERVICE] JWT Token is invalid");
-        res.status(500).json({ status: "ERROR", error: "JWT Token is invalid" });
-        return;
+        console.error("[AUTH SERVICE] JWT Token is invalid, refreshing token!!");
+        token = generateAccessToken(req_info.email);
+        res.status(200).json({ status: "APPROVED", token: token });
     }
-    token = generateAccessToken(req_info.email);
-    res.status(500).json({ status: "APPROVED", token: token });
+   
 
 }
 

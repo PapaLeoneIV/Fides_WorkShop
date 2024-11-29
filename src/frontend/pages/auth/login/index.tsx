@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const router = useRouter()
   const makeLoginRequest = async (msg : Message) => {
-    const response = await fetch('http://localhost:3004/auth/login', {
+    const response = await fetch('http://localhost:3004/users/login', {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',

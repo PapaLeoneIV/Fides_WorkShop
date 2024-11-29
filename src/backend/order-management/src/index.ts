@@ -1,8 +1,9 @@
 import bootService from "./boot";
 import {rabbitSub} from "./models/index";
-import app from "./boot/router/router";
+import app from "./router/router";
 async function main() {
 
+   const port = 3000;
    await bootService();
 
    //CONSUME
@@ -16,8 +17,8 @@ async function main() {
    rabbitSub.consumeHotelSagaResponse();
    rabbitSub.consumeBikeSagaResponse();
 
-   app.listen(3000, () => {
-      console.log("Server is running on port 3000");
+   app.listen(port, () => {
+      console.log("Server is running on port :", port);
    });
 }
 

@@ -4,18 +4,21 @@ import { validate_and_return_user_info, HTTPhandle_registration_req, HTTPhandle_
 
 const app = express ();
 
-const router = express.Router();
+const userRouter = express.Router();
+const jwtRouter = express.Router();
 
-
-router.post('/register', HTTPhandle_registration_req);   
-router.post('/login', HTTPhandle_login_req);
-router.post('/refresh', HTTPhandle_refresh_req);
-router.post('/validateJWT', validate_and_return_user_info);
-app.use(express.json());
 app.use(cors()); 
+app.use(express.json());
 
-app.use('/users', router);
-app.use("/auth", router);
+userRouter.post('/register', HTTPhandle_registration_req);   
+userRouter.post('/login', HTTPhandle_login_req);
+
+jwtRouter.post('/refresh', HTTPhandle_refresh_req);
+jwtRouter.post('/validateJWT', validate_and_return_user_info);
+
+
+app.use("/auth", jwtRouter);
+app.use('/users', userRouter);
 
 export default app;
 

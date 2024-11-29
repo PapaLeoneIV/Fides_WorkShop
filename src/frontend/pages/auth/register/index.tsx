@@ -26,7 +26,7 @@ export default function RegisterPage() {
 
     // Here you would typically make an API call to register the user
     // For this example, we'll just simulate a successful registration
-    const response = await fetch('http://localhost:3004/auth/register', {
+    const response = await fetch('http://localhost:3004/users/register', {
       method: 'POST',
       headers: {
       'Access-Control-Allow-Origin' : '*',

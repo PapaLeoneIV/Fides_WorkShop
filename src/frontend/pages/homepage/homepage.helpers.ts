@@ -63,13 +63,26 @@ export const createBookingData = (value: {
 
 
 
-export const fetchBookingData = (data: any) => {
-    return fetch("http://localhost:3003/order/booking", {
-        method: "POST",
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
+export const fetchBookingData = async (data: any) => {
+    try {
+        const response = await fetch("http://localhost:3003/order/booking", {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Success:', result);
+        return result;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
 };
