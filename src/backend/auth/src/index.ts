@@ -1,3 +1,4 @@
+import { Messages as log } from './config/Messages';
 import bootService from './boot/bootService';
 import { EXCHANGE, QueueNames as queue } from './config/rabbit-config';
 import { vaidateAndHandleRegistrationRequest, validateAndHandleLoginRequest } from './controller/rabbit-request-controller';
@@ -12,7 +13,7 @@ async function main(){
     await subscriber.consume(queue.REGISTRATION_QUEUE_REQUEST, EXCHANGE, subscriber.bindKeys.ConsumeRegistrationReq, (msg) => vaidateAndHandleRegistrationRequest(msg));
 
     app.listen(3000, () => {
-        console.log('[AUTH SERVICE] Service started on port 3000');
+        console.log(log.BOOT.INFO.BOOTING(`Server is running on port 3000`));
     });
     // await rabbitSub.consumeUserInformationRequest();
 
