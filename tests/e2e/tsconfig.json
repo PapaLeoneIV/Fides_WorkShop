@@ -1,0 +1,6 @@
+// `esModuleInterop` to `true` 
+{
+  "compilerOptions": {
+    "esModuleInterop": true
+  }
+}

@@ -16,24 +16,7 @@ networks:
     driver: bridge
 
 services:
-#--------------------------------- -  -
-#---------------------------BACKEND SERVICES
-#------------------------- -  - --  -  --
-  #--------------------------CONFIG SERVICE
-  config_service:
-    container_name: config-service
-    build: ./src/backend/config_service/
-    command: >
-      sh -c "npm install \
-      && npx tsx src/index.ts"
-    volumes:
-      - ./src/backend/config_service:/app
-      - ./src/backend/config_service/package.json:/app/package.json
-    networks:
-      - app_network
-    ports:
-      - "3005:3000"
-    restart: always
+  # --------------------------FRONTEND
   frontend:
     container_name: frontend
     build: ./src/frontend
@@ -63,10 +46,38 @@ services:
       - app_network
     ports:
       - "6969:6969"
+  #---------------------------BACKEND SERVICES
+  #--------------------------CONFIG SERVICE
+  config_service:
+    container_name: config-service
+    build: ./src/backend/config_service/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    command: >
+      sh -c "npm install \
+      && npx tsx src/index.ts"
+    volumes:
+      - ./src/backend/config_service:/app
+      - ./src/backend/config_service/package.json:/app/package.json
+    networks:
+      - app_network
+    ports:
+      - "3005:3000"
+    restart: always
   #--------------------------AUTHENTICATION
   authentication-service:
     container_name: authentication-service
     build: ./src/backend/auth
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     depends_on:
       db_auth:
         condition: service_healthy
@@ -104,6 +115,12 @@ services:
   order-management-service:
     container_name: order-management-service
     build: ./src/backend/order-management
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     depends_on:
       db_order_management: # ensures that the database is completely running
         condition: service_healthy
@@ -133,6 +150,12 @@ services:
   bike-rental-service:
     container_name: bike-rental-service
     build: ./src/backend/bike-rental
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     depends_on:
       db_bike_rental:
         condition: service_healthy # ensures that the database is completely running
@@ -169,6 +192,12 @@ services:
   hotel-booking-service:
     container_name: hotel-booking-service
     build: ./src/backend/hotel-booking
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     depends_on:
       db_hotel_booking:
         condition: service_healthy # ensures that the database is completely running
@@ -192,7 +221,7 @@ services:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
     networks:
       - app_network
-    ports: 
+    ports:
       - "3001:3000"
       - "5556:5556" #prisma studio
     restart: always
@@ -201,6 +230,12 @@ services:
   payment-confirmation-service:
     container_name: payment-confirmation-service
     build: ./src/backend/payment-confirmation
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     depends_on:
       db_payment_confirmation:
         condition: service_healthy # ensures that the database is completely running
@@ -227,11 +262,7 @@ services:
       - "3002:3000"
       - "5557:5557" #prisma studio
     restart: always
-    
-  
-#--------------------------------- -  -
-#----------------------------DATABASES
-#------------------------- -  - --  -  --
+  #----------------------------DATABASES
   #--------------------------bike rental
   db_bike_rental:
     image: postgres:13
@@ -241,11 +272,11 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-     #TODO_PROD: update to let docker manage the volume
+      #TODO_PROD: update to let docker manage the volume
       - db_bike_rental:/var/lib/postgresql/data
       - ./src/backend/bike-rental/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_USER: ${POSTGRES_USER} 
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_BIKE}
     networks:
@@ -286,7 +317,7 @@ services:
       retries: 10
     volumes:
       - db_payment_confirmation:/var/lib/postgresql/data
-       - ./src/backend/payment-confirmation/init.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./src/backend/payment-confirmation/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -336,9 +367,7 @@ services:
     ports:
       - "5437:5432"
     restart: always
-#--------------------------------- -  -
-#--------------------------MESSAGE BROKER
-#------------------------- -  - --  -  --
+  #--------------------------MESSAGE BROKER
   #--------------------------RabbitMQ
   rabbitmq:
     container_name: rabbitmq
@@ -354,8 +383,9 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
-  #LOGGING AND MONITORING
 
+  #--------------------------LOGGING AND MONITORING
+  #--------------------------Grafana
   #grafana:
   #  image: grafana/grafana:latest
   #  ports:
@@ -368,7 +398,7 @@ services:
   #    - GF_AUTH_DISABLE_LOGIN_FORM=true
   #  networks:
   #    - app_network
-#
+  #
   #loki:
   #  image: grafana/loki:latest
   #  ports:
@@ -376,7 +406,7 @@ services:
   #  command: -config.file=/etc/loki/local-config.yaml
   #  networks:
   #    - app_network
-#
+  #
   #promtail:
   #  image:  grafana/promtail:latest
   #  container_name: promtail
@@ -389,4 +419,61 @@ services:
   #    - loki
   #  networks:
   #    - app_network
-
+  #--------------------------TESTING
+  #--------------------------E2E TESTING
+  e2e-testing-service:
+    container_name: e2e-testing-service
+    build:
+      context: ./tests/e2e
+      dockerfile: Dockerfile
+    depends_on:
+      # frontend:
+      #   condition: service_healthy
+      # authentication-service:
+      #   condition: service_healthy
+      # order-management-service:
+      #   condition: service_healthy
+      # bike-rental-service:
+      #   condition: service_healthy
+      # hotel-booking-service:
+      #   condition: service_healthy
+      # payment-confirmation-service:
+      #   condition: service_healthy
+      db_bike_rental:
+        condition: service_healthy
+      db_hotel_booking:
+        condition: service_healthy
+      db_payment_confirmation:
+        condition: service_healthy
+      db_order_management:
+        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_healthy
+    command: >
+      sh -c "npm install \
+      && npx playwright install \
+      && npm install --save-dev jest \
+      && npm install --save-dev jest-playwright-preset \
+      && npm run e2e"
+    volumes:
+      - ./tests/e2e:/app
+      - ./tests/e2e/package.json:/app/package.json
+      - ~/.cache/ms-playwright:/ms-playwright
+    environment:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      FRONTEND_URL: http://frontend:6969
+      BACKEND_AUTH_URL: http://authentication-service:3004
+      BACKEND_ORDER_URL: http://order-management-service:3003
+      BACKEND_BIKE_URL: http://bike-rental-service:3000
+      BACKEND_HOTEL_URL: http://hotel-booking-service:3001
+      BACKEND_PAYMENT_URL: http://payment-confirmation-service:3002
+      DATABASE_URL_BIKE: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
+      DATABASE_URL_HOTEL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}?schema=public
+      DATABASE_URL_PAYMENT: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}?schema=public
+      DATABASE_URL_ORDER: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}?schema=public
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+    networks:
+      - app_network
+    ports:
+      - "7000:7000" # Optional, for logs or dashboards
+    restart: on-failure
