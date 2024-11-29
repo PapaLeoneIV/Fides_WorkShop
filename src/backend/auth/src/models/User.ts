@@ -50,6 +50,6 @@ export class User {
   }
 
   generateAccessToken(): string {
-    return jwt.sign({ email: this.email }, process.env.TOKEN_SECRET as string, { expiresIn: 1 } as jwt.SignOptions);
+    return jwt.sign({ email: this.email }, process.env.TOKEN_SECRET as string, { expiresIn: '1800s' });
   }
 }

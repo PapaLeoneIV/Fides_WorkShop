@@ -46,13 +46,43 @@ export async function HTTPprocessLoginRequest(request: ILoginRequestDTO, res: Re
       return;
     }
 
-    if (!User.authenticateToken(request.jwtToken)) throw new Error("JWT Token is invalid");
+    //TODO: investigate why this part of the code is commented
+    // if (!User.authenticateToken(request.jwtToken)) throw new Error("JWT Token is invalid");
 
-    response.token = user.generateAccessToken();
-    // modified from the original code (500 status code)
-    res.status(200).json(response);
+    // response.token = user.generateAccessToken();
+    // // modified from the original code (500 status code)
+    // res.status(200).json(response);
   } catch (error) {
-    console.error("[AUTH SERVICE] Failed to login user");
+    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to login user: ${error}`, "", request));
+    response.status = status.ERROR;
+    response.message = error;
+    res.status(500).json(response);
+  }
+}
+
+export async function HTTPprocessJwtRefreshRequest(req: ILoginRequestDTO, res: Response) {
+  let response: IAuthResponseDTO = {
+    status: "APPROVED",
+    message: "Token refreshed successfully",
+    token: null,
+  };
+
+  try {
+    let user: User;
+
+    if (!req.jwtToken) throw new Error("JWT Token not found");
+
+    let isJWTValid = User.authenticateToken(req.jwtToken as string);
+    if (!isJWTValid || req.email !== isJWTValid.email) {
+      console.log(log.SERVICE.INFO.PROCESSING(`JWT Token is invalid, generating new token`, "", req));
+      //TODO: create a new static method to generate a new token from an email(?)
+      user = new User(await userRepository.read.getRow_byColumn("email", req.email));
+      if (!user) throw new Error("User does not exist");
+      response.token = user.generateAccessToken();
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to refresh token: ${error}`, "", req));
     response.status = status.ERROR;
     response.message = error;
     res.status(500).json(response);
@@ -76,7 +106,7 @@ export async function HTTPprocessUserInformationRequest(req: ILoginRequestDTO, r
 
     res.status(200).json(user); //?? response ??
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to login user: ${error}`, "", req));
+    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to retrieve user information: ${error}`, "", req));
     response.status = status.ERROR;
     response.message = error;
     res.status(500).json(response);
