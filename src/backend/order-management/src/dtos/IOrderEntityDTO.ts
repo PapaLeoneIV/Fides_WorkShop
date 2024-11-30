@@ -1,12 +1,12 @@
-export default interface IFrontendRequestDTO {
-  userJWT: string;
+export default interface IOrderEntityDTO {
+  id: string;
   userEmail: string;
-  from: string;
   to: string;
+  from: string;
   room: string;
-  amount: string;
   road_bike_requested: number;
   dirt_bike_requested: number;
+  amount: string;
   bike_status: string;
   hotel_status: string;
   payment_status: string;

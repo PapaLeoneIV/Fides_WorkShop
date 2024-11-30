@@ -14,8 +14,8 @@ import {
 } from "../service/HTTP-request-service";
 
 export async function HTTPvalidateRegistrationRequest(req: Request, res: Response) {
-  let request: IRegistrationRequestDTO;
   let response: IAuthResponseDTO = { status: status.ERROR, message: "Invalid data format", token: null };
+  let request: IRegistrationRequestDTO;
 
   // To allow cross-origin requests
   res.setHeader("Access-Control-Allow-Origin", "*");
