@@ -36,7 +36,7 @@ export async function processRegistrationRequest(request: IRegistrationRequestDT
   } catch (error) {
     console.error(log.SERVICE.ERROR.PROCESSING(`Failed to register user: ${error}`, "", request));
     response.status = status.ERROR;
-    response.message = error;
+    response.message = error.message;
     await updateExchange(response, REGISTRATION_BKEY);
     return;
   }
@@ -68,7 +68,7 @@ export async function processLoginRequest(request: ILoginRequestDTO) {
   } catch (error) {
     console.error(log.SERVICE.ERROR.PROCESSING(`Failed to login user: ${error}`, "", request));
     response.status = status.ERROR;
-    response.message = error;
+    response.message = error.message;
     await updateExchange(response, LOGIN_BKEY);
   }
 }
