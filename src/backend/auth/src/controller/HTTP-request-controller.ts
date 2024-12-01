@@ -49,6 +49,7 @@ export async function HTTPvalidateLoginRequest(req: Request, res: Response) {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   try {
+    
     request = FrontendLoginSchema.parse(req.body.msg); //TODO: check how to make it standardize with the other controller where the request is parsed from req.body
     console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
   } catch (error) {
@@ -59,9 +60,6 @@ export async function HTTPvalidateLoginRequest(req: Request, res: Response) {
 
   try {
     HTTPprocessLoginRequest(request, res);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
   } catch (error) {
     console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed ${error}`, "", error));
     // res.status(500).json(response);
