@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Head } from "@/components/head"
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -25,8 +24,6 @@ export default function RegisterPage() {
       return
     }
 
-    // Here you would typically make an API call to register the user
-    // For this example, we'll just simulate a successful registration
     const response = await fetch('http://localhost:3004/users/register', {
       method: 'POST',
       headers: {
@@ -41,7 +38,7 @@ export default function RegisterPage() {
     
     if (!response.ok) {
       const data = await response.json()
-      setError(data.error)
+      setError(data.message)
       return
     }
 
