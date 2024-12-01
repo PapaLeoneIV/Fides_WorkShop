@@ -16,6 +16,7 @@ interface Message {
 dotenv.config()
 
 export default function LoginPage() {
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -35,7 +36,7 @@ export default function LoginPage() {
   }
 
   const makeRefreshRequest = async (msg : Message) => {
-    const response = await fetch('http://localhost:3004/auth/refresh', {
+    const response = await fetch('http://localhost:3004/auth/refreshJWT', {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -63,7 +64,7 @@ export default function LoginPage() {
             document.cookie = `${email}=${response.token}; path=/`;
             router.push(`/homepage?email=${email}`);
         } else {
-            setError(response.error);
+            setError(response.message);
             return;
         }
     } else {
