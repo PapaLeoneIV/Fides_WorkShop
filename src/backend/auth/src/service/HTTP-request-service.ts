@@ -15,6 +15,7 @@ export async function HTTPprocessRegistrationRequest(request: IRegistrationReque
     if (await userRepository.read.getRow_byColumn("email", request.email))
       throw new Error("Registration denied User already exists");
 
+    request.password = await User.hashPassword(request.password);
     user = new User(await userRepository.write.addRow(request));
     if (!user) throw new Error("Failed to register user");
 
