@@ -1,5 +1,5 @@
-import logger from '../config/logger';
-import log  from "../config/logs";
+import logger from "../config/logger";
+import log from "../config/logs";
 import { OrderStatus as status } from "../config/OrderStatus";
 import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
@@ -11,7 +11,7 @@ async function updateExchange(resp: IOrderResponseDTO, bindKey: string = publish
     await publisher.publishEvent(EXCHANGE, bindKey, JSON.stringify(resp));
     logger.info(log.SERVICE.PROCESSING(`Response ${resp.id} published successfully`, "", resp));
   } catch (error) {
-    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response: ${error}`, { error }));
     throw error;
   }
 }
@@ -24,11 +24,9 @@ async function processOrderRequest(data: IOrderRequestDTO) {
     response.status = Math.random() < 0.9 ? status.APPROVED : status.DENIED;
     await updateExchange(response);
     logger.info(
-      log.SERVICE.PROCESSING(
-        `Order request ${data.id} processed successfully with status: ${response.status}`,
-        "",
-        data
-      )
+      log.SERVICE.PROCESSING(`Order request ${data.id} processed successfully with status: ${response.status}`, {
+        data,
+      })
     );
   } catch (error) {
     logger.error(log.SERVICE.PROCESSING(`Order request failed`, "", error));

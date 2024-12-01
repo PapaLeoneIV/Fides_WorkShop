@@ -8,9 +8,9 @@ async function bootService() {
   try {
     await initializePostgresConnection();
     await initializeRabbitmqConnection();
-    logger.info(log.BOOT.BOOTING("Payment Confirmation Service"));
+    logger.info(log.BOOT.BOOTING("Payment Confirmation Service Started"));
   } catch (error) {
-    logger.error(log.BOOT.BOOTING("Payment Confirmation Service", error));
+    logger.error(log.BOOT.BOOTING(`Error starting Payment Confirmation Service: ${error}`));
     // throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   }
 }

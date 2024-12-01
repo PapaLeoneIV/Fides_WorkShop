@@ -40,7 +40,7 @@ async function initializeRabbitmqConnection() {
       })
     );
   } catch (error) {
-    logger.error(log.BOOT.CONNECTING("RabbitMQ", { error }));
+    logger.error(log.BOOT.CONNECTING(`Error connecting to RabbitMQ: ${error}`));
   }
 }
 

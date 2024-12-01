@@ -13,20 +13,17 @@ export async function validateAndHandleOrderRequest(msg: string) {
 
   try {
     request = OrderRequestSchema.parse(JSON.parse(msg));
-    logger.info(log.CONTROLLER.VALIDATING(`Order request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Order request validated successfully`, { request }));
   } catch (error) {
-    logger.error(log.CONTROLLER.VALIDATING(`Order request`, "", error));
-    await updateExchange(response);
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating order request: ${error}`, { error }));
+    return await updateExchange(response);
   }
 
   try {
     processOrderRequest(request);
-    logger.info(log.CONTROLLER.PROCESSING(`Order request ${request.id} processed successfully`, "", request));
   } catch (error) {
-    logger.error(log.CONTROLLER.PROCESSING(`Order request failed`, "", error));
+    logger.error(log.CONTROLLER.PROCESSING(`Order request failed: ${error}`, "", request));
     response.id = request.id;
     await updateExchange(response);
-    throw error;
   }
 }
