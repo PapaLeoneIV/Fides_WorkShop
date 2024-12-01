@@ -1,4 +1,4 @@
-import import logger from '../config/logger';
+import logger from '../config/logger';
 import log from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { QueueNames as queue } from "../config/rabbit-config";
@@ -13,7 +13,7 @@ async function initializeRabbitmqConnection() {
     publisher.bindKeys = await publisher.requestBindingKeys(bikeKeysUrl);
     subscriber.bindKeys = await subscriber.requestBindingKeys(bikeKeysUrl);
     logger.info(
-      message.BOOT.FETCHING("Binding keys from config service fetched", {
+      log.BOOT.FETCHING("Binding keys from config service fetched", {
         publisherKeys: publisher.bindKeys,
         subscriberKeys: subscriber.bindKeys,
       })
@@ -21,14 +21,14 @@ async function initializeRabbitmqConnection() {
 
     await publisher.connect();
     logger.info(
-      message.BOOT.CONNECTING("Publisher connected to RabbitMQ", {
+      log.BOOT.CONNECTING("Publisher connected to RabbitMQ", {
         publisherKeys: publisher.bindKeys,
       })
     );
 
     await subscriber.connect();
     logger.info(
-      message.BOOT.CONNECTING("Subscriber connected to RabbitMQ", {
+      log.BOOT.CONNECTING("Subscriber connected to RabbitMQ", {
         subscriberKeys: subscriber.bindKeys,
       })
     );
@@ -36,12 +36,12 @@ async function initializeRabbitmqConnection() {
     await subscriber.createQueue(queue.ORDER_REQ);
     await subscriber.createQueue(queue.SAGA_REQ);
     logger.info(
-      message.BOOT.CONFIGURING("Order request queues created", {
+      log.BOOT.CONFIGURING("Order request queues created", {
         queues: [queue.ORDER_REQ, queue.SAGA_REQ],
       })
     );
   } catch (error) {
-    logger.error(message.BOOT.CONNECTING("RabbitMQ", { error }));
+    logger.error(log.BOOT.CONNECTING("RabbitMQ", { error }));
   }
 }
 

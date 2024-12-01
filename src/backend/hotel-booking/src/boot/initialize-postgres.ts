@@ -8,7 +8,7 @@ async function initializePostgresConnection() {
     await postgresClient.connect();
     logger.info(log.BOOT.CONNECTING(`Postgres on port ${process.env.POSTGRES_PORT}`));
   } catch (error) {
-    logger.info(log.BOOT.CONNECTING("Postgres", { error }));
+    logger.error(log.BOOT.CONNECTING(`Error connecting to Postgres: ${error}`));
   }
 }
 

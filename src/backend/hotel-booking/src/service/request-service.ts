@@ -16,7 +16,7 @@ export async function updateExchange(
     await publisher.publishEvent(EXCHANGE, bindKey, response);
     logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
   } catch (error) {
-    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response: ${error}`, { error }));
     throw error;
   }
 }
@@ -58,8 +58,7 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
     logger.error(
       log.SERVICE.PROCESSING(
         `Error while processing order with order_id ${request.order_id} request: ${error}`,
-        "",
-        error
+        { error }
       )
     );
     await updateExchange(response);

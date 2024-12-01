@@ -54,7 +54,7 @@ class ReadHotelRepository {
       logger.info(log.REPOSITORY.READING("Room availability retreived", ""));
       return result.length === dateIds.length;
     } catch (error) {
-      logger.info(log.REPOSITORY.READING("Unable to read room availability", ""));
+      logger.error(log.REPOSITORY.READING(`Error reading room availability: ${error}`, { error }));
       throw error;
     }
   }
@@ -65,7 +65,7 @@ class ReadHotelRepository {
     try {
       bookedDaysID = await this.getDateIdsForRange(new Date(order.from), new Date(order.to));
       if (!bookedDaysID) {
-        throw new Error(HTTPerror.NOT_FOUND.message);
+        throw new Error("No dates found for the given range");
       }
       return bookedDaysID.map((date: any) => date.id);
     } catch (error) {
@@ -99,10 +99,10 @@ class WriteHotelRepository {
       });
 
       if (result) logger.info(log.REPOSITORY.WRITING("Room availability upadated", ""));
-      else logger.info(log.REPOSITORY.WRITING("Room avalability non updated", ""));
+      else logger.warning(log.REPOSITORY.WRITING("Room avalability non updated", ""));
       return result ? true : false;
     } catch (error) {
-      logger.info(log.REPOSITORY.WRITING(`Error updating room availability: ${error}`, "", { error }));
+      logger.error(log.REPOSITORY.WRITING(`Error updating room availability: ${error}`, { error }));
       throw error;
     }
   }
@@ -124,10 +124,10 @@ class WriteHotelRepository {
       });
 
       if (result) logger.info(log.REPOSITORY.WRITING("Room availability restored", ""));
-      else logger.info(log.REPOSITORY.WRITING("Room avalability non restored", ""));
+      else logger.warning(log.REPOSITORY.WRITING(`Room availability not restored`, ""));
       return result ? true : false;
     } catch (error) {
-      logger.info(log.REPOSITORY.WRITING(`Restoring room availability: ${error}`, "", { error }));
+      logger.error(log.REPOSITORY.WRITING(`Restoring room availability: ${error}`, { error }));
       throw error;
     }
   }

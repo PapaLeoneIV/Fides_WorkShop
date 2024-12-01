@@ -1,4 +1,4 @@
-import import logger from '../config/logger';
+import logger from '../config/logger';
 import log from "../config/logs";
 import { RabbitmqClient } from "./RabbitmqClient";
 
@@ -21,7 +21,7 @@ class RabbitSubscriber extends RabbitmqClient {
       (msg) => {
         {
           if (!msg) {
-            return logger.error(message.CLIENT.FETCHING("Message is empty"));
+            return logger.error(log.CLIENT.FETCHING("Message is empty"));
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);

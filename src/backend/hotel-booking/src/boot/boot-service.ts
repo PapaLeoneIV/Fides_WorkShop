@@ -8,10 +8,9 @@ async function bootService() {
   try {
     await initializePostgresConnection();
     await initializeRabbitmqConnection();
-    logger.info(log.BOOT.BOOTING("Hotel Booking Service"));
+    logger.info(log.BOOT.BOOTING("Hotel Booking Service Started"));
   } catch (error) {
-    logger.error(log.BOOT.BOOTING("Hotel Booking Service", error));
-    throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
+    logger.error(log.BOOT.BOOTING(`Error starting Hotel Booking Service: ${error}`));
   }
 }
 
