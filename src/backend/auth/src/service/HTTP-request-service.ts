@@ -14,7 +14,7 @@ export async function HTTPprocessRegistrationRequest(request: IRegistrationReque
   try {
     if (await userRepository.read.getRow_byColumn("email", request.email))
       throw new Error("Registration denied User already exists");
-
+    //TODO remove logging of password pls
     request.password = await User.hashPassword(request.password);
     user = new User(await userRepository.write.addRow(request));
     if (!user) throw new Error("Failed to register user");
@@ -24,7 +24,7 @@ export async function HTTPprocessRegistrationRequest(request: IRegistrationReque
   } catch (error) {
     console.error(log.SERVICE.ERROR.PROCESSING(`Failed to register user: ${error}`, "", request));
     response.status = status.ERROR;
-    response.message = error;
+    response.message = error.message;
     res.status(500).json(response);
   }
 }
