@@ -10,7 +10,7 @@ nostro progetto è comunque rivolto all Architettura del progetto e allo svilupp
 
 ## Build prerequisites
 Tutti gli strumenti che potrebbero servirvi to build the project:
-- make
+- python3
 - docker
 
 ## Architecture
