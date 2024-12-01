@@ -52,9 +52,9 @@ export async function processLoginRequest(request: ILoginRequestDTO) {
 
     if (!(await user.validatePassword(request.password))) throw new Error("Wrong password");
 
-    logger.info(log.SERVICE.PROCESSING(`User logged in successfully`, "", request));
+    logger.info(log.SERVICE.PROCESSING(`User logged successfully`, { }, request));
     if (!request.jwtToken) {
-      logger.info(log.SERVICE.PROCESSING(`JWT Token not found, generating new token`, "", request));
+      logger.info(log.SERVICE.PROCESSING(`JWT Token not found, generating new token`, { }, request));
       response.token = user.generateAccessToken();
       return await updateExchange(response, LOGIN_BKEY);
     }
@@ -64,7 +64,7 @@ export async function processLoginRequest(request: ILoginRequestDTO) {
     response.token = user.generateAccessToken();
     await updateExchange(response, LOGIN_BKEY);
   } catch (error) {
-    logger.error(log.SERVICE.PROCESSING(`Failed to login user: ${error}`, "", request));
+    logger.error(log.SERVICE.PROCESSING(`Failed to login user: ${error}`, { error }, request));
     response.status = status.ERROR;
     response.message = error;
     await updateExchange(response, LOGIN_BKEY);
