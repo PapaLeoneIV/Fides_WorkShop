@@ -1,4 +1,5 @@
-import { Messages as message } from '../config/Messages';
+import import logger from './config/logger';
+import log from '../config/logs';
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IServiceResponseDTO from "../dtos/IServiceResponseDTO";
 import ServiceResponseSchema from "../schema/ServiceResponseSchema";

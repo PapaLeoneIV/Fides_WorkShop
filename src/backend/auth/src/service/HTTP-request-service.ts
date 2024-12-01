@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from './config/logger';
+import log  from "../config/logs";
 import { RequestStatus as status } from "../config/RequestStatus";
 import { User } from "../models/User";
 import { userRepository } from "../repository/user-repository";

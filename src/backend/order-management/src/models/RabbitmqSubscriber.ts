@@ -1,5 +1,6 @@
 import { RabbitClient } from "./RabbitmqClient";
-import { Messages as log } from '../config/Messages';
+import logger from './config/logger';
+import log  from '../config/logs';
 import { HTTPErrors as HTTPerror} from "../config/HTTPErrors";
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 

@@ -1,6 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from "../config/Messages";
+import logger from './config/logger';
+import log  from "../config/logs";
 import { RABBITMQ_URL } from "../config/rabbit-config";
 import IBindingKeysDTO from "../dtos/IBindingKeysDTO";
 

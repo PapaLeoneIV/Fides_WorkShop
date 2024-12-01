@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from './config/logger';
+import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { OrderStatus as status } from "../config/OrderStatus";
 import { EXCHANGE } from "../config/rabbit-config";

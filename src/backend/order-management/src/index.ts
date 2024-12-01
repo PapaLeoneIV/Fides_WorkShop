@@ -1,4 +1,5 @@
-import { Messages as log } from "./config/Messages";
+import logger from './config/logger';
+import log  from "./config/logs";
 import bootService from "./boot/bootService";
 import { QueueNames as queue, EXCHANGE } from "./config/rabbit-config";
 import { subscriber } from "./models/RabbitmqSubscriber";

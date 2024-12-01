@@ -1,5 +1,6 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from "../config/Messages";
+import logger from './config/logger';
+import log  from "../config/logs";
 import { RabbitmqClient } from "./RabbitmqClient";
 
 class RabbitmqPublisher extends RabbitmqClient {

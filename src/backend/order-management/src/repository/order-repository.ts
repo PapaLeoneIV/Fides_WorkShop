@@ -1,5 +1,6 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from "../config/Messages";
+import logger from './config/logger';
+import log  from "../config/logs";
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import { OrderStatus as status } from "../config/OrderStatus";
 import IFrontendRequestDTO from "../dtos/IFrontendRequestDTO";
