@@ -1,14 +1,14 @@
-import logger from './config/logger';
-import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import postgresClient from "../models/postgresClient";
 
 async function initializePostgresConnection() {
   try {
     await postgresClient.connect();
-    console.log(log.BOOT.INFO.CONNECTING(`Postgres on port ${process.env.POSTGRES_PORT}`));
+    logger.info(log.BOOT.CONNECTING(`Postgres on port ${process.env.POSTGRES_PORT}`));
   } catch (error) {
-    console.log(log.BOOT.ERROR.CONNECTING("Postgres", { error }));
+    logger.error(log.BOOT.CONNECTING("Postgres", { error }));
   }
 }
 

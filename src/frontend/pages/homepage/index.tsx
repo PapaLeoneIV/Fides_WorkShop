@@ -51,7 +51,7 @@ export default function Home() {
 
   const handleSend = async () => {
     if (!email || !cookie) {
-      console.error("[FRONTEND SERVICE] Email or cookie is missing")
+      logger.error("[FRONTEND SERVICE] Email or cookie is missing")
       return
     }
 
@@ -61,7 +61,7 @@ export default function Home() {
     try {
       setIsLoading(false)
       const result = await fetchBookingData(data)
-      console.log(result)
+      logger.info(result)
       if (result.status === 200) {
         let order_id = result.order_id;
         localStorage.setItem("bookingData", JSON.stringify({
@@ -75,10 +75,10 @@ export default function Home() {
         }))
         router.push("/summary")
       } else {
-        console.error("Order failed")
+        logger.error("Order failed")
       }
     } catch (error) {
-      console.error("Error sending order:", error)
+      logger.error("Error sending order:", error)
     } finally {
       setIsLoading(false)
     }

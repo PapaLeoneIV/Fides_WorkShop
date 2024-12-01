@@ -47,10 +47,10 @@ const log = {
     WRITING: (msg: string, data: any, req?: any) => createLogMessage("REPOSITORY", "WRITING", msg, data, req),
   },
   CLIENT: {
-    CONNECTING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "CONNECTING", msg, data, req),
-    CONFIGURING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "CONFIGURING", msg, data, req),
-    FETCHING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "FETCHING", msg, data, req),
-    OPERATING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "OPERATING", msg, data, req),
+    CONNECTING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "CONNECTING", msg, data, req),
+    CONFIGURING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "CONFIGURING", msg, data, req),
+    FETCHING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "FETCHING", msg, data, req),
+    OPERATING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "OPERATING", msg, data, req),
   },
 };
 

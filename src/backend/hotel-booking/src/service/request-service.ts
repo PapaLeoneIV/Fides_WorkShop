@@ -1,4 +1,4 @@
-import logger from './config/logger';
+import logger from '../config/logger';
 import log  from "../config/logs";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
@@ -14,9 +14,9 @@ export async function updateExchange(
 ) {
   try {
     await publisher.publishEvent(EXCHANGE, bindKey, response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
+    logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed publishing response`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
     throw error;
   }
 }
@@ -32,8 +32,8 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
 
     // if the order does not exist, create the order
     order = await orderRepository.write.createOrder(request);
-    console.log(
-      log.SERVICE.INFO.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`, "", order)
+    logger.info(
+      log.SERVICE.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`, "", order)
     );
 
     //  check if the room is available for the requested dates
@@ -53,10 +53,10 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
     await hotelRepository.write.updateRoomAvailability(n_bookedDays, order.room);
     response.status = (await orderRepository.write.updateOrderStatus(order.id, status.APPROVED)).renting_status;
     await updateExchange(response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
+    logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(
+    logger.error(
+      log.SERVICE.PROCESSING(
         `Error while processing order with order_id ${request.order_id} request: ${error}`,
         "",
         error
@@ -97,11 +97,11 @@ export async function processCancellatioRequest(request: IOrderResponseDTO) {
     // }
 
     response.status = (await orderRepository.write.updateOrderStatus(order.id, status.CANCELLED)).renting_status;
-    console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request} successfully cancelled`, "", { request }));
+    logger.info(log.SERVICE.PROCESSING(`Order with id: ${request} successfully cancelled`, "", { request }));
     await updateExchange(response);
     return;
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Error while processing order with id: ${request}`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Error while processing order with id: ${request}`, "", error));
     await updateExchange(response);
     throw error;
   }

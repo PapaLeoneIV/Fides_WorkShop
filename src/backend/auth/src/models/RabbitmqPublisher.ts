@@ -31,7 +31,7 @@ class RabbitmqPublisher extends RabbitmqClient {
 
   //       return this.channel.sendToQueue(queue, Buffer.from(message));
   //     } catch (error) {
-  //       console.error("[BIKE SERVICE]", error);
+  //       logger.error("[BIKE SERVICE]", error);
   //       throw error;
   //     }
   // }

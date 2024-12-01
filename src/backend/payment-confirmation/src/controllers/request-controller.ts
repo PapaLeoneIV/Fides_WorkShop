@@ -1,5 +1,5 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import logger from './config/logger';
+import logger from '../config/logger';
 import log  from "../config/logs";
 import { OrderStatus as status } from "../config/OrderStatus";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
@@ -13,18 +13,18 @@ export async function validateAndHandleOrderRequest(msg: string) {
 
   try {
     request = OrderRequestSchema.parse(JSON.parse(msg));
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Order request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Order request validated successfully`, "", request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Order request`, "", error));
+    logger.error(log.CONTROLLER.VALIDATING(`Order request`, "", error));
     await updateExchange(response);
     throw new Error(HTTPerror.BAD_REQUEST.message);
   }
 
   try {
     processOrderRequest(request);
-    console.log(log.CONTROLLER.INFO.PROCESSING(`Order request ${request.id} processed successfully`, "", request));
+    logger.info(log.CONTROLLER.PROCESSING(`Order request ${request.id} processed successfully`, "", request));
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed`, "", error));
+    logger.error(log.CONTROLLER.PROCESSING(`Order request failed`, "", error));
     response.id = request.id;
     await updateExchange(response);
     throw error;

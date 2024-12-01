@@ -1,5 +1,5 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import logger from './config/logger';
+import logger from '../config/logger';
 import log  from "../config/logs";
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import { OrderStatus as status } from "../config/OrderStatus";
@@ -20,7 +20,7 @@ class ReadOrderRepository {
         },
       })) as (IFrontendRequestDTO & { id: string }) | null;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading order with id ${id}`, "", error));
+      logger.error(log.REPOSITORY.READING(`Error reading order with id ${id}`, "", error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -87,10 +87,10 @@ class WriteOrderRepository {
           updated_at: new Date(),
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Order with id: ${order.id} created`, "", order));
+      logger.info(log.REPOSITORY.WRITING(`Order with id: ${order.id} created`, "", order));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error creating order", "", error));
+      logger.error(log.REPOSITORY.WRITING("Error creating order", "", error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -105,10 +105,10 @@ class WriteOrderRepository {
           bike_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Bike status updated with status: ${status}`, "", order));
+      logger.info(log.REPOSITORY.WRITING(`Bike status updated with status: ${status}`, "", order));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating bike status", "", error));
+      logger.error(log.REPOSITORY.WRITING("Error updating bike status", "", error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -123,10 +123,10 @@ class WriteOrderRepository {
           hotel_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Hotel status updated with status: ${status}`, "", order));
+      logger.info(log.REPOSITORY.WRITING(`Hotel status updated with status: ${status}`, "", order));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating hotel status", "", error));
+      logger.error(log.REPOSITORY.WRITING("Error updating hotel status", "", error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -141,10 +141,10 @@ class WriteOrderRepository {
           payment_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Payment status updated with status: ${status}`, "", order));
+      logger.info(log.REPOSITORY.WRITING(`Payment status updated with status: ${status}`, "", order));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating payment status", "", error));
+      logger.error(log.REPOSITORY.WRITING("Error updating payment status", "", error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -173,10 +173,10 @@ class WriteOrderRepository {
   //       },
   //       data: data,
   //     });
-  //     console.log(log.REPOSITORY.INFO.WRITING(`Hotel status updated with status: ${status}`, "", order));
+  //     logger.info(log.REPOSITORY.WRITING(`Hotel status updated with status: ${status}`, "", order));
   //     return order;
   //   } catch (error) {
-  //     console.error(log.REPOSITORY.ERROR.WRITING("Error updating hotel status", "", error));
+  //     logger.error(log.REPOSITORY.WRITING("Error updating hotel status", "", error));
   //     throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   //   }
   // }
@@ -208,10 +208,10 @@ class WriteOrderRepository {
   //         updated_at: new Date(),
   //       },
   //     });
-  //     console.log(log.REPOSITORY.INFO.WRITING(`Order with id: ${order.id} updated`, "", order));
+  //     logger.info(log.REPOSITORY.WRITING(`Order with id: ${order.id} updated`, "", order));
   //     return order as IFrontendRequestDTO & { id: string };
   //   } catch (error) {
-  //     console.error(log.REPOSITORY.ERROR.WRITING("Error updating order", "", error));
+  //     logger.error(log.REPOSITORY.WRITING("Error updating order", "", error));
   //     throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   //   }
 }

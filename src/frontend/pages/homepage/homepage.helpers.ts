@@ -79,10 +79,10 @@ export const fetchBookingData = async (data: any) => {
         }
 
         const result = await response.json();
-        console.log('Success:', result);
+        logger.info('Success:', result);
         return result;
     } catch (error) {
-        console.error('Error:', error);
+        logger.error('Error:', error);
         throw error;
     }
 };

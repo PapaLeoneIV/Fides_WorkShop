@@ -41,19 +41,19 @@ class RabbitClient {
         else this.connected = true;
 
         try {
-            console.log(`[TEST SERVICE] Connecting to Rabbit-MQ Server`);
+            logger.info(`[TEST SERVICE] Connecting to Rabbit-MQ Server`);
             this.connection = await client.connect(
                 `amqp://${rmqUser}:${rmqPass}@${rmqhost}:5672`
             );
 
-            console.log(`[TEST SERVICE] Rabbit MQ Connection is ready`);
+            logger.info(`[TEST SERVICE] Rabbit MQ Connection is ready`);
 
             this.channel = await this.connection.createChannel();
 
-            console.log(`[TEST SERVICE] Created RabbitMQ Channel successfully`);
+            logger.info(`[TEST SERVICE] Created RabbitMQ Channel successfully`);
         } catch (error) {
-            console.error(error);
-            console.error(`[TEST SERVICE]Not connected to MQ Server`);
+            logger.error(error);
+            logger.error(`[TEST SERVICE]Not connected to MQ Server`);
         }
     }
     async setupExchange(exchange: string, exchangeType: string) {
@@ -63,9 +63,9 @@ class RabbitClient {
             await this.channel.assertExchange(exchange, exchangeType, {
                 durable: true,
             });
-            console.log(`[TEST SERVICE] Event Exchange '${exchange}' declared`);
+            logger.info(`[TEST SERVICE] Event Exchange '${exchange}' declared`);
         } catch (error) {
-            console.error(`[TEST SERVICE] Error setting up event exchange:`, error);
+            logger.error(`[TEST SERVICE] Error setting up event exchange:`, error);
         }
     }
     async publishEvent(exchange: string, routingKey: string, message: any): Promise<boolean> {
@@ -85,7 +85,7 @@ class RabbitClient {
                 }
             );
         } catch (error) {
-            console.error("[ORDER SERVICE] Error publishing event:", error);
+            logger.error("[ORDER SERVICE] Error publishing event:", error);
             throw error;
         }
     }
@@ -97,7 +97,7 @@ class RabbitClient {
 
             return this.channel.sendToQueue(queue, Buffer.from(message));
         } catch (error) {
-            console.error("[ORDER SERVICE]", error);
+            logger.error("[ORDER SERVICE]", error);
             throw error;
         }
 
@@ -120,7 +120,7 @@ class RabbitClient {
             (msg: any) => {
                 {
                     if (!msg) {
-                        return console.error(`Invalid incoming message`);
+                        return logger.error(`Invalid incoming message`);
                     }
                     handlerFunc(msg?.content?.toString());
                     this.channel.ack(msg);
@@ -142,11 +142,11 @@ class RabbitPublisher extends RabbitClient {
         super();
     }
     publish_login_req = async (body: string): Promise<void> => {
-        console.log(`[TEST SERVICE] Publishing login req: `, body, "with routing keyy: ", ConsumeLoginReq);
+        logger.info(`[TEST SERVICE] Publishing login req: `, body, "with routing keyy: ", ConsumeLoginReq);
         this.publishEvent("OrderEventExchange", ConsumeLoginReq, body);
     };
     publish_registration_req = async (body: string): Promise<void> => {
-        console.log(`[TEST SERVICE] Sending Publishing Registration req: `, body, "with routing key: ", ConsumeRegistrationReq);
+        logger.info(`[TEST SERVICE] Sending Publishing Registration req: `, body, "with routing key: ", ConsumeRegistrationReq);
         this.publishEvent("OrderEventExchange", ConsumeRegistrationReq, body);
     };
 }
@@ -157,12 +157,12 @@ class RabbitSubscriber extends RabbitClient {
         super();
     }
     consume_login_resp = async () => {
-        console.log("[TEST SERVICE] Listening login responses..");
+        logger.info("[TEST SERVICE] Listening login responses..");
         this.consume(LOGIN_RESP_QUEUE, "OrderEventExchange", PublishLoginResp, (msg) => send_booking_order(JSON.parse(msg)));
     };
 
     consume_registration_resp = async () => {
-        console.log("[TEST SERVICE] Listening for booking orders...");
+        logger.info("[TEST SERVICE] Listening for booking orders...");
         this.consume(REGISTRATION_RESP_QUEUE, "OrderEventExchange", PublishRegistrationReq, (msg) => try_login(JSON.parse(msg)));
     };
 }
@@ -206,33 +206,33 @@ let message = {
 
 
 async function send_booking_order(msg: any) {
-    console.log("[TESTER SERVICE] Received booking order: ", msg);
+    logger.info("[TESTER SERVICE] Received booking order: ", msg);
     msg = JSON.parse(msg);
     if (msg.status === "APPROVED") {
         message.userJWT = msg.userJWT;
-        console.log("[TESTER SERVICE] Booking successful");
+        logger.info("[TESTER SERVICE] Booking successful");
     }
     else {
-        console.log("[TESTER SERVICE] Booking failed");
+        logger.info("[TESTER SERVICE] Booking failed");
     }
 }
 
 async function try_login(msg: any) {
     msg = JSON.parse(msg);
     if (msg.status === "APPROVED") {
-        console.log("[TESTER SERVICE] Registration successful");
+        logger.info("[TESTER SERVICE] Registration successful");
         await Publisher.publish_login_req(JSON.stringify(registration_info_base));
     }
     else if (msg.status === "ERROR" && msg.error === "Registration: User already exists") {
 
-        console.log("[TESTER SERVICE] User already exists");
+        logger.info("[TESTER SERVICE] User already exists");
         const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvb0BiYXouY29tIiwiaWF0IjoxNzMwOTIwNTU4LCJleHAiOjE3MzA5MjA1NTl9.BqSjOnWhanjlzUh8nQqMsCzZHeEN";
         Publisher.publish_login_req(JSON.stringify({email: email, password: password, jwtToken: jwtToken}));
 
 
     }
     else {
-        console.log("[TESTER SERVICE] Registration failed");
+        logger.info("[TESTER SERVICE] Registration failed");
     }
 }
 
@@ -240,18 +240,18 @@ async function try_login(msg: any) {
 
 async function bootstrap() {
 
-    console.log("[TESTER SERVICE] Connecting to RabbitMQ...");
+    logger.info("[TESTER SERVICE] Connecting to RabbitMQ...");
     await Publisher.connect();
     await Subscriber.connect();
 
-    console.log("[TESTER SERVICE] Setting up queues");
+    logger.info("[TESTER SERVICE] Setting up queues");
     await Publisher.createQueue(LOGIN_RESP_QUEUE);
     await Publisher.createQueue(REGISTRATION_RESP_QUEUE);
 
     try {
         await Publisher.channel.checkExchange(EXCHANGE);
     } catch (error) {
-        console.error('Error checking exchange:', error);
+        logger.error('Error checking exchange:', error);
     }
 }
 
@@ -262,7 +262,7 @@ async function listen() {
 }
 
 async function send_login() {
-    console.log("[TESTER SERVICE] Sending login request...");
+    logger.info("[TESTER SERVICE] Sending login request...");
     const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvb0BiYXouY29tIiwiaWF0IjoxNzMwOTIwNTU4LCJleHAiOjE3MzA5MjA1NTl9.BqSjOnWhanjlzUh8nQqMsCzZHeEN";
     Publisher.publish_login_req(JSON.stringify({email: email, password: password, jwtToken: jwtToken}));
 

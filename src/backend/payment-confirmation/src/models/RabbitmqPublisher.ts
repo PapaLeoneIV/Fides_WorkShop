@@ -1,5 +1,5 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import logger from './config/logger';
+import logger from '../config/logger';
 import log  from "../config/logs";
 import { RabbitmqClient } from "./RabbitmqClient";
 
@@ -13,7 +13,7 @@ class RabbitmqPublisher extends RabbitmqClient {
       if (!this.channel) {
         await this.connect();
       }
-      console.log(log.CLIENT.INFO.OPERATING("RabbitMQ", "", { exchange, routingKey, message }));
+      logger.info(log.CLIENT.OPERATING("RabbitMQ", "", { exchange, routingKey, message }));
       return this.channel.publish(
         exchange,
         routingKey, // No routing key needed for fanout
@@ -24,7 +24,7 @@ class RabbitmqPublisher extends RabbitmqClient {
         }
       );
     } catch (error) {
-      console.error(log.CLIENT.ERROR.OPERATING("RabbitMQ", "", { error }));
+      logger.error(log.CLIENT.OPERATING("RabbitMQ", "", { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -37,7 +37,7 @@ class RabbitmqPublisher extends RabbitmqClient {
 
       return this.channel.sendToQueue(queue, Buffer.from(message));
     } catch (error) {
-      console.error("[ORDER SERVICE]", error);
+      logger.error("[ORDER SERVICE]", error);
       throw error;
     }
   }

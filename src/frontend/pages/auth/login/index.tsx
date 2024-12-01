@@ -56,10 +56,10 @@ export default function LoginPage() {
     // Retrieve token from cookies
     let token = getCookie(`${email}`);
     if (!token) {
-        console.log("No JWT found, attempting login.");
+        logger.info("No JWT found, attempting login.");
         let response = await makeLoginRequest(message);
         if (response.status === 'APPROVED') {
-            console.log("Login successful, storing JWT.");
+            logger.info("Login successful, storing JWT.");
             document.cookie = `${email}=${response.token}; path=/`;
             router.push(`/homepage?email=${email}`);
         } else {
@@ -67,15 +67,15 @@ export default function LoginPage() {
             return;
         }
     } else {
-        console.log("JWT found, validating token.");
+        logger.info("JWT found, validating token.");
 
         // Check if token is expired
         let isExpired = checkTokenExpiry(token);
         if (isExpired) {
-            console.log("JWT expired, refreshing...");
+            logger.info("JWT expired, refreshing...");
             let response = await makeRefreshRequest({email:email, password: password,  jwtToken: token });
             if (response.status === 'APPROVED') {
-                console.log("Token refreshed, storing new JWT.");
+                logger.info("Token refreshed, storing new JWT.");
                 document.cookie = `${email}=${response.token}`; `path=/`;
                 router.push(`/homepage?email=${email}`);
             } else {
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 return;
             }
         } else {
-            console.log("Token is valid, redirecting.");
+            logger.info("Token is valid, redirecting.");
             router.push(`/homepage?email=${email}`);
         }
     }
