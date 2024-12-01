@@ -1,15 +1,14 @@
 const createLogMessage = (
   layer: string,
-  level: string,
   action: string,
   message: string,
   data: any = {},
   req?: any // Optional request object
 ) => ({
-  layer,
-  level,
-  action,
-  message,
+  timestamp: new Date().toISOString(),
+  level: process.env.LOG_LEVEL || "info",
+  layer: layer || "GENERAL",
+  message: `${action} - ${message}`,
   data: {
     ...data,
     ...(req
@@ -23,7 +22,6 @@ const createLogMessage = (
         }
       : {}),
   },
-  timestamp: new Date().toISOString(),
 });
 
 const log = {
@@ -47,10 +45,10 @@ const log = {
     WRITING: (msg: string, data: any, req?: any) => createLogMessage("REPOSITORY", "WRITING", msg, data, req),
   },
   CLIENT: {
-    CONNECTING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "CONNECTING", msg, data, req),
-    CONFIGURING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "CONFIGURING", msg, data, req),
-    FETCHING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "FETCHING", msg, data, req),
-    OPERATING: (msg: string, data: any, req?: any) => createLogMessage("CLIENT", "OPERATING", msg, data, req),
+    CONNECTING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "CONNECTING", msg, data, req),
+    CONFIGURING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "CONFIGURING", msg, data, req),
+    FETCHING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "FETCHING", msg, data, req),
+    OPERATING: (msg: string, data: any = {}, req?: any) => createLogMessage("CLIENT", "OPERATING", msg, data, req),
   },
 };
 
