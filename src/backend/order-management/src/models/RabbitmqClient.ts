@@ -1,6 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from '../config/Messages';
+import logger from '../config/logger';
+import log  from '../config/logs';
 import { RABBITMQ_URL } from "../config/rabbit-config";
 import { IBindingKeysDTO } from "../dtos/IBindingKeysDTO";
 
@@ -12,7 +13,7 @@ export class RabbitClient {
 
   async connect() {
     if (this.connected && this.channel) 
-      return console.log(log.CLIENT.WARNING.CONNECTING(`Already connected to RabbitMQ`));
+      return logger.info(log.CLIENT.CONNECTING(`Already connected to RabbitMQ`));
     else this.connected = true;
 
     try {
@@ -20,9 +21,9 @@ export class RabbitClient {
       this.connection = await client.connect(RABBITMQ_URL);
 
       this.channel = await this.connection.createChannel();
-      console.log(log.CLIENT.INFO.CONNECTING(`RabbitMQ`));
+      logger.info(log.CLIENT.CONNECTING(`RabbitMQ`));
     } catch (error) {
-      console.error(log.CLIENT.ERROR.CONNECTING(`RabbitMQ`, { error }));
+      logger.error(log.CLIENT.CONNECTING(`RabbitMQ`, { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -33,9 +34,9 @@ export class RabbitClient {
       await this.channel.assertExchange(exchange, exchangeType, {
         durable: true,
       });
-      console.log(log.CLIENT.INFO.CONFIGURING(`Rabbitmq Exchange`, exchange));
+      logger.info(log.CLIENT.CONFIGURING(`Rabbitmq Exchange`, exchange));
     } catch (error) {
-      console.error(log.CLIENT.ERROR.CONFIGURING(`Rabbitmq Exchange`, { error }));
+      logger.error(log.CLIENT.CONFIGURING(`Rabbitmq Exchange`, { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -45,9 +46,9 @@ export class RabbitClient {
       await this.channel.assertQueue(queue, {
         durable: true,
       });
-      console.log(log.CLIENT.INFO.CONFIGURING(`Rabbitmq Queue`, queue));
+      logger.info(log.CLIENT.CONFIGURING(`Rabbitmq Queue`, queue));
     } catch (error) {
-      console.error(log.CLIENT.ERROR.CONFIGURING(`Rabbitmq Queue`, { error }));
+      logger.error(log.CLIENT.CONFIGURING(`Rabbitmq Queue`, { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
@@ -55,10 +56,10 @@ export class RabbitClient {
   async requestBindingKeys(url: string): Promise<IBindingKeysDTO> {
     try {
       let response = await fetch(url, { method: "GET" });
-      console.log(log.CLIENT.INFO.FETCHING("Binding keys", url));
+      logger.info(log.CLIENT.FETCHING("Binding keys", url));
       return await response.json();
     } catch (error) {
-      console.error(log.CLIENT.ERROR.FETCHING("Binding keys", { error }));
+      logger.error(log.CLIENT.FETCHING("Binding keys", { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }

@@ -1,4 +1,5 @@
-import { Messages as message } from "../config/Messages";
+import import logger from '../config/logger';
+import log from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IFrontendRequestDTO from "../dtos/IFrontendRequestDTO";
 import FrontendRequestSchema from "../schema/FrontendRequestSchema";
@@ -27,18 +28,18 @@ export async function HTTPValidateAndHandleFrontendRequest(req: Request, res: Re
 
   try {
     request = FrontendRequestSchema.parse(req.body);
-    console.log(message.CONTROLLER.INFO.VALIDATING("Frontend Request validated successfully", "", { request }));
+    logger.info(message.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
   } catch (error) {
-    console.error(message.CONTROLLER.WARNING.VALIDATING("Frontend Request", "", error));
+    logger.error(message.CONTROLLER.VALIDATING("Frontend Request", "", error));
     res.status(400).send(response);
     throw error;
   }
 
   try {
     await HTTPprocessFrontendRequest(request, res);
-    console.log(message.CONTROLLER.INFO.PROCESSING(`Frontend Request processed successfully`, "", { request }));
+    logger.info(message.CONTROLLER.PROCESSING(`Frontend Request processed successfully`, "", { request }));
   } catch (error) {
-    console.error(message.CONTROLLER.ERROR.PROCESSING("Frontend Request failed", "", error));
+    logger.error(message.CONTROLLER.PROCESSING("Frontend Request failed", "", error));
     // res.status(500).send(response);
     throw error;
   }
@@ -62,18 +63,18 @@ export async function HTTPValidateAndHandleConfirmationRequest(req: Request, res
     order_id = req.query.order_id as string; //TODO: check how to make it standardize with the other controller where the request is parsed from req.body
     if (!order_id) throw new Error("Order ID not found in request");
 
-    console.log(message.CONTROLLER.INFO.VALIDATING(`Confirmation request validated successfully`, "", { order_id }));
+    logger.info(message.CONTROLLER.VALIDATING(`Confirmation request validated successfully`, "", { order_id }));
   } catch (error) {
-    console.error(message.CONTROLLER.WARNING.VALIDATING(`Error validating confirmation request`, "", error));
+    logger.error(message.CONTROLLER.VALIDATING(`Error validating confirmation request`, "", error));
     res.status(400).send(response);
     throw error;
   }
 
   try {
     await HTTPprocessConfirmationRequest(order_id, res);
-    console.log(message.CONTROLLER.INFO.PROCESSING(`Confirmation request processed successfully`, "", req.query));
+    logger.info(message.CONTROLLER.PROCESSING(`Confirmation request processed successfully`, "", req.query));
   } catch (error) {
-    console.error(message.CONTROLLER.ERROR.PROCESSING(`Confirmation request failed`, "", error));
+    logger.error(message.CONTROLLER.PROCESSING(`Confirmation request failed`, "", error));
     res.status(500).send(response);
     throw error;
   }
@@ -95,17 +96,17 @@ export async function validateAndHandleFrontendRequest(msg: string) {
     }
     delete rawData.userJWT;
     request = FrontendRequestSchema.parse(rawData);
-    console.log(message.CONTROLLER.INFO.VALIDATING("Frontend Request validated successfully", "", { request }));
+    logger.info(message.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
   } catch (error) {
-    console.log(message.CONTROLLER.ERROR.VALIDATING("Frontend Request", "", { error }));
+    logger.info(message.CONTROLLER.VALIDATING("Frontend Request", "", { error }));
     throw new Error(HTTPerror.BAD_REQUEST.message);
   }
 
   try {
     await processFrontendRequest(request, userJWT);
-    console.log(message.CONTROLLER.INFO.PROCESSING(`Frontend Request processed successfully`, "", { request }));
+    logger.info(message.CONTROLLER.PROCESSING(`Frontend Request processed successfully`, "", { request }));
   } catch (error) {
-    console.error(message.CONTROLLER.ERROR.PROCESSING("Frontend Request failed", "", { error }));
+    logger.error(message.CONTROLLER.PROCESSING("Frontend Request failed", "", { error }));
     throw error;
   }
 }

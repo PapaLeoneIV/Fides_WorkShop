@@ -1,4 +1,5 @@
-import { Messages as message } from './config/Messages';
+import import logger from '../config/logger';
+import log from './config/logs';
 import bootService from './boot/boot-service';
 import { subscriber } from './models/RabbitmqSubscriber';
 import { publisher } from './models/RabbitmqPublisher';
@@ -14,7 +15,7 @@ async function main() {
 
     subscriber.consume(queue.ORDER_REQ, EXCHANGE, ORDER_BK, (msg) => validateAndHandleOrderRequest(msg));
     subscriber.consume(queue.SAGA_REQ, EXCHANGE, SAGA_ORDER_BK, (msg) => validateAndHandleCancellationRequest(msg));
-    console.log(message.BOOT.INFO.CONFIGURING("Subscribers are consuming messages", {}));
+    logger.info(message.BOOT.CONFIGURING("Subscribers are consuming messages", {}));
 }
 
 main();

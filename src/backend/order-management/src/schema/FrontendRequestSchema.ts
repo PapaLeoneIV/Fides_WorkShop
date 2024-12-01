@@ -12,11 +12,11 @@ const FrontendRequestSchema = z.object({
   to: z.string(),
   room: z.string().refine((val) => {
     if (parseInt(val) === null) {
-      console.log("[ORDER SERVICE]Room number is required");
+      logger.info("[ORDER SERVICE]Room number is required");
     }
     const roomNumber = val !== null ? parseInt(val) : -1;
     if (roomNumber === -1) {
-      console.log("[ORDER SERVICE]Room number is required", roomNumber);
+      logger.info("[ORDER SERVICE]Room number is required", roomNumber);
       return false;
     }
     return roomNumber >= 101 && roomNumber <= 105;

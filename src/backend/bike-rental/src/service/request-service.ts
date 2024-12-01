@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
@@ -15,9 +16,9 @@ export async function updateExchange(
 ) {
   try {
     await publisher.publishEvent(EXCHANGE, bindKey, response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
+    logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed publishing response`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
     throw error;
   }
 }
@@ -38,8 +39,8 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
     if (!order)
       throw new Error(`Error creating order with order_id: ${request.order_id}`);
     
-    console.log(
-      log.SERVICE.INFO.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`, "", order)
+    logger.info(
+      log.SERVICE.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`, "", order)
     );
 
     // Check if there are sufficient bikes for the order
@@ -51,11 +52,11 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
     // Approving the order
     await bikeRepository.write.decrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
     response.status = (await orderRepository.write.updateStatus(order.id, status.APPROVED)).renting_status;
-    console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
+    logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
     await updateExchange(response);
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(
+    logger.error(
+      log.SERVICE.PROCESSING(
         `Error while processing order with order_id ${request.order_id} request: ${error}`,
         "",
         error
@@ -87,12 +88,12 @@ export async function processCancellationRequest(request: IOrderResponseDTO) {
     if (order) {
       bikeRepository.write.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
       response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED)).renting_status;
-      console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request.order_id} cancelled`, "", request));
+      logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} cancelled`, "", request));
       await updateExchange(response, SAGA_BK);
     }
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(
+    logger.error(
+      log.SERVICE.PROCESSING(
         `Error while processing cancellation request with order_id ${request.order_id}: ${error}`,
         "",
         error

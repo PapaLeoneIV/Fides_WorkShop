@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { OrderStatus as status } from "../config/OrderStatus";
 import { EXCHANGE } from "../config/rabbit-config";
@@ -22,9 +23,9 @@ export async function updateExchange(
 ) {
   try {
     await publisher.publishEvent(EXCHANGE, bindKey, response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
+    logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed publishing response`, "", error));
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
     throw error;
   }
 }
@@ -63,7 +64,7 @@ export async function HTTPprocessConfirmationRequest(order_id: string, res: Resp
         res.status(403).json(response);
     }
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to process confirmation request: ${error}`, "", { order_id }));
+    logger.error(log.SERVICE.PROCESSING(`Failed to process confirmation request: ${error}`, "", { order_id }));
     response.status = status.ERROR;
     response.message = error as string;
     res.status(500).json(response);
@@ -75,7 +76,7 @@ export async function HTTPprocessFrontendRequest(req: IFrontendRequestDTO, res: 
     let  order: IOrderEntityDTO | null;
 
     try{
-        console.log(log.CONTROLLER.INFO.VALIDATING("Frontend Request", "", { req }));
+        logger.info(log.CONTROLLER.VALIDATING("Frontend Request", "", { req }));
 
         const response = await fetch("http://authentication-service:3000/auth/validateJWT", {
             method: "POST",
@@ -109,7 +110,7 @@ export async function HTTPprocessFrontendRequest(req: IFrontendRequestDTO, res: 
 
         res.status(200).json(response);
     } catch (error) {
-        console.error(log.CONTROLLER.ERROR.PROCESSING("Frontend Request: {error}", "", { error }));
+        logger.error(log.CONTROLLER.PROCESSING("Frontend Request: {error}", "", { error }));
         response.status = status.ERROR;
         response.message = error as string;
         //TODO: handle better the status code
@@ -122,7 +123,7 @@ export async function processFrontendRequest(frontendReq: IFrontendRequestDTO, u
   let CONSUME_HOTEL_BK = publisher.bindKeys.ConsumeHotelOrder;
    let order: IOrderEntityDTO | null;
   try {
-    console.log(log.SERVICE.INFO.PROCESSING("Frontend Request", "", { frontendReq }));
+    logger.info(log.SERVICE.PROCESSING("Frontend Request", "", { frontendReq }));
 
     //TODO: handle the url in a better way (maybe use a config file)
     const response = await fetch("http://authentication-service:3000/auth/validateJWT", {
@@ -131,12 +132,12 @@ export async function processFrontendRequest(frontendReq: IFrontendRequestDTO, u
       body: JSON.stringify({ token: userJWT, email: frontendReq.userEmail }),
     });
     if (!response.ok) {
-      console.error(log.SERVICE.ERROR.PROCESSING("Failed to validate JWT", "", { frontendReq }));
+      logger.error(log.SERVICE.PROCESSING("Failed to validate JWT", "", { frontendReq }));
       throw new Error("Authentication failed, invalid JWT token");
     }
 
     const userInfo: { email: string; id: number; password: string } = await response.json();
-    console.log(log.SERVICE.INFO.VALIDATING(`JWT token verified for ${userInfo.email}`, "", { userInfo }));
+    logger.info(log.SERVICE.VALIDATING(`JWT token verified for ${userInfo.email}`, "", { userInfo }));
 
     order = await orderRepository.write.createOrder(frontendReq);
 
@@ -163,7 +164,7 @@ export async function processFrontendRequest(frontendReq: IFrontendRequestDTO, u
       updated_at: order.updated_at,
     });
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING("Frontend Request", "", { error }));
+    logger.error(log.SERVICE.PROCESSING("Frontend Request", "", { error }));
     throw error;
   }
 }
@@ -187,7 +188,7 @@ export async function processPaymentRequest(order_id: string, retries = 0) {
           processPaymentRequest(order_id, retries + 1);
         }, TIMEOUT);
       } else {
-        console.log(log.SERVICE.WARNING.PROCESSING("Payment request timed out", "", { order }));
+        logger.info(log.SERVICE.PROCESSING("Payment request timed out", "", { order }));
         await updateExchange(CONSUME_BIKE_SAGA_BK, serviceResponse);
         await updateExchange(CONSUME_HOTEL_SAGA_BK, serviceResponse);
       }
@@ -196,7 +197,7 @@ export async function processPaymentRequest(order_id: string, retries = 0) {
 
     if (await orderRepository.read.needsCancellation(order)) {
       await orderRepository.write.updatePaymentStatus(order_id, status.CANCELLED);
-      console.log(log.SERVICE.WARNING.PROCESSING("Both services failed, order cancelled", "", { order }));
+      logger.info(log.SERVICE.PROCESSING("Both services failed, order cancelled", "", { order }));
       //TODO: send response to frontend
       return;
     }
@@ -209,18 +210,18 @@ export async function processPaymentRequest(order_id: string, retries = 0) {
     };
 
     if (await orderRepository.read.isCompleted(order)) {
-      console.log(log.SERVICE.INFO.PROCESSING("Order completed, sending response to frontend", "", { order }));
+      logger.info(log.SERVICE.PROCESSING("Order completed, sending response to frontend", "", { order }));
       publisher.publishEvent(EXCHANGE, CONSUME_PAYMENT_BK, frontendResponse);
     }
 
     if (await orderRepository.read.isCancelled(order)) {
-      console.log(log.SERVICE.WARNING.PROCESSING("Order cancelled, sending response to frontend", "", { order }));
+      logger.info(log.SERVICE.PROCESSING("Order cancelled, sending response to frontend", "", { order }));
       publisher.publishEvent(EXCHANGE, CONSUME_PAYMENT_BK, frontendResponse);
       return;
     }
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(`Error processing payment for order ${order_id}: ${error}`, "", { error })
+    logger.error(
+      log.SERVICE.PROCESSING(`Error processing payment for order ${order_id}: ${error}`, "", { error })
     );
     throw error;
   }

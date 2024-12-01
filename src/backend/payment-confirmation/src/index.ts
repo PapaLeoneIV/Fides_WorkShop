@@ -9,7 +9,7 @@ async function main() {
     try {
         await bootService();
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         exit(1);
     }
 
@@ -19,7 +19,7 @@ async function main() {
         subscriber.consume(queue.PAYMENT_RESP, EXCHANGE, ORDER_REQ_BK, (msg) => { validateAndHandleOrderRequest(msg) });
         
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }    
 }
 

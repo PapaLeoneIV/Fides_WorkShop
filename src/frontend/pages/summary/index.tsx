@@ -61,11 +61,11 @@ export default function OrderConfirmation() {
             "Content-Type": "application/json",
           },
         })
-        console.log("RESULT STATUS:", result.status);
+        logger.info("RESULT STATUS:", result.status);
         switch (result.status) {
           case 200:
             setFetchStatus('success')
-            console.log(fetchStatus)
+            logger.info(fetchStatus)
             setConfirmationMessage('Your order has been successfully processed!')
             break
           case 400:

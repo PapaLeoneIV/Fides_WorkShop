@@ -51,7 +51,7 @@ export default function Home() {
 
   const handleSend = async () => {
     if (!email || !cookie) {
-      console.error("[FRONTEND SERVICE] Email or cookie is missing")
+      logger.error("[FRONTEND SERVICE] Email or cookie is missing")
       return
     }
 
@@ -90,7 +90,7 @@ export default function Home() {
         }
       }
     } catch (error) {
-      console.error("Error sending order:", error)
+      logger.error("Error sending order:", error)
     } finally {
       setIsLoading(false)
     }

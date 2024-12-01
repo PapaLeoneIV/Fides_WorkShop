@@ -1,5 +1,6 @@
 import { HTTPErrors } from '../config/HTTPErrors';
-import { Messages as log } from '../config/Messages';
+import logger from '../config/logger';
+import log  from '../config/logs';
 import { RabbitClient } from './RabbitmqClient';
 
 class RabbitPublisher extends RabbitClient {
@@ -22,7 +23,7 @@ class RabbitPublisher extends RabbitClient {
                 }
             );
         } catch (error) {
-            console.error(log.CLIENT.ERROR.OPERATING(`Publishing message: "${message}" to exchange: ${exchange} with routing key: ${routingKey}`, "", error).message);
+            logger.error(log.CLIENT.OPERATING(`Publishing message: "${message}" to exchange: ${exchange} with routing key: ${routingKey}`, "", error).message);
             throw new Error(HTTPErrors.INTERNAL_SERVER_ERROR.message);
         }
     }
@@ -32,7 +33,7 @@ class RabbitPublisher extends RabbitClient {
             if (!this.channel) { await this.connect(); }
             return this.channel.sendToQueue(queue, Buffer.from(message));
         } catch (error) {
-            console.error(log.CLIENT.ERROR.OPERATING(`Sending message: "${message}" to queue: ${queue}`, "", error).message);
+            logger.error(log.CLIENT.OPERATING(`Sending message: "${message}" to queue: ${queue}`, "", error).message);
             throw new Error(HTTPErrors.INTERNAL_SERVER_ERROR.message);
         }
     }

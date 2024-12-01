@@ -97,6 +97,9 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_PORT: ${RABBITMQ_PORT}
+      ELASTICSEARCH_INDEX_PREFIX: authentication-service
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      LOG_LEVEL: info
     env_file:
       - .env
     networks:
@@ -134,6 +137,9 @@ services:
       POSTGRES_HOST: db_order_management
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_order_management:${POSTGRES_PORT}/${POSTGRES_DB_ORDER}?schema=public
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+      ELASTICSEARCH_INDEX_PREFIX: order-service
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      LOG_LEVEL: info
     networks:
       - app_network
     ports:
@@ -173,6 +179,9 @@ services:
       DB_HOST: db_bike_rental
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_bike_rental:${POSTGRES_PORT}/${POSTGRES_DB_BIKE}?schema=public
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+      ELASTICSEARCH_INDEX_PREFIX: bike-service
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      LOG_LEVEL: info    
     networks:
       - app_network
     #TODO_PROD: update to serve only in the internal network
@@ -213,6 +222,9 @@ services:
       POSTFRES_HOST: db_hotel_booking
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_hotel_booking:${POSTGRES_PORT}/${POSTGRES_DB_HOTEL}?schema=public
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+      ELASTICSEARCH_INDEX_PREFIX: hotel-service
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      LOG_LEVEL: info
     networks:
       - app_network
     ports:
@@ -250,6 +262,9 @@ services:
       POSTGRES_HOST: db_payment_confirmation
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db_payment_confirmation:${POSTGRES_PORT}/${POSTGRES_DB_PAYMENT}?schema=public
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT}
+      ELASTICSEARCH_INDEX_PREFIX: payment-service
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      LOG_LEVEL: info
     networks:
       - app_network
     ports:
@@ -378,42 +393,35 @@ services:
       - "15672:15672"
     restart: always
 
-  #--------------------------LOGGING AND MONITORING
-  #--------------------------Grafana
-  #grafana:
-  #  image: grafana/grafana:latest
-  #  ports:
-  #    - 3000:3000
-  #  volumes:
-  #    - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
-  #  environment:
-  #    - GF_AUTH_ANONYMOUS_ENABLED=true
-  #    - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-  #    - GF_AUTH_DISABLE_LOGIN_FORM=true
-  #  networks:
-  #    - app_network
-  #
-  #loki:
-  #  image: grafana/loki:latest
-  #  ports:
-  #    - 3100:3100
-  #  command: -config.file=/etc/loki/local-config.yaml
-  #  networks:
-  #    - app_network
-  #
-  #promtail:
-  #  image:  grafana/promtail:latest
-  #  container_name: promtail
-  #  volumes:
-  #    - ./config/promtail.yaml:/etc/promtail/docker-config.yaml
-  #    - /var/lib/docker/containers:/var/lib/docker/containers:ro
-  #    - /var/run/docker.sock:/var/run/docker.sock
-  #  command: -config.file=/etc/promtail/docker-config.yaml
-  #  depends_on:
-  #    - loki
-  #  networks:
-  #    - app_network
-  #--------------------------TESTING
+#--------------------------LOGGING AND MONITORING
+  #--------------------------Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    container_name: elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+    networks:
+      - app_network
+
+  #--------------------------Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - app_network
+ 
+#--------------------------TESTING
   #--------------------------E2E TESTING
   # e2e-testing-service:
   #   container_name: e2e-testing-service

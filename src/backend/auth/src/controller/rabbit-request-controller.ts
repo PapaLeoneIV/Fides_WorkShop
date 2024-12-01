@@ -1,5 +1,6 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { RequestStatus as status } from "../config/RequestStatus";
 import FrontendRegistrationSchema from "../schema/FrontendRegistrationSchema";
 import FrontendLoginSchema from "../schema/FrontendLoginSchema";
@@ -16,22 +17,16 @@ export async function vaidateAndHandleRegistrationRequest(msg: string) {
 
   try {
     request = FrontendRegistrationSchema.parse(JSON.parse(msg));
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Registration request validated successfully`, { }, request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    //TODO: understand why rick told me that is not necessary for this method to be waited
-    await updateExchange(response, REGISTRATION_BKEY);
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating registration request: ${error}`, { error }));
+    return await updateExchange(response, REGISTRATION_BKEY);
   }
 
   try {
     processRegistrationRequest(request);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed`, "", error));
-    throw error;
+    logger.error(log.CONTROLLER.PROCESSING(`Registration request failed: ${error}`, { error }));
   }
 }
 
@@ -42,20 +37,15 @@ export async function validateAndHandleLoginRequest(msg: string) {
 
   try {
     request = FrontendLoginSchema.parse(JSON.parse(msg));
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Login request validated successfully`, { }, request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    await updateExchange(response, LOGIN_BKEY) /** before was updating via registration key */;
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating login request: ${error}`, { error }));
+    return await updateExchange(response, LOGIN_BKEY) /** before was updating via registration key */;
   }
 
   try {
     processLoginRequest(request);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed`, "", error));
-    throw error;
+    logger.error(log.CONTROLLER.PROCESSING(`Login request failed: ${error}`, { error }));
   }
 }

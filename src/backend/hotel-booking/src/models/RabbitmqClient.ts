@@ -1,4 +1,5 @@
-import { Messages as message } from "../../../../../config/Messages";
+import import logger from '../config/logger';
+import log from "../../../../../config/logs";
 import client, { Connection, Channel } from "amqplib";
 import IBindingKeysDTO from "../dtos/IBindingKeysDTO";
 import { RABBITMQ_URL } from "../config/rabbit-config";
@@ -35,9 +36,9 @@ export class RabbitmqClient {
   //     await this.channel.assertExchange(exchange, exchangeType, {
   //       durable: true,
   //     });
-  //     console.log(`[ORDER SERVICE] Event Exchange '${exchange}' declared`);
+  //     logger.info(`[ORDER SERVICE] Event Exchange '${exchange}' declared`);
   //   } catch (error) {
-  //     console.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
+  //     logger.error(`[ORDER SERVICE] Error setting up event exchange:`, error);
   //   }
   // }
 }
