@@ -1,4 +1,5 @@
 import {verify, JwtPayload, Secret } from "jsonwebtoken";
+import logger from "@/config/logger";
 import dotenv from 'dotenv'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -47,6 +48,7 @@ export default function LoginPage() {
     })
     return await response.json();
   }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -56,10 +58,10 @@ export default function LoginPage() {
     // Retrieve token from cookies
     let token = getCookie(`${email}`);
     if (!token) {
-        logger.info("No JWT found, attempting login.");
+        logger.warn(`JWT not found, making login request.`);
         let response = await makeLoginRequest(message);
         if (response.status === 'APPROVED') {
-            logger.info("Login successful, storing JWT.");
+            logger.info(`Login approved, storing JWT.`);
             document.cookie = `${email}=${response.token}; path=/`;
             router.push(`/homepage?email=${email}`);
         } else {
@@ -67,15 +69,15 @@ export default function LoginPage() {
             return;
         }
     } else {
-        logger.info("JWT found, validating token.");
+        logger.info(`JWT found, verifying.`);
 
         // Check if token is expired
         let isExpired = checkTokenExpiry(token);
         if (isExpired) {
-            logger.info("JWT expired, refreshing...");
+            logger.warn(`Token expired, making refresh request.`);
             let response = await makeRefreshRequest({email:email, password: password,  jwtToken: token });
             if (response.status === 'APPROVED') {
-                logger.info("Token refreshed, storing new JWT.");
+                logger.info(`Refresh approved, storing new JWT.`);
                 document.cookie = `${email}=${response.token}`; `path=/`;
                 router.push(`/homepage?email=${email}`);
             } else {
@@ -83,7 +85,7 @@ export default function LoginPage() {
                 return;
             }
         } else {
-            logger.info("Token is valid, redirecting.");
+            logger.info(`Token verified, redirecting to homepage.`);
             router.push(`/homepage?email=${email}`);
         }
     }

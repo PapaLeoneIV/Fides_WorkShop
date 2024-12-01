@@ -1,5 +1,5 @@
 'use client'
-
+import logger from "@/config/logger"
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Head } from "@/components/head"
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -45,10 +44,7 @@ export default function RegisterPage() {
       return
     }
 
-    logger.info('User registered:', email)
-
-
-    // Redirect to login page after successful registration
+    logger.info(`User ${email} registered successfully`)
     router.push('/auth/login')
   }
 

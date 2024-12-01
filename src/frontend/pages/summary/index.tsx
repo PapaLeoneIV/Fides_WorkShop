@@ -1,5 +1,5 @@
 'use client'
-
+import logger from "@/config/logger"
 import { useEffect, useState } from "react"
 import { Loader2, Mail, Calendar, MapPin, Bike, Facebook, Instagram, Twitter } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -61,11 +61,11 @@ export default function OrderConfirmation() {
             "Content-Type": "application/json",
           },
         })
-        logger.info("RESULT STATUS:", result.status);
+        logger.info(`Order sent successfully: ${result}`);
         switch (result.status) {
           case 200:
             setFetchStatus('success')
-            logger.info(fetchStatus)
+            logger.debug('Success:', result)
             setConfirmationMessage('Your order has been successfully processed!')
             break
           case 400:

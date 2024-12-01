@@ -43,7 +43,7 @@ services:
       GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
       GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
       NEXTAUTH_URL: $NEXTAUTH_URL
-      ELASTICSEARCH_INDEX_PREFIX: config-service
+      ELASTICSEARCH_INDEX_PREFIX: frontend-service
       ELASTICSEARCH_URL: http://elasticsearch:9200
       LOG_LEVEL: info
     networks:
@@ -111,9 +111,6 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_PORT: ${RABBITMQ_PORT}
-      ELASTICSEARCH_INDEX_PREFIX: authentication-service
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      LOG_LEVEL: info
     env_file:
       - .env
     networks:

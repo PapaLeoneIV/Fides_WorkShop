@@ -1,4 +1,4 @@
-
+import logger from "../../config/logger";
 import { CalendarDate } from "@nextui-org/calendar";
 import { getLocalTimeZone } from "@internationalized/date";
 
@@ -79,10 +79,10 @@ export const fetchBookingData = async (data: any) => {
         }
 
         const result = await response.json();
-        logger.info('Success:', result);
+        logger.info(`Order sent successfully: ${result}`);
         return result;
     } catch (error) {
-        logger.error('Error:', error);
+        logger.error(`Error sending order: ${error}`);
         throw error;
     }
 };

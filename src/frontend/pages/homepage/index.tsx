@@ -1,5 +1,5 @@
 'use client'
-
+import logger from "@/config/logger"
 import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { RangeCalendar, CalendarDate } from "@nextui-org/calendar"
@@ -51,7 +51,7 @@ export default function Home() {
 
   const handleSend = async () => {
     if (!email || !cookie) {
-      logger.error("[FRONTEND SERVICE] Email or cookie is missing")
+      logger.error(`User not logged in`)
       return
     }
 
@@ -61,7 +61,7 @@ export default function Home() {
     try {
       setIsLoading(false)
       const result = await fetchBookingData(data)
-      logger.info(result)
+      logger.info(`Order sent successfully`, { result })
       if (result.status === 200) {
         let order_id = result.order_id;
         localStorage.setItem("bookingData", JSON.stringify({
@@ -75,10 +75,10 @@ export default function Home() {
         }))
         router.push("/summary")
       } else {
-        logger.error("Order failed")
+        throw new Error(`Error sending order: ${result.error}`)
       }
     } catch (error) {
-      logger.error("Error sending order:", error)
+      logger.error(`Error sending order: ${error}`)
     } finally {
       setIsLoading(false)
     }
