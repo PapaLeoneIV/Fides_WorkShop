@@ -62,20 +62,32 @@ export default function Home() {
       setIsLoading(false)
       const result = await fetchBookingData(data)
       console.log(result)
-      if (result.status === 200) {
-        let order_id = result.order_id;
-        localStorage.setItem("bookingData", JSON.stringify({
-          order_id, 
-          value,
-          city,
-          email,
-          cookie,
-          roadBikeValue,
-          mountainBikeValue,
-        }))
-        router.push("/summary")
-      } else {
-        console.error("Order failed")
+      switch (result.status) {
+        case 200: {
+          let order_id = result.order_id;
+          localStorage.setItem("bookingData", JSON.stringify({
+            order_id, 
+            value,
+            city,
+            email,
+            cookie,
+            roadBikeValue,
+            mountainBikeValue,
+          }))
+          router.push("/summary")
+          break;
+        }
+        case 400: {
+          console.error("Bad request")
+          break;
+        }
+        case 401: {
+          console.error("Need to refresh JWT")
+          break;
+        }
+        default: {
+          console.error("Order failed")
+        }
       }
     } catch (error) {
       console.error("Error sending order:", error)
