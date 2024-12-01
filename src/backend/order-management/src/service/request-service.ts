@@ -80,7 +80,7 @@ export async function HTTPprocessFrontendRequest(req: IFrontendRequestDTO, res: 
         const response = await fetch("http://authentication-service:3000/auth/validateJWT", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: req.userJWT, email: req.userEmail }),
+            body: JSON.stringify({ jwtToken: req.userJWT, email: req.userEmail }),
         });
         if (!response.ok) throw new Error("Authentication failed, invalid JWT token");
 
