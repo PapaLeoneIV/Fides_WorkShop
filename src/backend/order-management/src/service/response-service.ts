@@ -21,6 +21,8 @@ async function cancellPayment(order: IFrontendRequestDTO & { id: string; }) {
     if (order.payment_status === status.PENDING) {
         console.log(`[ORDER SERVICE] Cancelling payment order...`);
         await orderRepository.write.updatePaymentStatus(order.id, status.CANCELLED);
+        //TODO add logic to cancel payment
+
     }
 }
 
@@ -38,6 +40,7 @@ export async function processBikeResponse(response: IServiceResponseDTO) {
         if (order.bike_status === status.DENIED) {
             await orderRepository.write.updateBikeStatus(order.id, status.CANCELLED);
             cancellPayment(order);
+            //TODO fix update exchange with correct metadata instead of order.id
             updateExchange(CONSUME_SAGA_HOTEL_BK, order.id);
             throw new Error(`Bike order denied for order with id: ${order.id}`);
         }
