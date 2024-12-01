@@ -1,3 +1,10 @@
 node_modules
 # Keep environment variables out of version control
-combined.log
+logs
+
+
+.gitignore
+
+videos
+test-results
+package-lock.json
