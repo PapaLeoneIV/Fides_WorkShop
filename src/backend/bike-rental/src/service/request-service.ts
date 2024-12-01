@@ -67,33 +67,33 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
 }
 
 // Function to handle the cancellation of an order
-export async function processCancellationRequest(request: IOrderResponseDTO) {
+export async function processCancellationRequest(request: string) {
   let SAGA_BK = publisher.bindKeys.PublishbikeSAGAOrder;
-  let response: IOrderResponseDTO = { order_id: request.order_id, status: status.DENIED };
+  let response: IOrderResponseDTO = { order_id: request, status: status.DENIED };
 
   try {
     // Check if the order exists
-    if (!(await orderRepository.read.checkExistance(request.order_id as string))) {
-      throw new Error(`Order with id: ${request.order_id} does not exist`);
+    if (!(await orderRepository.read.checkExistance(request as string))) {
+      throw new Error(`Order with id: ${request} does not exist`);
     }
 
     // Check if the order is approved
-    let order = await orderRepository.read.getOrderInfo(request.order_id as string)!;
+    let order = await orderRepository.read.getOrderInfo(request as string)!;
     if (order && order.renting_status !== status.APPROVED) {
-      throw new Error(`Order with id: ${request.order_id} is not approved, cannot cancel`);
+      throw new Error(`Order with id: ${request} is not approved, cannot cancel`);
     }
 
     // Cancel the order
     if (order) {
       bikeRepository.write.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
       response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED)).renting_status;
-      console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request.order_id} cancelled`, "", request));
+      console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request} cancelled`, "", request));
       await updateExchange(response, SAGA_BK);
     }
   } catch (error) {
     console.error(
       log.SERVICE.ERROR.PROCESSING(
-        `Error while processing cancellation request with order_id ${request.order_id}: ${error}`,
+        `Error while processing cancellation request with order_id ${request}: ${error}`,
         "",
         error
       )

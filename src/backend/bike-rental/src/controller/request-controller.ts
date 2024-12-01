@@ -34,12 +34,12 @@ export async function validateAndHandleOrderRequest(msg: string) {
 }
 
 export async function validateAndHandleCancellationRequest(msg: string) {
-  let request: IOrderResponseDTO;
+  let request:  string;
   let response: IOrderResponseDTO = { order_id: null, status: status.DENIED };
 
   try {
-    request = CancelRequestSchema.parse(JSON.parse(msg));
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Cancellation request validated successfully`, "", request.order_id));
+    request = JSON.parse(msg);
+    console.log(log.CONTROLLER.INFO.VALIDATING(`Cancellation request validated successfully`, "", request));
   } catch (error) {
     console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating cancellation request`, "", error));
     await updateExchange(response);
@@ -50,14 +50,14 @@ export async function validateAndHandleCancellationRequest(msg: string) {
     processCancellationRequest(request);
     console.log(
       log.CONTROLLER.INFO.PROCESSING(
-        `Cancellation request ${request.order_id} processed successfully`,
+        `Cancellation request ${request} processed successfully`,
         "",
-        request.order_id
+        request
       )
     );
   } catch (error) {
     console.error(log.CONTROLLER.ERROR.PROCESSING(`Cancellation request failed`, "", error));
-    response.order_id = request.order_id;
+    response.order_id = request;
     await updateExchange(response);
     throw error;
   }
