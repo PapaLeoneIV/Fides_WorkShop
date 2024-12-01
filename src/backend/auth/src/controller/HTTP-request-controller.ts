@@ -4,8 +4,10 @@ import { RequestStatus as status } from "../config/RequestStatus";
 import IRegistrationRequestDTO from "../dtos/IRegistrationRequestDTO";
 import ILoginRequestDTO from "../dtos/IRegistrationRequestDTO";
 import IAuthResponseDTO from "../dtos/IAuthResponseDTO";
+import IOrderInfoDTO from "../dtos/IOrderInfoDTO";
 import FrontendRegistrationSchema from "../schema/FrontendLoginSchema";
 import FrontendLoginSchema from "../schema/FrontendLoginSchema";
+import FrontendLoginReqchema from "../schema/FrontendReqSchema";
 import {
   HTTPprocessRegistrationRequest,
   HTTPprocessLoginRequest,
@@ -98,10 +100,10 @@ export async function HTTPvalidateAndHandleJwtRefreshRequest(req: Request, res: 
 export async function HTTPvalidateAndHandleUserInformation(req: Request, res: Response) {
   // let info: { email: string; token: string } = { email: "", token: "" };
   let response: IAuthResponseDTO = { status: status.ERROR, message: "Invalid data format", token: null };
-  let request: ILoginRequestDTO;
+  let request: IOrderInfoDTO;
 
   try {
-    request = FrontendLoginSchema.parse(req.body);
+    request = FrontendLoginReqchema.parse(req.body);
     console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
   } catch (error) {
     console.log(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));

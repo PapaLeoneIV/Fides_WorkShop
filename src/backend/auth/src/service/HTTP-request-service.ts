@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import { userRepository } from "../repository/user-repository";
 import { Response } from "express";
 import ILoginRequestDTO from "../dtos/ILoginRequestDTO";
+import IOrderInfoDTO from "../dtos/IOrderInfoDTO";
 import IRegistrationRequestDTO from "../dtos/IRegistrationRequestDTO";
 import IAuthResponseDTO from "../dtos/IAuthResponseDTO";
 
@@ -110,7 +111,7 @@ export async function HTTPprocessJwtRefreshRequest(req: ILoginRequestDTO, res: R
   }
 }
 
-export async function HTTPprocessUserInformationRequest(req: ILoginRequestDTO, res: Response) {
+export async function HTTPprocessUserInformationRequest(req: IOrderInfoDTO, res: Response) {
   let response: IAuthResponseDTO = {
     status: "APPROVED",
     message: "User information retrieved successfully",
