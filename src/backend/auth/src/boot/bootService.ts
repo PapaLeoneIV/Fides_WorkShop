@@ -10,7 +10,6 @@ async function bootService() {
     console.log(log.BOOT.INFO.BOOTING("Authorization Service"));
   } catch (error) {
     console.error(log.BOOT.ERROR.BOOTING("Authorization Rental Service", error));
-    throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   }
 }
 

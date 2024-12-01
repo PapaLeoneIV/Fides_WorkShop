@@ -107,7 +107,7 @@ function checkTokenExpiry(token: string): boolean {
 }
 
   return (
-    <div className="bg-softbrown flex items-center justify-center min-h-screen">
+    <><title>Login</title><div className="bg-softbrown flex items-center justify-center min-h-screen">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Login</CardTitle>
@@ -152,7 +152,7 @@ function checkTokenExpiry(token: string): boolean {
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </div></>
   )
 
 }

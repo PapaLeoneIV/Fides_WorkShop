@@ -12,7 +12,8 @@
     "pg": "^8.13.0",
     "prisma": "^5.20.0",
     "rabbitmq-stream-js-client": "^0.4.2",
-    "tsyringe": "^4.8.0"
+    "tsyringe": "^4.8.0",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "@prisma/client": "^5.20.0",
