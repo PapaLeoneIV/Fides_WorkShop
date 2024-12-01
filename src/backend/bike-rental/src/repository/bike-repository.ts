@@ -24,7 +24,7 @@ class ReadBikeRepository {
     
     } catch (error) {
       logger.error(log.REPOSITORY.READING(`Error reading number of dirt bikes: ${error}`, "", { error }));
-      throw error;
+      return 0;
     }
   }
 
@@ -43,7 +43,7 @@ class ReadBikeRepository {
     
     } catch (error) {
       logger.error(log.REPOSITORY.READING(`Error reading number of road bikes: ${error}`, "", { error }));
-      throw error;
+      return 0;
     }
   }
 
@@ -84,7 +84,6 @@ class WriteBikeRepository {
       logger.info(log.REPOSITORY.WRITING(`Incremented bike count in the DB`, ""));
     } catch (error) {
       logger.error(log.REPOSITORY.WRITING(`Error incrementing bike count in the DB`, "", error));
-      throw error;
     }
   }
 
@@ -103,7 +102,6 @@ class WriteBikeRepository {
       logger.info(log.REPOSITORY.WRITING(`Decremented bike count in the DB`, ""));
     } catch (error) {
       logger.error(log.REPOSITORY.WRITING(`Error decrementing bike count in the DB`, "", error));
-      throw error;
     }
   }
 }

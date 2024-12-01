@@ -26,7 +26,7 @@ class ReadOrderRepository {
       return order ? true : false;
     } catch (error) {
       logger.info(log.REPOSITORY.READING(`Unable to read for bike order exhistance`, "", error));
-      throw error;
+      return false;
     }
   }
 
@@ -46,7 +46,7 @@ class ReadOrderRepository {
     } catch (error) {
       //TODO: move all the logging format
       logger.info(log.REPOSITORY.READING(`Unable to read hotel order info ${order_id}`, "", { order_id }));
-      throw error;
+      return null;
     }
   }
 }
@@ -58,7 +58,7 @@ class WriteOrderRepository {
     this.prisma = prisma;
   }
 
-  async createOrder(bike_order: IOrderRequestDTO): Promise<IOrderRequestDTO & { id: string }> {
+  async createOrder(bike_order: IOrderRequestDTO): Promise<IOrderRequestDTO & { id: string } | null> {
     let order: IOrderRequestDTO & { id: string };
     try {
       order = await prisma.order.create({
@@ -76,11 +76,11 @@ class WriteOrderRepository {
       return order;
     } catch (error) {
       logger.error(log.REPOSITORY.WRITING(`Error creating bike order: ${error}`, "", { error }));
-      throw error;
+      return null;
     }
   }
 
-  async updateStatus(id: string, status: string): Promise<IOrderRequestDTO & { id: string }> {
+  async updateStatus(id: string, status: string): Promise<IOrderRequestDTO & { id: string } | null> {
     let order: (IOrderRequestDTO & { id: string }) | null;
 
     try {
@@ -96,7 +96,7 @@ class WriteOrderRepository {
       return order;
     } catch (error) {
       logger.error(log.REPOSITORY.WRITING(`Error updating bike order status: ${error}`, "", { error }));
-      throw error;
+      return null;
     }
   }
 

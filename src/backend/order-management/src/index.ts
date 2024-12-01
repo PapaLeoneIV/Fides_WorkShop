@@ -34,7 +34,7 @@ async function main() {
   subscriber.consume(queue.SAGA_BIKE_RESP, EXCHANGE, PUBLISH_BIKE_SAGA_BK, (msg) => validateAndHandleBikeResponse(msg));
 
   app.listen(3000, () => {
-    logger.info(log.SERVICE.PROCESSING(`Server is running on port 3000`));
+    logger.info(log.SERVICE.PROCESSING(`Server is running on port 3000`, {}));
   });
 }
 

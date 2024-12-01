@@ -1,4 +1,6 @@
 import { EXCHANGE, QueueNames as queue } from "./config/rabbit-config"
+import logger from "./config/logger";
+import log from "./config/logs";
 import bootService from "./boot/bootService";
 import { subscriber } from "./models/RabbitmqSubscriber"
 import { publisher } from "./models/RabbitmqPublisher";
@@ -11,10 +13,10 @@ async function main() {
     let CONSUME_ORDER_BK = publisher.bindKeys.ConsumeBikeOrder;
     let CONSUME_ORDER_SAGA_BK = publisher.bindKeys.ConsumeBikeSAGAOrder;
 
-    logger.info(`[boot] Setting up consumer`);
+    logger.info(log.BOOT.CONFIGURING(`Setting up consumer`));
     subscriber.consume(queue.ORDER_REQ, EXCHANGE, CONSUME_ORDER_BK, (msg) => validateAndHandleOrderRequest(msg));
     subscriber.consume(queue.SAGA_REQ, EXCHANGE, CONSUME_ORDER_SAGA_BK, (msg) => validateAndHandleCancellationRequest(msg));
-    logger.info(`[boot] Consumer set up`);
+    logger.info(log.BOOT.CONFIGURING(`Consumer set up successfully`));
 }
 
 main();

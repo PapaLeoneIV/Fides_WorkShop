@@ -19,14 +19,13 @@ export async function updateExchange(
     logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
   } catch (error) {
     logger.error(log.SERVICE.PROCESSING(`Failed publishing response`, "", error));
-    throw error;
   }
 }
 
 // Function to handle the creation of an order
 export async function processOrderRequest(request: IOrderRequestDTO) {
   let response: IOrderResponseDTO = { order_id: request.order_id, status: status.DENIED };
-  let order: IOrderRequestDTO & { id: string };
+  let order: IOrderRequestDTO & { id: string } | null;
 
   try {
     // Check if the order already exists
@@ -45,13 +44,13 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
 
     // Check if there are sufficient bikes for the order
     if (!(await bikeRepository.read.checkAvailability(order.road_bike_requested, order.dirt_bike_requested))) {
-      response.status = (await orderRepository.write.updateStatus(order.id, status.DENIED)).renting_status;
+      response.status = (await orderRepository.write.updateStatus(order.id, status.DENIED))!.renting_status;
       throw new Error(`Insufficient bikes for order with id: ${request.order_id}`);
     }
 
     // Approving the order
     await bikeRepository.write.decrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
-    response.status = (await orderRepository.write.updateStatus(order.id, status.APPROVED)).renting_status;
+    response.status = (await orderRepository.write.updateStatus(order.id, status.APPROVED))!.renting_status;
     logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
     await updateExchange(response);
   } catch (error) {
@@ -63,7 +62,6 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
       )
     );
     await updateExchange(response);
-    throw error;
   }
 }
 
@@ -87,7 +85,7 @@ export async function processCancellationRequest(request: IOrderResponseDTO) {
     // Cancel the order
     if (order) {
       bikeRepository.write.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
-      response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED)).renting_status;
+      response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED))!.renting_status;
       logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} cancelled`, "", request));
       await updateExchange(response, SAGA_BK);
     }
@@ -100,6 +98,5 @@ export async function processCancellationRequest(request: IOrderResponseDTO) {
       )
     );
     await updateExchange(response, SAGA_BK);
-    throw error;
   }
 }

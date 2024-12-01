@@ -1,3 +1,5 @@
+import logger from "../config/logger";
+import log from "../config/logs";
 import { RabbitmqClient } from "./RabbitmqClient";
 
 type HandlerCB = (msg: string, instance?: RabbitmqClient) => any;
@@ -18,7 +20,7 @@ class RabbitSubscriber extends RabbitmqClient {
       (msg) => {
         {
           if (!msg) {
-            return logger.error(`[BIKE SERVICE] Invalid incoming message`);
+            return logger.error(log.CLIENT.OPERATING(`Error consuming message: ${msg}`));
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);

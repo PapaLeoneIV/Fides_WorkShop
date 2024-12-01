@@ -19,7 +19,7 @@ const consoleFormat = winston.format.combine(
   winston.format.printf(({ timestamp, level, message, layer, data }) => {
     const safeData = data ? JSON.stringify(data, null, 2) : ""; // Pretty-print data
     const safeLayer = layer || "GENERAL"; // Default layer
-    return `[${timestamp}] [${level}] [${safeLayer}] ${message} - ${safeData}`;
+    return `[${timestamp}] [${level}] [${safeLayer}] ${message}`;
   })
 );
 

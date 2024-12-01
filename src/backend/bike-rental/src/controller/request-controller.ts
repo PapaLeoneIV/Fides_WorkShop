@@ -14,23 +14,18 @@ export async function validateAndHandleOrderRequest(msg: string) {
 
   try {
     request = OrderRequestSchema.parse(JSON.parse(msg));
-    logger.info(log.CONTROLLER.VALIDATING(`Order request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Order request validated successfully`, { request: msg }));
   } catch (error) {
-    logger.error(log.CONTROLLER.VALIDATING(`Error validating order request`, "", error));
-    await updateExchange(response);
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating order request: ${error}`, { request: msg }));
+    return await updateExchange(response);
   }
 
   try {
     processOrderRequest(request);
-    logger.info(
-      log.CONTROLLER.PROCESSING(`Order request ${request.order_id} processed successfully`, "", request)
-    );
   } catch (error) {
-    logger.error(log.CONTROLLER.PROCESSING(`Order request failed`, "", error));
+    logger.error(log.CONTROLLER.PROCESSING(`Order request failed: ${error}`, { order_id: request.order_id }));
     response.order_id = request.order_id;
     await updateExchange(response);
-    throw error;
   }
 }
 
@@ -40,26 +35,17 @@ export async function validateAndHandleCancellationRequest(msg: string) {
 
   try {
     request = CancelRequestSchema.parse(JSON.parse(msg));
-    logger.info(log.CONTROLLER.VALIDATING(`Cancellation request validated successfully`, "", request.order_id));
+    logger.info(log.CONTROLLER.VALIDATING(`Cancellation request validated successfully`, { request: msg }));
   } catch (error) {
-    logger.error(log.CONTROLLER.VALIDATING(`Error validating cancellation request`, "", error));
-    await updateExchange(response);
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating cancellation request: ${error}`, { request: msg }));
+    return await updateExchange(response);
   }
 
   try {
     processCancellationRequest(request);
-    logger.info(
-      log.CONTROLLER.PROCESSING(
-        `Cancellation request ${request.order_id} processed successfully`,
-        "",
-        request.order_id
-      )
-    );
   } catch (error) {
-    logger.error(log.CONTROLLER.PROCESSING(`Cancellation request failed`, "", error));
+    logger.error(log.CONTROLLER.PROCESSING(`Cancellation request failed: ${error}`, { order_id: request.order_id }));
     response.order_id = request.order_id;
     await updateExchange(response);
-    throw error;
   }
 }
