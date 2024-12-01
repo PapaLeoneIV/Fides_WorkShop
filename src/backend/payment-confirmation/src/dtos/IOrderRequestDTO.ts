@@ -1,5 +1,5 @@
 export default interface IOrderRequestDTO {
-    id: string;
+    order_id: string;
     amount: string;
     created_at: Date;
     updated_at: Date;

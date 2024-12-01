@@ -21,10 +21,10 @@ export async function validateAndHandleOrderRequest(msg: string) {
 
   try {
     processOrderRequest(request);
-    console.log(log.CONTROLLER.INFO.PROCESSING(`Order request ${request.id} processed successfully`, "", request));
+    console.log(log.CONTROLLER.INFO.PROCESSING(`Order request ${request.order_id} processed successfully`, "", request));
   } catch (error) {
     console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed`, "", error));
-    response.id = request.id;
+    response.id = request.order_id;
     await updateExchange(response);
     throw error;
   }

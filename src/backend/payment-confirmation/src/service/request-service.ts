@@ -16,7 +16,7 @@ async function updateExchange(resp: IOrderResponseDTO, bindKey: string = publish
 }
 
 async function processOrderRequest(data: IOrderRequestDTO) {
-  let response: IOrderResponseDTO = { id: data.id, status: null };
+  let response: IOrderResponseDTO = { id: data.order_id, status: null };
 
   try {
     //TODO: add some logic to call an external payment gateway to process the payment
@@ -24,7 +24,7 @@ async function processOrderRequest(data: IOrderRequestDTO) {
     await updateExchange(response);
     console.log(
       log.SERVICE.INFO.PROCESSING(
-        `Order request ${data.id} processed successfully with status: ${response.status}`,
+        `Order request ${data.order_id} processed successfully with status: ${response.status}`,
         "",
         data
       )
