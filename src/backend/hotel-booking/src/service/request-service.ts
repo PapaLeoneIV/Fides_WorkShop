@@ -62,7 +62,6 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
       )
     );
     await updateExchange(response);
-    throw error;
   }
 }
 
