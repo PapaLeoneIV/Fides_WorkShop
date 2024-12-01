@@ -31,6 +31,11 @@ And others helper services:
 - The RabbitMQ service which is responsible for the communication between the services
 - The ELK stack which is responsible for the monitoring of the services
 
+The services are connected to each other using a RabbitMQ message broker and also API calls.
+This is an example of the flow of an order request:
+<!-- dsisplat a jpg from a local url -->
+![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
+
 ### Frontend
 The frontend is a simple web application that allows the user to interact with the backend services.
 
