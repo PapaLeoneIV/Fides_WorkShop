@@ -210,12 +210,11 @@ export async function processPaymentRequest(order_id: string, retries = 0) {
 
     if (await orderRepository.read.isCompleted(order)) {
       console.log(log.SERVICE.INFO.PROCESSING("Order completed, sending response to frontend", "", { order }));
-      publisher.publishEvent(EXCHANGE, CONSUME_PAYMENT_BK, frontendResponse);
+      return;
     }
 
     if (await orderRepository.read.isCancelled(order)) {
       console.log(log.SERVICE.WARNING.PROCESSING("Order cancelled, sending response to frontend", "", { order }));
-      publisher.publishEvent(EXCHANGE, CONSUME_PAYMENT_BK, frontendResponse);
       return;
     }
   } catch (error) {
