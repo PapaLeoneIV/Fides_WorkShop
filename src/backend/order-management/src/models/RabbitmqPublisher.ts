@@ -24,7 +24,7 @@ class RabbitPublisher extends RabbitClient {
             );
         } catch (error) {
             logger.error(log.CLIENT.OPERATING(`Publishing message: "${message}" to exchange: ${exchange} with routing key: ${routingKey}`, "", error).message);
-            throw new Error(HTTPErrors.INTERNAL_SERVER_ERROR.message);
+            return false;
         }
     }
 
@@ -34,7 +34,7 @@ class RabbitPublisher extends RabbitClient {
             return this.channel.sendToQueue(queue, Buffer.from(message));
         } catch (error) {
             logger.error(log.CLIENT.OPERATING(`Sending message: "${message}" to queue: ${queue}`, "", error).message);
-            throw new Error(HTTPErrors.INTERNAL_SERVER_ERROR.message);
+            return false;
         }
     }
 }

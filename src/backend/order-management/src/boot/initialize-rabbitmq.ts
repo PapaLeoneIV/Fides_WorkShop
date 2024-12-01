@@ -1,4 +1,4 @@
-import import logger from '../config/logger';
+import logger from '../config/logger';
 import log from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { QueueNames as queue } from "../config/rabbit-config";
@@ -13,7 +13,7 @@ async function InitializeRabbitmqConnection() {
     publisher.bindKeys = await publisher.requestBindingKeys(bindingKeysUrl);
     subscriber.bindKeys = await subscriber.requestBindingKeys(bindingKeysUrl);
     logger.info(
-      message.BOOT.FETCHING("Binging keys from config service fetched", {
+      log.BOOT.FETCHING("Binging keys from config service fetched", {
         publisherKeys: publisher.bindKeys,
         subscriberKeys: subscriber.bindKeys,
       })
@@ -21,20 +21,20 @@ async function InitializeRabbitmqConnection() {
 
     await publisher.connect();
     logger.info(
-      message.BOOT.CONNECTING("Publisher connected to RabbitMQ", {
+      log.BOOT.CONNECTING("Publisher connected to RabbitMQ", {
         publisherKeys: publisher.bindKeys,
       })
     );
 
     await subscriber.connect();
     logger.info(
-      message.BOOT.CONNECTING("Subscriber connected to RabbitMQ", {
+      log.BOOT.CONNECTING("Subscriber connected to RabbitMQ", {
         subscriberKeys: subscriber.bindKeys,
       })
     );
 
     await publisher.setupExchange("OrderEventExchange", "direct");
-    logger.info(message.BOOT.CONFIGURING(`Exchange OrderEventExchange`, { exchange: "OrderEventExchange" }));
+    logger.info(log.BOOT.CONFIGURING(`Exchange OrderEventExchange`, { exchange: "OrderEventExchange" }));
 
     await subscriber.createQueue(queue.FRONTEND_REQ);
     await subscriber.createQueue(queue.BIKE_RESP);
@@ -43,7 +43,7 @@ async function InitializeRabbitmqConnection() {
     await subscriber.createQueue(queue.SAGA_HOTEL_RESP);
     await subscriber.createQueue(queue.PAYMENT_RESP);
     logger.info(
-      message.BOOT.CONFIGURING("Queues ORDER_REQUEST and CANCEL_REQUEST", {
+      log.BOOT.CONFIGURING("Queues ORDER_REQUEST and CANCEL_REQUEST", {
         queues: [
           queue.FRONTEND_REQ,
           queue.BIKE_RESP,
@@ -55,7 +55,7 @@ async function InitializeRabbitmqConnection() {
       })
     );
   } catch (error) {
-    logger.error(message.BOOT.CONNECTING("Binding keys", { error }));
+    logger.error(log.BOOT.CONNECTING("Binding keys", { error }));
   }
 }
 

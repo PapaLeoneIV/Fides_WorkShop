@@ -1,4 +1,4 @@
-import import logger from '../config/logger';
+import logger from '../config/logger';
 import log from '../config/logs';
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IServiceResponseDTO from "../dtos/IServiceResponseDTO";
@@ -10,18 +10,16 @@ export async function validateAndHandleBikeResponse(msg: string) {
 
     try {
         request = ServiceResponseSchema.parse(JSON.parse(msg));
-        logger.info(message.CONTROLLER.VALIDATING("Bike Response validated successfully", "", { request }));
+        logger.info(log.CONTROLLER.VALIDATING("Bike Response validated successfully", "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.VALIDATING("Bike Response", "", { error }));
-        return new Error(HTTPerror.BAD_REQUEST.message);
+        logger.error(log.CONTROLLER.VALIDATING("Bike Response", "", { error }));
+        return;
     }
 
     try {
         await processBikeResponse(request);
-        logger.info(message.CONTROLLER.PROCESSING(`Bike Response processed successfully with order id ${request.order_id}`, "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.PROCESSING("Bike Response failed", "", { error }));
-        return error;
+        logger.error(log.CONTROLLER.PROCESSING("Bike Response failed", "", { error }));
     }
 }
 
@@ -30,18 +28,16 @@ export async function validateAndHandleHotelResponse(msg: string) {
 
     try {
         request = ServiceResponseSchema.parse(JSON.parse(msg));
-        logger.info(message.CONTROLLER.VALIDATING("Hotel Response validated successfully", "", { request }));
+        logger.info(log.CONTROLLER.VALIDATING("Hotel Response validated successfully", "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.VALIDATING("Hotel Response", "", { error }));
-        return new Error(HTTPerror.BAD_REQUEST.message);
+        logger.error(log.CONTROLLER.VALIDATING("Hotel Response", "", { error }));
+        return;
     }
 
     try {
         await processHotelResponse(request);
-        logger.info(message.CONTROLLER.PROCESSING(`Hotel Response processed successfully with order id ${request.order_id}`, "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.PROCESSING("Hotel Response failed", "", { error }));
-        return error;
+        logger.error(log.CONTROLLER.PROCESSING("Hotel Response failed", "", { error }));
     }
 }
 
@@ -50,17 +46,16 @@ export async function validateAndHandlePaymentResponse(msg: string) {
 
     try {
         request = ServiceResponseSchema.parse(JSON.parse(msg));
-        logger.info(message.CONTROLLER.VALIDATING("Hotel Response validated successfully", "", { request }));
+        logger.info(log.CONTROLLER.VALIDATING("Hotel Response validated successfully", "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.VALIDATING("Hotel Response", "", { error }));
-        return new Error(HTTPerror.BAD_REQUEST.message);
+        logger.error(log.CONTROLLER.VALIDATING("Hotel Response", "", { error }));
+        return;
     }
 
     try {
         await processPaymentResponse(request);
-        logger.info(message.CONTROLLER.PROCESSING(`Hotel Response processed successfully with order id ${request.order_id}`, "", { request }));
+        logger.info(log.CONTROLLER.PROCESSING(`Hotel Response processed successfully with order id ${request.order_id}`, "", { request }));
     } catch (error) {
-        logger.error(message.CONTROLLER.PROCESSING("Hotel Response failed", "", { error }));
-        return error;
+        logger.error(log.CONTROLLER.PROCESSING("Hotel Response failed", "", { error }));
     }
 }

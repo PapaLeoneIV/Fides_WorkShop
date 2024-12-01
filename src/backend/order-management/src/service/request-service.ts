@@ -86,6 +86,7 @@ export async function HTTPprocessFrontendRequest(req: IFrontendRequestDTO, res: 
         if (!response.ok) throw new Error("Authentication failed, invalid JWT token");
 
         order = await orderRepository.write.createOrder(req);
+        if (!order) throw new Error("Failed to create order");
         
         await updateExchange(publisher.bindKeys.ConsumeBikeOrder, {
             order_id: order.id,
@@ -140,6 +141,7 @@ export async function processFrontendRequest(frontendReq: IFrontendRequestDTO, u
     logger.info(log.SERVICE.VALIDATING(`JWT token verified for ${userInfo.email}`, "", { userInfo }));
 
     order = await orderRepository.write.createOrder(frontendReq);
+    if (!order) throw new Error("Failed to create order");
 
     //TODO add user info to bike service
     await updateExchange(CONSUME_BIKE_BK, {

@@ -1,4 +1,4 @@
-import logger from '../config/logger';
+import logger from './config/logger';
 import log  from "./config/logs";
 import bootService from "./boot/bootService";
 import { QueueNames as queue, EXCHANGE } from "./config/rabbit-config";

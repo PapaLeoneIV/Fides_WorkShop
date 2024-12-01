@@ -1,7 +1,7 @@
 import client, { Connection, Channel } from "amqplib";
-import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import logger from '../config/logger';
 import log  from '../config/logs';
+import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { RABBITMQ_URL } from "../config/rabbit-config";
 import { IBindingKeysDTO } from "../dtos/IBindingKeysDTO";
 
@@ -13,7 +13,7 @@ export class RabbitClient {
 
   async connect() {
     if (this.connected && this.channel) 
-      return logger.info(log.CLIENT.CONNECTING(`Already connected to RabbitMQ`));
+      return logger.info(log.CLIENT.CONNECTING(`Already connected to RabbitMQ`, { url: RABBITMQ_URL }));
     else this.connected = true;
 
     try {
@@ -21,7 +21,7 @@ export class RabbitClient {
       this.connection = await client.connect(RABBITMQ_URL);
 
       this.channel = await this.connection.createChannel();
-      logger.info(log.CLIENT.CONNECTING(`RabbitMQ`));
+      logger.info(log.CLIENT.CONNECTING(`RabbitMQ`, { url: RABBITMQ_URL }));
     } catch (error) {
       logger.error(log.CLIENT.CONNECTING(`RabbitMQ`, { error }));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);

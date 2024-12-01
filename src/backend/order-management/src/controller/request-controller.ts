@@ -1,4 +1,4 @@
-import import logger from '../config/logger';
+import logger from '../config/logger';
 import log from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IFrontendRequestDTO from "../dtos/IFrontendRequestDTO";
@@ -28,20 +28,18 @@ export async function HTTPValidateAndHandleFrontendRequest(req: Request, res: Re
 
   try {
     request = FrontendRequestSchema.parse(req.body);
-    logger.info(message.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
+    logger.info(log.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
   } catch (error) {
-    logger.error(message.CONTROLLER.VALIDATING("Frontend Request", "", error));
-    res.status(400).send(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING("Frontend Request", "", error));
+    return res.status(400).send(response);
   }
 
   try {
     await HTTPprocessFrontendRequest(request, res);
-    logger.info(message.CONTROLLER.PROCESSING(`Frontend Request processed successfully`, "", { request }));
+    logger.info(log.CONTROLLER.PROCESSING(`Frontend Request processed successfully`, "", { request }));
   } catch (error) {
-    logger.error(message.CONTROLLER.PROCESSING("Frontend Request failed", "", error));
+    logger.error(log.CONTROLLER.PROCESSING("Frontend Request failed", "", error));
     // res.status(500).send(response);
-    throw error;
   }
 }
 
@@ -63,26 +61,23 @@ export async function HTTPValidateAndHandleConfirmationRequest(req: Request, res
     order_id = req.query.order_id as string; //TODO: check how to make it standardize with the other controller where the request is parsed from req.body
     if (!order_id) throw new Error("Order ID not found in request");
 
-    logger.info(message.CONTROLLER.VALIDATING(`Confirmation request validated successfully`, "", { order_id }));
+    logger.info(log.CONTROLLER.VALIDATING(`Confirmation request validated successfully`, "", { order_id }));
   } catch (error) {
-    logger.error(message.CONTROLLER.VALIDATING(`Error validating confirmation request`, "", error));
-    res.status(400).send(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating confirmation request: ${error}`, {  }, req));
+    return res.status(400).send(response);
   }
 
   try {
     await HTTPprocessConfirmationRequest(order_id, res);
-    logger.info(message.CONTROLLER.PROCESSING(`Confirmation request processed successfully`, "", req.query));
   } catch (error) {
-    logger.error(message.CONTROLLER.PROCESSING(`Confirmation request failed`, "", error));
+    logger.error(log.CONTROLLER.PROCESSING(`Confirmation request failed: ${error}`, {  }, req));
     res.status(500).send(response);
-    throw error;
   }
 }
 
 /**
  * Validates and handles the frontend request
- * @param msg - The message received from the frontend
+ * @param msg - The log received from the frontend
  */
 export async function validateAndHandleFrontendRequest(msg: string) {
   let request: IFrontendRequestDTO;
@@ -96,17 +91,15 @@ export async function validateAndHandleFrontendRequest(msg: string) {
     }
     delete rawData.userJWT;
     request = FrontendRequestSchema.parse(rawData);
-    logger.info(message.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
+    logger.info(log.CONTROLLER.VALIDATING("Frontend Request validated successfully", "", { request }));
   } catch (error) {
-    logger.info(message.CONTROLLER.VALIDATING("Frontend Request", "", { error }));
-    throw new Error(HTTPerror.BAD_REQUEST.message);
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating frontend request: ${error}`, {  }));
+    return;
   }
 
   try {
     await processFrontendRequest(request, userJWT);
-    logger.info(message.CONTROLLER.PROCESSING(`Frontend Request processed successfully`, "", { request }));
   } catch (error) {
-    logger.error(message.CONTROLLER.PROCESSING("Frontend Request failed", "", { error }));
-    throw error;
+    logger.error(log.CONTROLLER.PROCESSING(`Frontend Request failed: ${error}`, {  }));
   }
 }
