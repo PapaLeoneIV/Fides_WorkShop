@@ -90,6 +90,7 @@ def start_services(mode):
             print(f"Starting {service}...")
             run_command(f"docker compose up -d {service}")
             print("Waiting for frontend to be ready...")
+            time.sleep(5)
 
             # Health check for frontend
             frontend_url = "http://localhost:6969"  # Adjust URL/port as necessary
