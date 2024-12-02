@@ -1,10 +1,16 @@
 # Fides WorkShop Project
 This is the repository for the Fides Workshop project.
 We organize the work in order to acomplish the projects main goals:
-- [X] Create a backend using a microservice architecture
+
+- [X] Create a backend using a microservice architecture with Node and ExpressJS
+- [X] Frontend developed with NextJS as a simple interface for the backend
+- [X] Async communication between microservices through RabbitMQ
+- [X] Sync communication between Client-Server with HTTP Req/Res
+- [X] Auth/Registration with JWT Token
+- [X] Developed Distributed Database System
+- [X] Developed SAGA PATTERN to handle cancellation of orders 
 - [ ] Set up an ELK stack to monitor the services
 - [X] Have the environment running on a docker-compose file
-- [X] Create a simple frontend to interact with the backend
 
 ## Contributors
 - [Riccardo Leone](https://github.com/PapaLeoneIV)
