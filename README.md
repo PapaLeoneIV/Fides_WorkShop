@@ -1,5 +1,7 @@
 # Fides WorkShop Project
 This is the repository for the Fides Workshop project.
+
+## Goals
 We organize the work in order to acomplish the projects main goals:
 
 - [X] Create a backend using a microservice architecture with Node and ExpressJS
@@ -20,20 +22,20 @@ We organize the work in order to acomplish the projects main goals:
 
 ## Build prerequisites
 To build the project you need to have the following tools installed on your machine:
-- `python3`
 - `docker`
 
 ## Architecture
 The project is divided in two main parts:
-- The backend, which is a microservice architecture
+- The backend, implement with microservice architecture
 - The frontend, which is a simple web application
 
 ### Backend
-The backend is composed by four business services:
-- The authentication service (auth) which is responsible for the authentication of the users
-- The Order management service (order) which is responsible for the management of the orders
-- The bike rental service (bike) which is responsible for the management of the bike rentals
-- The Hotel booking service (hotel) which is responsible for the management of the hotel bookings
+The backend is composed of five business services:
+- Authentication service
+- Order management service 
+- Bike rental service 
+- Hotel booking service
+- Payment Service
 And others helper services:
 - A database service for each business service
 - The RabbitMQ service which is responsible for the communication between the services
@@ -56,15 +58,35 @@ The frontend is a simple web application that allows the user to interact with t
 
 
 ## How to run the project
-The project is still in development, so the only way to run it is to run it in development mode.
-To run the project you need to have docker installed on your machine.
-Once you have docker installed you can run the following command in the root directory of the project:
-
+Once you have docker installed, run the following command in the root directory of the project:
 ```bash
-python3 manage.py start-dev
+git clone git@github.com:PapaLeoneIV/MicroservicesArchApp.git && \
+cd MicroservicesArchApp && \
+chmod +x start-up.sh && \
+bash start-up.sh dev
 ```
 
-To stop the project you can run the following command in the root directory of the project:
+## Known Problems(To be fixed)
+
+### Set up RabbitMQ Exchange
+At the moment `order-management-service` takes care of setting up the Exchange, it obviously gives problem 
+during the set up of all the containers where a service is setting up a queue. 
+
+### Components background color
+`Chrome` `Brave` browser seem to render some shadcn/nextui components background color in black and the usability of the app decreases, `Mozilla` seems the only one to not do it.
+
+### Starting script
+
+If your not able to start the project with our `start-up.sh` run the following commands:
 ```bash
-python3 manage.py stop
+docker compose up rabbitmq db_bike_rental db_hotel_booking \
+  db_payment_confirmation db_order_management \
+  db_auth config_service
+```
+
+Once all the Dbs, rabbit server and the config microservice are running: 
+```bash
+docker compose up authentication-service bike-rental-service \
+  hotel-booking-service payment-confirmation-service \
+  order-management-service
 ```
