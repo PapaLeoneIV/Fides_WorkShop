@@ -16,15 +16,15 @@ datasource db {
 model order {
   id                  String   @id @default(uuid())
   userEmail           String
-  to                  String
   from                String
+  to                  String
   room                String
   road_bike_requested Int
   dirt_bike_requested Int
   amount              String
   bike_status         String
   hotel_status        String
-  payment_status      String 
+  payment_status      String
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 }

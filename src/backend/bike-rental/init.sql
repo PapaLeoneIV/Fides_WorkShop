@@ -12,6 +12,7 @@ INSERT INTO "bikes" ("id", "road", "dirt") VALUES
 
 CREATE TABLE "order" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "userEmail" TEXT NOT NULL,
     "order_id" TEXT NOT NULL,
     "road_bike_requested" INTEGER,
     "dirt_bike_requested" INTEGER,

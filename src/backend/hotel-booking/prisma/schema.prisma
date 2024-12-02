@@ -13,30 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model date {
-  id           Int      @id @default(autoincrement())
-  booking_date DateTime @unique
-
-  rooms room[]
-}
-
-model room {
-  id           Int     @id @default(autoincrement())
-  room_number  String  @unique
-  is_available Boolean
-
-  date_id Int
-  date    date @relation(fields: [date_id], references: [id], onDelete: Cascade)
-}
-
 model order {
-  userEmail      String
   id             String   @id @default(uuid())
   order_id       String
+  userEmail      String
   from           String
   to             String
   room           String
   renting_status String
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+}
+
+model date {
+  id           Int      @id @default(autoincrement())
+  booking_date DateTime @unique
+  rooms        room[]
+}
+
+model room {
+  id           Int     @id @default(autoincrement())
+  room_number  String  @unique
+  is_available Boolean
+  date_id      Int
+  date         date    @relation(fields: [date_id], references: [id], onDelete: Cascade)
 }
