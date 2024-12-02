@@ -4,13 +4,15 @@ We organize the work in order to acomplish the projects main goals:
 
 - [X] Create a backend using a microservice architecture with Node and ExpressJS
 - [X] Frontend developed with NextJS as a simple interface for the backend
+- [X] Organized work and directory around Layered Architecture
+- [X] Use of various Design Patterns (Repository Patterns, State Pattern, Saga Pattern, ...) 
 - [X] Async communication between microservices through RabbitMQ
 - [X] Sync communication between Client-Server with HTTP Req/Res
 - [X] Auth/Registration with JWT Token
 - [X] Developed Distributed Database System
-- [X] Developed SAGA PATTERN to handle cancellation of orders 
+- [X] Developed SAGA PATTERN to handle cancellation of orders
+- [X] Have the environment Dockerized
 - [ ] Set up an ELK stack to monitor the services
-- [X] Have the environment running on a docker-compose file
 
 ## Contributors
 - [Riccardo Leone](https://github.com/PapaLeoneIV)
@@ -37,10 +39,16 @@ And others helper services:
 - The RabbitMQ service which is responsible for the communication between the services
 - The ELK stack which is responsible for the monitoring of the services
 
+### Macro View of MicroService Architecture
+![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
+
+
 The services are connected to each other using a RabbitMQ message broker and also API calls.
 This is an example of the flow of an order request:
 <!-- dsisplat a jpg from a local url -->
 ![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
+
+
 
 ### Frontend
 The frontend is a simple web application that allows the user to interact with the backend services.
