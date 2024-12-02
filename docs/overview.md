@@ -6,61 +6,173 @@ This project aims to create an application for booking accommodations and rentin
 - **Property owners** to list their apartments and bikes for rent, manage availability, and track reservations.
 
 ## General Composition and High-Level Workflow
-The application consists of multiple services working in tandem to deliver a smooth and reliable experience. Each service is responsible for a specific domain, and inter-service communication is managed through an event-driven architecture using RabbitMQ. Here’s a high-level workflow of the application:
+The application consists of multiple services, each responsible for a specific aspect of the booking and rental process. These services communicate with each other through RabbitMQ messaging and API calls to fulfill user requests. The frontend service provides the user interface for interacting with the application, displaying data, and handling user interactions.
 
-1. **User Interaction**: Customers or property owners interact with the frontend.
-2. **Service Requests**: The frontend communicates with backend services for requests like booking apartments, renting bikes, or processing payments.
-3. **Service Orchestration**: The order service orchestrates interactions between services, such as retrieving user details, checking availability, and managing payments.
-4. **Database Updates**: Each service updates its respective database to maintain data consistency.
-5. **Notification & Logging**: Key events and activities are logged, and errors trigger alerts to improve monitoring and observability.
+### Request Flow
+1. **User Interaction**: A user interacts with the frontend service to search for accommodations or bike rentals, view details, and make a booking.
+2. **Frontend Service**: The frontend service sends requests to the appropriate backend services based on the user's actions.
+3. **Backend Services**: The backend services handle the requests, process data, and communicate with other services to complete the booking or rental process.
+4. **Database Operations**: Each service interacts with its dedicated PostgreSQL database to store and retrieve data related to orders, bookings, users, and properties.
+5. **Messaging**: Services communicate with each other through RabbitMQ messaging to update order statuses, handle payments, and manage availability.
+6. **Response**: The frontend service receives responses from the backend services and updates the user interface with the latest information.
 
 ## Services
-Each service manages its own database and has a dedicated role in the application. Here is a brief overview of each:
+Each service manages its own database and has a dedicated role in the application. Here is a brief overview of each service's purpose and core functionalities:
 
-- **Bike Rental Service**  
-  Manages bike inventory and availability, processing requests for bike rentals.
+### Configuration service
+#### Purpose
+The configuration service provides a centralized location for managing configuration settings for other services. It allows services to fetch and update configuration settings based on the service name.
 
-- **Apartment Booking Service**  
-  Handles apartment availability and booking, as well as owner listings.
+#### Core Functionalities
+- **handleConfigRequest**: Fetch configuration settings based on the service name.
+- **handleConfigUpdate**: Update configuration settings for a specific service.
 
-- **Payment Service**  
-  Processes payments for both bike rentals and apartment bookings, integrating with third-party payment providers.
+#### API Endpoints
+- **GET /config/:service**: Retrieve configuration settings for a specific service.
+- **POST /config/:service**: Update configuration settings for a specific service.
 
-- **User Service**  
-  Manages authentication and authorization, handling roles (customer, owner) and user data securely.
+### Order Service
+#### Purpose
+The order service is responsible for managing the booking and rental orders, handling order creation, confirmation, and status updates. It communicates with other services to process orders and update order statuses.
+#### Core Functionalities
+- **handle Order HTTPRequest**
+- **handle Confirmation HTTPRequest**
 
-- **Order Service**  
-  Acts as the central orchestrator, coordinating between services based on user actions (e.g., booking a rental) and updating order statuses accordingly.
+- **handle Order RabbitMQRequest**
 
-- **Frontend Service**  
-  The user interface where customers and owners interact with the system, designed in React.
+- **handle Bike Order RabbitMQResponse**
+- **handle Hotel Order RabbitMQResponse**
+- **handle Payment RabbitMQResponse**
 
-- **RabbitMQ (Message Broker)**  
-  Handles inter-service communication, enabling asynchronous messaging for efficient task delegation and reliability.
+#### RabbitMQ Messaging
+- **Exchanges**: `OrderEventExchange` is the main exchange for each service to publish messages.
+- **Queues**: 
+  - `order_request_queue`
+  - `order_confirm_queue`
+- **Routing Keys**:
+  - `order.create`
+  - `order.confirm`
 
-## Technology Stack
+#### API Endpoints
+- **POST /order**: Create a new order based on the request payload.
+- **POST /confirm**: Confirm an order and update its status.
 
-### Frontend
-- **React** - for the user interface, delivering a responsive and interactive experience.
+#### Dependencies
+  - RabbitMQ for message handling.
+  - PostgreSQL for order data storage.
+  - config-service for configuration management.
+  - bike-rental, apt-booking, and payment services for order processing.
 
-### Backend
-- **Node.js** - a high-performance, scalable environment for handling service logic and processing.
+### Authentication service
+#### Purpose
+The authentication service handles user authentication, registration, and token management. It provides endpoints for user login, registration, token refresh, and user information validation.
 
-### Databases
-- **PostgreSQL** - each service has its own PostgreSQL instance to ensure data segregation and integrity.
+#### Core Functionalities
+- handle Login HTTPRequest
+- handle Registration HTTPRequest
+- handle JWT Refresh HTTPRequest
+- handle User Info validation HTTPRequest
 
-### Messaging
-- **RabbitMQ** - an event-driven messaging broker facilitating inter-service communication.
+- handle Login RabbitMQRequest
+- handle Registration RabbitMQRequest
 
-### Containerization & Orchestration
-- **Docker & Docker Compose** - for containerizing services and orchestrating multi-container deployment in development and production.
+#### RabbitMQ Messaging
+- **Exchanges**: `OrderEventExchange` is the main exchange for each service to publish messages.
+- **Queues**: 
+  - `login_request_queue`
+  - `registration_request_queue`
+- **Routing Keys**:
+  - `
+- **Message Structure**: Messages are JSON objects with specific fields and formats for consistency.
 
-### CI/CD
-- **GitHub Actions** - automates code deployment and testing workflows.
+#### API Endpoints
+- **POST /login**: Authenticate a user and generate a JWT token.
+- **POST /register**: Register a new user and assign a role.
+- **POST /refresh**: Refresh the JWT token for an authenticated user.
+- **GET /user**: Retrieve user information based on the JWT token.
 
-### Observability
-- **ELK Stack** (Elasticsearch, Logstash, and Kibana) - for log aggregation, processing, and visualization.
-- **Prometheus & Grafana** - for metrics monitoring and alerting.
+#### Dependencies
+  - RabbitMQ for message handling.
+  - PostgreSQL for user data storage.
+  - config-service for configuration management.
+  - order-service for order exchange setup.
+  
+### Hotel Booking Service and bike rental service
+#### Purpose
+The hotel booking service and bike rental service manage the availability, booking, and rental of apartments and bikes, respectively. They handle requests for listing properties, checking availability, and processing bookings or rentals.
 
-## Architectural Diagram
-*(Include architectural diagrams here if available to give an overall picture of the system)*
+#### Core Functionalities
+- **handleOrder**
+- **handleCancel**
+
+#### RabbitMQ Messaging
+- **Exchanges**: `OrderEventExchange` is the main exchange for each service to publish messages.
+- **Queues**: 
+  - `order_request_queue`
+  - `order_cancel_queue`
+- **Routing Keys**:
+  - `order.create`
+  - `order.cancel`
+
+#### API Endpoints
+Does not expose any HTTP endpoints. All interactions are through RabbitMQ messages.
+
+#### Dependencies
+  - RabbitMQ for message handling.
+  - PostgreSQL for apartment data storage.
+  - config-service for configuration management.
+  - order-service for order exchange setup.
+
+### Payment Service
+#### Purpose
+The payment service handles payment processing for orders, including payment creation, verification, and status updates. It communicates with other services to process payments and update order statuses.
+
+#### Core Functionalities
+- **handlePaymentRequest**
+
+#### RabbitMQ Messaging
+- **Exchanges**: `OrderEventExchange` is the main exchange for each service to publish messages.
+- **Queues**: 
+  - `payment_request_queue`
+- **Routing Keys**:
+  - `payment.create`
+
+#### API Endpoints
+Does not expose any HTTP endpoints. All interactions are through RabbitMQ messages.
+
+### Frontend Service
+The frontend service provides the user interface for interacting with the application, displaying data, and handling user interactions. It communicates with backend services through API calls and message subscriptions to update data in real-time.
+
+#### Stack
+- **Framework**: React.js
+- **State Management**: Redux
+- **Styling**: Tailwind CSS
+
+#### Directory Structure
+The frontend service follows a standard React project structure with components, pages, and utilities for managing state and UI interactions.
+  
+## support services
+
+### Database services
+The database services provide PostgreSQL databases for storing data related to users, orders, properties, and configurations. Each service has its dedicated database schema and tables for managing data specific to its functionality.
+
+#### config
+- **ports**: 5432 : (range 5432-5439)
+
+### RabbitMQ service
+The RabbitMQ service provides message queuing and routing capabilities for inter-service communication. It enables services to publish and subscribe to messages for handling asynchronous tasks, event notifications, and data exchange.
+
+#### config
+- **ports**: 5672 : 5672
+
+### elasticsearch service
+The elasticsearch service provides search functionality for the application, allowing users to search for apartments and bikes based on various criteria. It indexes property data and provides search results based on user queries.
+
+#### config
+- **ports**: 9200 : 9200
+
+### kibana service
+The kibana service provides a visualization dashboard for monitoring application logs, metrics, and performance. It integrates with Elasticsearch to display real-time data and insights into the application's health and performance.
+
+#### config
+- **ports**: 5601 : 5601

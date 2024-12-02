@@ -1,5 +1,5 @@
 'use client'
-
+import logger from "@/config/logger"
 import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { RangeCalendar, CalendarDate } from "@nextui-org/calendar"
@@ -66,7 +66,7 @@ export default function Home() {
 
   const handleSend = async () => {
     if (!email || !cookie) {
-      console.error("[FRONTEND SERVICE] Email or cookie is missing")
+      logger.error(`User not logged in`)
       return
     }
 
@@ -76,36 +76,24 @@ export default function Home() {
     try {
       setIsLoading(false)
       const result = await fetchBookingData(data)
-      console.log("result: " , result)
-      switch (result.status) {
-        case 200: {
-          let order_id = result.order_id;
-          localStorage.setItem("bookingData", JSON.stringify({
-            order_id, 
-            value,
-            city,
-            email,
-            cookie,
-            roadBikeValue,
-            mountainBikeValue,
-          }))
-          router.push("/summary")
-          break;
-        }
-        case 400: {
-          console.log("Bad request")
-          break;
-        }
-        case 401: {
-          console.log("Need to refresh JWT")
-          break;
-        }
-        default: {
-          console.log("Order failed")
-        }
+      logger.info(`Order sent successfully`, { result })
+      if (result.status === 200) {
+        let order_id = result.order_id;
+        localStorage.setItem("bookingData", JSON.stringify({
+          order_id, 
+          value,
+          city,
+          email,
+          cookie,
+          roadBikeValue,
+          mountainBikeValue,
+        }))
+        router.push("/summary")
+      } else {
+        throw new Error(`Error sending order: ${result.error}`)
       }
     } catch (error) {
-      console.error("Error sending order:", error)
+      logger.error(`Error sending order: ${error}`)
     } finally {
       setIsLoading(false)
     }

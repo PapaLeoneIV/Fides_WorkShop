@@ -1,5 +1,5 @@
 'use client'
-
+import logger from "@/config/logger"
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -42,10 +42,7 @@ export default function RegisterPage() {
       return
     }
 
-    console.info('User registered:', email)
-
-
-    // Redirect to login page after successful registration
+    logger.info(`User ${email} registered successfully`)
     router.push('/auth/login')
   }
 

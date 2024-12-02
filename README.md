@@ -1,29 +1,54 @@
 # Fides WorkShop Project
-Il progetto nasce da una sfida lanciata dall azienda Fides all interno del network 42 Italia. Fides ha chiesto di concentrarsi sullo sviluppo di una architettura a microservizi.
-L impostazione del progetto lascia notevole spazio per quanto riguarda il design dell App,  la nostra app permetterà di prenotare hotel e bici per spostarsi. Il focus del 
-nostro progetto è comunque rivolto all Architettura del progetto e allo sviluppo migliore del design interno di ogni microservizio. 
+This is the repository for the Fides Workshop project.
+We organize the work in order to acomplish the projects main goals:
+- [X] Create a backend using a microservice architecture
+- [ ] Set up an ELK stack to monitor the services
+- [X] Have the environment running on a docker-compose file
+- [X] Create a simple frontend to interact with the backend
 
 ## Contributors
 - [Riccardo Leone](https://github.com/PapaLeoneIV)
 - [Emma Veronelli](https://github.com/minestrinad)
 
-
 ## Build prerequisites
-Tutti gli strumenti che potrebbero servirvi to build the project:
-- make
+To build the project you need to have the following tools installed on your machine:
+- python3
 - docker
 
 ## Architecture
+The project is divided in two main parts:
+- The backend, which is a microservice architecture
+- The frontend, which is a simple web application
 
-Il backend è stato progettato per rispecchiare le dinamiche di business del progetto, applicando varie soluzioni e pattern:
-  - Microservizio di gestione degl ordini                                   (Design State Pattern)
-  - Microservizio per la validazione della prontazione in hotel             (Repository Pattern)
-  - Microservizio per la validazione della protazioni di bici da trekking   (Repository Pattern)
-  - Microservizio per la conferma di pagamento                              (Repository Pattern)
+### Backend
+The backend is composed by four business services:
+- The authentication service (auth) which is responsible for the authentication of the users
+- The Order management service (order) which is responsible for the management of the orders
+- The bike rental service (bike) which is responsible for the management of the bike rentals
+- The Hotel booking service (hotel) which is responsible for the management of the hotel bookings
+And others helper services:
+- A database service for each business service
+- The RabbitMQ service which is responsible for the communication between the services
+- The ELK stack which is responsible for the monitoring of the services
 
-## How to run it
-- from the root directory:
+The services are connected to each other using a RabbitMQ message broker and also API calls.
+This is an example of the flow of an order request:
+<!-- dsisplat a jpg from a local url -->
+![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
+
+### Frontend
+The frontend is a simple web application that allows the user to interact with the backend services.
+
+## How to run the project
+The project is still in development, so the only way to run it is to run it in development mode.
+To run the project you need to have docker installed on your machine.
+Once you have docker installed you can run the following command in the root directory of the project:
+
+```bash
+python3 manage.py start-dev
 ```
-make up
-`````
 
+To stop the project you can run the following command in the root directory of the project:
+```bash
+python3 manage.py stop
+```

@@ -23,10 +23,34 @@ def is_service_running(service_name):
     status = run_command(f"docker compose ps {service_name} --services --filter 'status=running'")
     return service_name in status
 
-# Start services based on mode
+import requests  # Add this at the top for HTTP requests
+
+# Check if the frontend is effectively up
+def is_frontend_ready(url, retries=5, delay=5):
+    """
+    Check if the frontend service is ready by making HTTP requests to a specific URL.
+    Retries the check a few times with a delay between attempts.
+    """
+    for attempt in range(retries):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                print(f"Frontend is ready after {attempt + 1} attempt(s).")
+                return True
+            else:
+                print(f"Frontend not ready (status: {response.status_code}), retrying...")
+        except requests.ConnectionError:
+            print("Frontend connection failed, retrying...")
+        
+        time.sleep(delay)
+    
+    print("Frontend failed to start after multiple attempts.")
+    return False
+
+# Update the start_services function to include the health check
 def start_services(mode):
     print(f"Starting services in {mode} mode...")
-    
+
     # Start databases only if they are not already running
     for db in DATABASES:
         if not is_service_running(db):
@@ -39,18 +63,16 @@ def start_services(mode):
     if not is_service_running("rabbitmq"):
         print("Starting RabbitMQ...")
         run_command("docker compose up -d rabbitmq")
-        # Wait for dependencies to start
         print("Waiting for databases and RabbitMQ to be ready...")
         time.sleep(20)
     else:
         print("RabbitMQ is already running, skipping...")
-    
-    
+
     # Start config service only if it's not already running
     if not is_service_running(CONFIG_SERVICE):
         print(f"Starting {CONFIG_SERVICE}...")
         run_command(f"docker compose up -d {CONFIG_SERVICE}")
-        time.sleep(5)  # Allow some time for the config service to start
+        time.sleep(5)
     else:
         print(f"{CONFIG_SERVICE} is already running, skipping...")
 
@@ -62,22 +84,27 @@ def start_services(mode):
         else:
             print(f"{service} is already running, skipping...")
 
-    # Always start the frontend service (for integration tests or development) if not already running
+    # Always start the frontend service if not already running
     for service in FRONTEND:
         if not is_service_running(service):
             print(f"Starting {service}...")
             run_command(f"docker compose up -d {service}")
             print("Waiting for frontend to be ready...")
-            time.sleep(10)  # Adjust the time based on how long it takes for the frontend to start
+
+            # Health check for frontend
+            frontend_url = "http://localhost:6969"  # Adjust URL/port as necessary
+            if not is_frontend_ready(frontend_url):
+                print(f"Error: Frontend service {service} failed to start properly.")
+                sys.exit(1)  # Exit script if frontend fails to start
         else:
             print(f"{service} is already running, skipping...")
-    
-    
+
     if mode == "testing":
         print("Running tests...")
-        # Replace the following with actual test commands
-        run_command("docker compose up e2e-testing-service")    
+        run_command("docker compose up e2e-testing-service")
+    
     print("All services are up!")
+
 
 # Stop all services
 def stop_services():
