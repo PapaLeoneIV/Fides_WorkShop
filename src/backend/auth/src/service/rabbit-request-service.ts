@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { RequestStatus as status } from "../config/RequestStatus";
 import { EXCHANGE } from "../config/rabbit-config";
 import { User } from "../models/User";
@@ -11,10 +12,9 @@ import IAuthResponseDTO from "../dtos/IAuthResponseDTO";
 export async function updateExchange(response: IAuthResponseDTO, bindKeys: string) {
   try {
     await publisher.publishEvent(EXCHANGE, bindKeys, response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Response ${response.message} published successfully`, "", response));
+    logger.debug(log.SERVICE.PROCESSING(`Response ${response.message} published successfully`, { response }));
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed publishing response`, "", error));
-    throw error;
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response: ${error}`, { error }));
   }
 }
 
@@ -31,14 +31,13 @@ export async function processRegistrationRequest(request: IRegistrationRequestDT
     user = new User(await userRepository.write.addRow(request));
     if (!user) return new Error("Failed to register user");
 
-    console.log(log.SERVICE.INFO.PROCESSING(`User registered successfully`, "", request));
+    logger.info(log.SERVICE.PROCESSING(`User registered successfully`, { }, request));
     await updateExchange(response, REGISTRATION_BKEY);
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to register user: ${error}`, "", request));
+    logger.error(log.SERVICE.PROCESSING(`Failed to register user: ${error}`, { error }, request));
     response.status = status.ERROR;
     response.message = error.message;
     await updateExchange(response, REGISTRATION_BKEY);
-    return;
   }
 }
 
@@ -53,12 +52,11 @@ export async function processLoginRequest(request: ILoginRequestDTO) {
 
     if (!(await user.validatePassword(request.password))) throw new Error("Wrong password");
 
-    console.log(log.SERVICE.INFO.PROCESSING(`User logged in successfully`, "", request));
+    logger.info(log.SERVICE.PROCESSING(`User logged successfully`, { }, request));
     if (!request.jwtToken) {
-      console.log(log.SERVICE.INFO.PROCESSING(`JWT Token not found, generating new token`, "", request));
+      logger.info(log.SERVICE.PROCESSING(`JWT Token not found, generating new token`, { }, request));
       response.token = user.generateAccessToken();
-      await updateExchange(response, LOGIN_BKEY);
-      return;
+      return await updateExchange(response, LOGIN_BKEY);
     }
 
     if (!User.authenticateToken(request.jwtToken)) throw new Error("JWT Token is invalid");
@@ -66,7 +64,7 @@ export async function processLoginRequest(request: ILoginRequestDTO) {
     response.token = user.generateAccessToken();
     await updateExchange(response, LOGIN_BKEY);
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to login user: ${error}`, "", request));
+    logger.error(log.SERVICE.PROCESSING(`Failed to login user: ${error}`, { error }, request));
     response.status = status.ERROR;
     response.message = error.message;
     await updateExchange(response, LOGIN_BKEY);

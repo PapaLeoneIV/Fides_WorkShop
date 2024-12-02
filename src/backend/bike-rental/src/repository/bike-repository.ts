@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { PrismaClient } from "@prisma/client";
 
 class ReadBikeRepository {
@@ -18,12 +19,12 @@ class ReadBikeRepository {
         },
       });
     
-      console.log(log.REPOSITORY.INFO.READING(`Number of dirt bikes: ${dirtBikesCount._sum.dirt}`, ""));
+      logger.info(log.REPOSITORY.READING(`Number of dirt bikes: ${dirtBikesCount._sum.dirt}`, ""));
       return dirtBikesCount._sum.dirt ?? 0;
     
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading number of dirt bikes: ${error}`, "", { error }));
-      throw error;
+      logger.error(log.REPOSITORY.READING(`Error reading number of dirt bikes: ${error}`,{ error }));
+      return 0;
     }
   }
 
@@ -37,12 +38,12 @@ class ReadBikeRepository {
         },
       });
      
-      console.log(log.REPOSITORY.INFO.READING(`Number of road bikes: ${roadBikesCount._sum.road}`, ""));
+      logger.info(log.REPOSITORY.READING(`Number of road bikes: ${roadBikesCount._sum.road}`, ""));
       return roadBikesCount._sum.road ?? 0;
     
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading number of road bikes: ${error}`, "", { error }));
-      throw error;
+      logger.error(log.REPOSITORY.READING(`Error reading number of road bikes: ${error}`,{ error }));
+      return 0;
     }
   }
 
@@ -80,10 +81,9 @@ class WriteBikeRepository {
           },
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Incremented bike count in the DB`, ""));
+      logger.info(log.REPOSITORY.WRITING(`Incremented bike count in the DB`, ""));
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING(`Error incrementing bike count in the DB`, "", error));
-      throw error;
+      logger.error(log.REPOSITORY.WRITING(`Error incrementing bike count in the DB`,error));
     }
   }
 
@@ -99,10 +99,9 @@ class WriteBikeRepository {
           },
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Decremented bike count in the DB`, ""));
+      logger.info(log.REPOSITORY.WRITING(`Decremented bike count in the DB`, ""));
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING(`Error decrementing bike count in the DB`, "", error));
-      throw error;
+      logger.error(log.REPOSITORY.WRITING(`Error decrementing bike count in the DB`,error));
     }
   }
 }

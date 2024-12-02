@@ -1,4 +1,5 @@
-import { Messages as log }  from '../config/Messages';
+import logger from '../config/logger';
+import log   from '../config/logs';
 import { OrderStatus as status } from '../config/OrderStatus';
 import { EXCHANGE } from '../config/rabbit-config';
 import IFrontendRequestDTO from "../dtos/IFrontendRequestDTO";
@@ -10,16 +11,16 @@ import { processPaymentRequest } from "./request-service";
 async function updateExchange(ORDER_BK: string, id: string ) {
     try {
         await publisher.publishEvent(EXCHANGE, ORDER_BK, id);
-        console.log(log.SERVICE.INFO.PROCESSING(`For order with id: ${id}`, "", id));
+        logger.info(log.SERVICE.PROCESSING(`For order with id: ${id}`,id));
     } catch (error) {
-        console.error(log.SERVICE.ERROR.PROCESSING(`For order with id: ${id}`, "", error));
+        logger.error(log.SERVICE.PROCESSING(`For order with id: ${id}`,error));
         throw error;
     }
 }
 
 async function cancellPayment(order: IFrontendRequestDTO & { id: string; }) {
     if (order.payment_status === status.PENDING) {
-        console.log(`[ORDER SERVICE] Cancelling payment order...`);
+        logger.info(`[ORDER SERVICE] Cancelling payment order...`);
         await orderRepository.write.updatePaymentStatus(order.id, status.CANCELLED);
         //TODO add logic to cancel payment
 
@@ -44,10 +45,10 @@ export async function processBikeResponse(response: IServiceResponseDTO) {
             updateExchange(CONSUME_SAGA_HOTEL_BK, order.id);
             throw new Error(`Bike order denied for order with id: ${order.id}`);
         }
-        console.log(log.SERVICE.INFO.PROCESSING(`Bike service approved order with id: ${order.id}`, "", order));
+        logger.info(log.SERVICE.PROCESSING(`Bike service approved order with id: ${order.id}`,order));
         processPaymentRequest(order.id);
     } catch (error) {
-        console.error(log.SERVICE.ERROR.PROCESSING(`Bike response ${response.order_id}: ${error}`));
+        logger.error(log.SERVICE.PROCESSING(`Bike response ${response.order_id}: ${error}`, {}));
         throw error;
     }
 }
@@ -68,10 +69,10 @@ export async function processHotelResponse(response: IServiceResponseDTO) {
             updateExchange(CONSUME_SAGA_BIKE_BK, order.id);
             throw new Error(`Hotel order denied for order with id: ${order.id}`);
         }
-        console.log(log.SERVICE.INFO.PROCESSING(`Hotel service approved order with id: ${order.id}`, "", order));
+        logger.info(log.SERVICE.PROCESSING(`Hotel service approved order with id: ${order.id}`,order));
         processPaymentRequest(order.id);
     } catch (error) {
-        console.error(log.SERVICE.ERROR.PROCESSING(`Hotel response ${response.order_id}: ${error}`));
+        logger.error(log.SERVICE.PROCESSING(`Hotel response ${response.order_id}: ${error}`, {}));
         throw error;
     }
 }
@@ -91,12 +92,12 @@ export async function processPaymentResponse(response: IServiceResponseDTO) {
         if (response.status !== status.APPROVED) {
             updateExchange(CONSUME_SAGA_HOTEL_BK, response.order_id);
             updateExchange(CONSUME_SAGA_BIKE_BK, response.order_id);
+            return;
         }
-
         if (await orderRepository.read.isApproved(order))
-            console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${order.id} approved`, "", order));
+            logger.info(log.SERVICE.PROCESSING(`Order with id: ${order.id} approved everything, sending response to UI`,order));
     } catch (error) {
-        console.error(log.SERVICE.ERROR.PROCESSING(`Payment response ${response.order_id}: ${error}`));
+        logger.error(log.SERVICE.PROCESSING(`Payment response ${response.order_id}: ${error}`));
         throw error;
     }
 }

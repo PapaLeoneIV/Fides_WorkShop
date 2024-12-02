@@ -18,7 +18,7 @@ class RabbitSubscriber extends RabbitmqClient {
       (msg) => {
         {
           if (!msg) {
-            return console.error(`[BIKE SERVICE] Invalid incoming message`);
+            return logger.error(`[BIKE SERVICE] Invalid incoming message`);
           }
           handlerFunc(msg?.content?.toString());
           this.channel.ack(msg);

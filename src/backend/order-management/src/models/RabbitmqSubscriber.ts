@@ -1,5 +1,6 @@
 import { RabbitClient } from "./RabbitmqClient";
-import { Messages as log } from '../config/Messages';
+import logger from '../config/logger';
+import log  from '../config/logs';
 import { HTTPErrors as HTTPerror} from "../config/HTTPErrors";
 type HandlerCB = (msg: string, instance?: RabbitClient) => any;
 
@@ -15,7 +16,7 @@ class RabbitSubscriber extends RabbitClient {
         this.channel.consume( queue,
             (msg) => {{
                     if (!msg) { 
-                        console.error(log.CLIENT.ERROR.OPERATING(`Consuming message from queue: ${queue} with routing key: ${routingKey} from exchange: ${exchange}`, "", { }).message);
+                        logger.error(log.CLIENT.OPERATING(`Consuming message from queue: ${queue} with routing key: ${routingKey} from exchange: ${exchange}`,{ }).message);
                         throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);                    }
                     handlerFunc(msg?.content?.toString());
                     this.channel.ack(msg);

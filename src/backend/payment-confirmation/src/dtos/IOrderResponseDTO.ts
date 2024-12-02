@@ -1,4 +1,4 @@
 export default interface IOrderResponseDTO {
-  id: string | null;
+  order_id: string | null;
   status: string | null;
 }

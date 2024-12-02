@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { PrismaClient } from "@prisma/client";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 
@@ -19,13 +20,13 @@ class ReadOrderRepository {
         },
       });
 
-      if (order) console.log(log.REPOSITORY.INFO.READING(`Bike order with id ${order_id} exists`, "", { order_id }));
+      if (order) logger.info(log.REPOSITORY.READING(`Bike order with id ${order_id} exists`,{ order_id }));
       else
-        console.log(log.REPOSITORY.WARNING.READING(`Bike order with id ${order_id} does not exist`, "", { order_id }));
+        logger.info(log.REPOSITORY.READING(`Bike order with id ${order_id} does not exist`,{ order_id }));
       return order ? true : false;
     } catch (error) {
-      console.log(log.REPOSITORY.WARNING.READING(`Unable to read for bike order exhistance`, "", error));
-      throw error;
+      logger.info(log.REPOSITORY.READING(`Unable to read for bike order exhistance`,error));
+      return false;
     }
   }
 
@@ -40,12 +41,12 @@ class ReadOrderRepository {
       });
 
       if (!order) throw new Error(`Hotel order with id ${order_id} not found`);
-      console.log(log.REPOSITORY.INFO.READING(`Hotel order with id ${order_id} found`, "", { order_id }));
+      logger.info(log.REPOSITORY.READING(`Hotel order with id ${order_id} found`,{ order_id }));
       return order;
     } catch (error) {
       //TODO: move all the logging format
-      console.log(log.REPOSITORY.ERROR.READING(`Unable to read hotel order info ${order_id}`, "", { order_id }));
-      throw error;
+      logger.info(log.REPOSITORY.READING(`Unable to read hotel order info ${order_id}`,{ order_id }));
+      return null;
     }
   }
 }
@@ -57,7 +58,7 @@ class WriteOrderRepository {
     this.prisma = prisma;
   }
 
-  async createOrder(bike_order: IOrderRequestDTO): Promise<IOrderRequestDTO & { id: string }> {
+  async createOrder(bike_order: IOrderRequestDTO): Promise<IOrderRequestDTO & { id: string } | null> {
     let order: IOrderRequestDTO & { id: string };
     try {
       order = await prisma.order.create({
@@ -71,15 +72,15 @@ class WriteOrderRepository {
           updated_at: bike_order.updated_at,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Bike order with id ${bike_order.order_id} created`, "", { bike_order }));
+      logger.info(log.REPOSITORY.WRITING(`Bike order with id ${bike_order.order_id} created`,{ bike_order }));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING(`Error creating bike order: ${error}`, "", { error }));
-      throw error;
+      logger.error(log.REPOSITORY.WRITING(`Error creating bike order: ${error}`,{ error }));
+      return null;
     }
   }
 
-  async updateStatus(id: string, status: string): Promise<IOrderRequestDTO & { id: string }> {
+  async updateStatus(id: string, status: string): Promise<IOrderRequestDTO & { id: string } | null> {
     let order: (IOrderRequestDTO & { id: string }) | null;
 
     try {
@@ -91,17 +92,17 @@ class WriteOrderRepository {
           renting_status: status,
         },
       });
-        console.log(log.REPOSITORY.INFO.WRITING(`Bike order ${order.order_id} status updated with status: ${status}`, "", { order }));
+        logger.info(log.REPOSITORY.WRITING(`Bike order ${order.order_id} status updated with status: ${status}`,{ order }));
       return order;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING(`Error updating bike order status: ${error}`, "", { error }));
-      throw error;
+      logger.error(log.REPOSITORY.WRITING(`Error updating bike order status: ${error}`,{ error }));
+      return null;
     }
   }
 
   // UNUSED
   // async updateOrder(bike_order: IOrderRequestDTO & { id: number }): Promise<IOrderRequestDTO & { id: number }> {
-  //     console.log("[repository]", "Updating bike ORDER with id: ", bike_order.order_id);
+  //     logger.info("[repository]", "Updating bike ORDER with id: ", bike_order.order_id);
   //     let updated_bike_order = await prisma.order.update({
   //         where: {
   //             id: bike_order.id,
@@ -119,7 +120,7 @@ class WriteOrderRepository {
   //     return { ...bike_order, id: updated_bike_order.id }
   // }
   // async deleteOrder(bike_order: IOrderRequestDTO & { id: number }): Promise<void> {
-  //     console.log("[repository]", "Deleting bike order with id: ", bike_order.order_id);
+  //     logger.info("[repository]", "Deleting bike order with id: ", bike_order.order_id);
   //     await prisma.order.delete({
   //         where: {
   //             id: bike_order.id,

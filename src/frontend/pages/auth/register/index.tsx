@@ -42,7 +42,7 @@ export default function RegisterPage() {
       return
     }
 
-    console.log('User registered:', email)
+    console.info('User registered:', email)
 
 
     // Redirect to login page after successful registration

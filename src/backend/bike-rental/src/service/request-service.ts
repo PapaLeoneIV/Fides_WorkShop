@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
 import IOrderResponseDTO from "../dtos/IOrderResponseDTO";
@@ -15,17 +16,16 @@ export async function updateExchange(
 ) {
   try {
     await publisher.publishEvent(EXCHANGE, bindKey, response);
-    console.log(log.SERVICE.INFO.PROCESSING(`Response ${response.order_id} published successfully`, "", response));
+    logger.info(log.SERVICE.PROCESSING(`Response ${response.order_id} published successfully`,response));
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed publishing response`, "", error));
-    throw error;
+    logger.error(log.SERVICE.PROCESSING(`Failed publishing response`,error));
   }
 }
 
 // Function to handle the creation of an order
 export async function processOrderRequest(request: IOrderRequestDTO) {
   let response: IOrderResponseDTO = { order_id: request.order_id, status: status.DENIED };
-  let order: IOrderRequestDTO & { id: string };
+  let order: IOrderRequestDTO & { id: string } | null;
 
   try {
     // Check if the order already exists
@@ -38,31 +38,30 @@ export async function processOrderRequest(request: IOrderRequestDTO) {
     if (!order)
       throw new Error(`Error creating order with order_id: ${request.order_id}`);
     
-    console.log(
-      log.SERVICE.INFO.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`, "", order)
+    logger.info(
+      log.SERVICE.PROCESSING(`Order with order_id: ${order.order_id} created with id ${order.id}`,order)
     );
 
     // Check if there are sufficient bikes for the order
     if (!(await bikeRepository.read.checkAvailability(order.road_bike_requested, order.dirt_bike_requested))) {
-      response.status = (await orderRepository.write.updateStatus(order.id, status.DENIED)).renting_status;
+      response.status = (await orderRepository.write.updateStatus(order.id, status.DENIED))!.renting_status;
       throw new Error(`Insufficient bikes for order with id: ${request.order_id}`);
     }
 
     // Approving the order
     await bikeRepository.write.decrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
-    response.status = (await orderRepository.write.updateStatus(order.id, status.APPROVED)).renting_status;
-    console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request.order_id} approved`, "", request));
+    response.status = (await orderRepository.write.updateStatus(order.id, status.APPROVED))!.renting_status;
+    logger.info(log.SERVICE.PROCESSING(`Order with id: ${request.order_id} approved`,request));
     await updateExchange(response);
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(
+    logger.error(
+      log.SERVICE.PROCESSING(
         `Error while processing order with order_id ${request.order_id} request: ${error}`,
         "",
         error
       )
     );
     await updateExchange(response);
-    throw error;
   }
 }
 
@@ -86,19 +85,18 @@ export async function processCancellationRequest(request: string) {
     // Cancel the order
     if (order) {
       bikeRepository.write.incrementBikeCount(order.road_bike_requested, order.dirt_bike_requested);
-      response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED)).renting_status;
-      console.log(log.SERVICE.INFO.PROCESSING(`Order with id: ${request} cancelled`, "", request));
+      response.status = (await orderRepository.write.updateStatus(order.id, status.CANCELLED))!.renting_status;
+      logger.info(log.SERVICE.PROCESSING(`Order with id: ${request} cancelled`,request));
       await updateExchange(response, SAGA_BK);
     }
   } catch (error) {
-    console.error(
-      log.SERVICE.ERROR.PROCESSING(
+    logger.error(
+      log.SERVICE.PROCESSING(
         `Error while processing cancellation request with order_id ${request}: ${error}`,
         "",
         error
       )
     );
     await updateExchange(response, SAGA_BK);
-    throw error;
   }
 }

@@ -73,13 +73,16 @@ export const fetchBookingData = async (data: any) => {
             },
             body: JSON.stringify(data),
         });
-
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
+            const result = await response.json();
+            console.info('Failure:', result);
+            result.status = response.status;
+            return result;
+        }
         const result = await response.json();
-        console.log('Success:', result);
+        console.info('Success:', result);
+        result.status = response.status;
         return result;
     } catch (error) {
         console.error('Error:', error);

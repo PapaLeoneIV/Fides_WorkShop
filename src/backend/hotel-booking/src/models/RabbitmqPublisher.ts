@@ -28,7 +28,7 @@ class RabbitmqPublisher extends RabbitmqClient {
 
     //         return this.channel.sendToQueue(queue, Buffer.from(message));
     //     } catch (error) {
-    //         console.error("[ORDER SERVICE]", error);
+    //         logger.error("[ORDER SERVICE]", error);
     //         throw error;
     //     }
 

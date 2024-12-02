@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
 import { PrismaClient } from "@prisma/client";
 import IOrderRequestDTO from "../dtos/IOrderRequestDTO";
@@ -22,10 +23,10 @@ class ReadHotelRepository {
         },
       });
       if (result.length === 0) throw new Error(HTTPerror.NOT_FOUND.message);
-      console.log(log.REPOSITORY.INFO.READING(`Date ids for range ${from} to ${to}`, "", result));
+      logger.info(log.REPOSITORY.READING(`Date ids for range ${from} to ${to}`,result));
       return result;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading date ids for range ${from} to ${to}`, "", error));
+      logger.error(log.REPOSITORY.READING(`Error reading date ids for range ${from} to ${to}`,error));
       throw error;
     }
   }
@@ -50,10 +51,10 @@ class ReadHotelRepository {
           room_number: true,
         },
       });
-      console.log(log.REPOSITORY.INFO.READING("Room availability retreived", ""));
+      logger.info(log.REPOSITORY.READING("Room availability retreived", ""));
       return result.length === dateIds.length;
     } catch (error) {
-      console.log(log.REPOSITORY.ERROR.READING("Unable to read room availability", ""));
+      logger.error(log.REPOSITORY.READING(`Error reading room availability: ${error}`, { error }));
       throw error;
     }
   }
@@ -64,11 +65,11 @@ class ReadHotelRepository {
     try {
       bookedDaysID = await this.getDateIdsForRange(new Date(order.from), new Date(order.to));
       if (!bookedDaysID) {
-        throw new Error(HTTPerror.NOT_FOUND.message);
+        throw new Error("No dates found for the given range");
       }
       return bookedDaysID.map((date: any) => date.id);
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading booked days for order with id ${order.id}`, "", error));
+      logger.error(log.REPOSITORY.READING(`Error reading booked days for order with id ${order.id}`,error));
       throw error;
     }
   }
@@ -97,11 +98,11 @@ class WriteHotelRepository {
         },
       });
 
-      if (result) console.log(log.REPOSITORY.INFO.WRITING("Room availability upadated", ""));
-      else console.log(log.REPOSITORY.WARNING.WRITING("Room avalability non updated", ""));
+      if (result) logger.info(log.REPOSITORY.WRITING("Room availability upadated", ""));
+      else logger.warning(log.REPOSITORY.WRITING("Room avalability non updated", ""));
       return result ? true : false;
     } catch (error) {
-      console.log(log.REPOSITORY.ERROR.WRITING(`Error updating room availability: ${error}`, "", { error }));
+      logger.error(log.REPOSITORY.WRITING(`Error updating room availability: ${error}`, { error }));
       throw error;
     }
   }
@@ -122,11 +123,11 @@ class WriteHotelRepository {
         },
       });
 
-      if (result) console.log(log.REPOSITORY.INFO.WRITING("Room availability restored", ""));
-      else console.log(log.REPOSITORY.WARNING.WRITING("Room avalability non restored", ""));
+      if (result) logger.info(log.REPOSITORY.WRITING("Room availability restored", ""));
+      else logger.warning(log.REPOSITORY.WRITING(`Room availability not restored`, ""));
       return result ? true : false;
     } catch (error) {
-      console.log(log.REPOSITORY.ERROR.WRITING(`Restoring room availability: ${error}`, "", { error }));
+      logger.error(log.REPOSITORY.WRITING(`Restoring room availability: ${error}`, { error }));
       throw error;
     }
   }

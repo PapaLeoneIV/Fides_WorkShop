@@ -1,4 +1,6 @@
 import { PrismaClient, Prisma, registered_users as UserEntity } from "@prisma/client";
+import logger from "../config/logger";
+import log from "../config/logs";
 
 class ReadUserRepository {
   private prisma: PrismaClient;
@@ -44,7 +46,7 @@ class ReadUserRepository {
         } as Prisma.registered_usersWhereInput, // Type cast for dynamic filtering
       });
     } catch (error) {
-      console.error(error);
+      logger.error(log.REPOSITORY.READING(`Error reading user by ${column} value ${value}: ${error}`, { column, value }));
       throw error;
     }
   }
@@ -66,7 +68,7 @@ class WriteUserRepository {
         },
       });
     } catch (error) {
-      console.error(error);
+      logger.error(log.REPOSITORY.WRITING(`Error writing user ${data.email}: ${error}`, { data }));
       throw error;
     }
   }

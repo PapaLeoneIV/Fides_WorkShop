@@ -1,5 +1,6 @@
 import { HTTPErrors as HTTPerror } from "../config/HTTPErrors";
-import { Messages as log } from "../config/Messages";
+import logger from "../config/logger";
+import log from "../config/logs";
 import { PrismaClient, order as OrderEntity } from "@prisma/client";
 import { OrderStatus as status } from "../config/OrderStatus";
 import IFrontendRequestDTO from "../dtos/IFrontendRequestDTO";
@@ -19,8 +20,8 @@ class ReadOrderRepository {
         },
       })) as (IFrontendRequestDTO & { id: string }) | null;
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.READING(`Error reading order with id ${id}`, "", error));
-      throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
+      logger.error(log.REPOSITORY.READING(`Error reading order with id ${id}`,error));
+      return null;
     }
   }
 
@@ -68,7 +69,7 @@ class WriteOrderRepository {
     this.prisma = prisma;
   }
 
-  async createOrder(request: IFrontendRequestDTO): Promise<IFrontendRequestDTO & { id: string }> {
+  async createOrder(request: IFrontendRequestDTO): Promise<IFrontendRequestDTO & { id: string } | null> {
     try {
       const order = await prisma.order.create({
         data: {
@@ -86,16 +87,16 @@ class WriteOrderRepository {
           updated_at: new Date(),
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Order with id: ${order.id} created`, "", order));
-      return order;
+      logger.info(log.REPOSITORY.WRITING(`Order with id: ${order.id} created`,order));
+      return order as IFrontendRequestDTO & { id: string };
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error creating order", "", error));
-      throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
+      logger.error(log.REPOSITORY.WRITING("Error creating order",error));
+      return null;
     }
   }
 
-  async updateBikeStatus( id: string, status: string ): Promise<IFrontendRequestDTO & { id: string }> { 
-    try{
+  async updateBikeStatus(id: string, status: string): Promise<IFrontendRequestDTO & { id: string }> {
+    try {
       const order = await prisma.order.update({
         where: {
           id: id,
@@ -104,15 +105,15 @@ class WriteOrderRepository {
           bike_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Bike status updated with status: ${status}`, "", order));
-      return order;
+      logger.info(log.REPOSITORY.WRITING(`Bike status updated with status: ${status}`,order));
+      return order as IFrontendRequestDTO & { id: string };
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating bike status", "", error));
+      logger.error(log.REPOSITORY.WRITING("Error updating bike status",error));
       throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
     }
   }
 
-  async updateHotelStatus( id: string, status: string ): Promise<IFrontendRequestDTO & { id: string }> {
+  async updateHotelStatus(id: string, status: string): Promise<(IFrontendRequestDTO & { id: string }) | null> {
     try {
       const order = await prisma.order.update({
         where: {
@@ -122,15 +123,15 @@ class WriteOrderRepository {
           hotel_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Hotel status updated with status: ${status}`, "", order));
-      return order;
+      logger.info(log.REPOSITORY.WRITING(`Hotel status updated with status: ${status}`,order));
+      return order as IFrontendRequestDTO & { id: string };
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating hotel status", "", error));
-      throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
+      logger.error(log.REPOSITORY.WRITING("Error updating hotel status",error));
+      return null;
     }
   }
-  
-  async updatePaymentStatus( id: string, status: string ): Promise<IFrontendRequestDTO & { id: string }> {
+
+  async updatePaymentStatus(id: string, status: string): Promise<(IFrontendRequestDTO & { id: string }) | null> {
     try {
       const order = await prisma.order.update({
         where: {
@@ -140,11 +141,11 @@ class WriteOrderRepository {
           payment_status: status,
         },
       });
-      console.log(log.REPOSITORY.INFO.WRITING(`Payment status updated with status: ${status}`, "", order));
-      return order;
+      logger.info(log.REPOSITORY.WRITING(`Payment status updated with status: ${status}`,order));
+      return order as IFrontendRequestDTO & { id: string };
     } catch (error) {
-      console.error(log.REPOSITORY.ERROR.WRITING("Error updating payment status", "", error));
-      throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
+      logger.error(log.REPOSITORY.WRITING("Error updating payment status",error));
+      return null;
     }
   }
 
@@ -172,14 +173,13 @@ class WriteOrderRepository {
   //       },
   //       data: data,
   //     });
-  //     console.log(log.REPOSITORY.INFO.WRITING(`Hotel status updated with status: ${status}`, "", order));
+  //     logger.info(log.REPOSITORY.WRITING(`Hotel status updated with status: ${status}`,order));
   //     return order;
   //   } catch (error) {
-  //     console.error(log.REPOSITORY.ERROR.WRITING("Error updating hotel status", "", error));
+  //     logger.error(log.REPOSITORY.WRITING("Error updating hotel status",error));
   //     throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   //   }
   // }
-
 
   // async updateOrder(update: IFrontendRequestDTO & { id: string }): Promise<IFrontendRequestDTO & { id: string }> {
   //   try {
@@ -207,10 +207,10 @@ class WriteOrderRepository {
   //         updated_at: new Date(),
   //       },
   //     });
-  //     console.log(log.REPOSITORY.INFO.WRITING(`Order with id: ${order.id} updated`, "", order));
+  //     logger.info(log.REPOSITORY.WRITING(`Order with id: ${order.id} updated`,order));
   //     return order as IFrontendRequestDTO & { id: string };
   //   } catch (error) {
-  //     console.error(log.REPOSITORY.ERROR.WRITING("Error updating order", "", error));
+  //     logger.error(log.REPOSITORY.WRITING("Error updating order",error));
   //     throw new Error(HTTPerror.INTERNAL_SERVER_ERROR.message);
   //   }
 }

@@ -54,6 +54,7 @@ export default function OrderConfirmation() {
   const simulateApiCall = async () => {
     setFetchStatus('loading')
     try {
+      console.log("bookingData:", bookingData?.order_id)  
       if(bookingData){
         let result = await fetch(`http://localhost:3003/order/confirmation?order_id=${bookingData.order_id}`, {
           method: "GET",
@@ -61,12 +62,16 @@ export default function OrderConfirmation() {
             "Content-Type": "application/json",
           },
         })
-        console.log("RESULT STATUS:", result.status);
+        console.info("RESULT:", result);
         switch (result.status) {
           case 200:
             setFetchStatus('success')
-            console.log(fetchStatus)
+            console.info(fetchStatus)
             setConfirmationMessage('Your order has been successfully processed!')
+            break
+          case 202:
+            setFetchStatus('error')
+            setConfirmationMessage('Order is still processing. Please check back later.')
             break
           case 400:
             setFetchStatus('error')
@@ -78,7 +83,7 @@ export default function OrderConfirmation() {
             break
           case 409:
             setFetchStatus('error')
-            setConfirmationMessage('Order is cancelled or still processing. Please try again.')
+            setConfirmationMessage('Order was cancelled. Please try again with another date/city.')
             break
         }
       }

@@ -1,4 +1,5 @@
-import { Messages as log } from "./config/Messages";
+import logger from './config/logger';
+import log  from "./config/logs";
 import bootService from "./boot/bootService";
 import { QueueNames as queue, EXCHANGE } from "./config/rabbit-config";
 import { subscriber } from "./models/RabbitmqSubscriber";
@@ -33,7 +34,7 @@ async function main() {
   subscriber.consume(queue.SAGA_BIKE_RESP, EXCHANGE, PUBLISH_BIKE_SAGA_BK, (msg) => validateAndHandleBikeResponse(msg));
 
   app.listen(3000, () => {
-    console.log(log.SERVICE.INFO.PROCESSING(`Server is running on port 3000`));
+    logger.info(log.SERVICE.PROCESSING(`Server is running on port 3000`, {}));
   });
 }
 

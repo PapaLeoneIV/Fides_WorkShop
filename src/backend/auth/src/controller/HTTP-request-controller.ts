@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { Request, Response } from "express";
 import { RequestStatus as status } from "../config/RequestStatus";
 import IRegistrationRequestDTO from "../dtos/IRegistrationRequestDTO";
@@ -24,22 +25,17 @@ export async function HTTPvalidateRegistrationRequest(req: Request, res: Respons
 
   try {
     request = FrontendRegistrationSchema.parse(req.body);
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Registration request validated successfully`, { }, request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    res.status(500).json(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating registration request: ${error}`, { error }, req));
+    return res.status(500).json(response);
   }
 
   try {
     HTTPprocessRegistrationRequest(request, res);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed ${error}`, "", error));
+    logger.warning(log.CONTROLLER.PROCESSING(`Registration request failed: ${error}`, { error }, request));
     // res.status(500).json(response);
-    throw error;
   }
 }
 
@@ -53,19 +49,17 @@ export async function HTTPvalidateLoginRequest(req: Request, res: Response) {
   try {
     
     request = FrontendLoginSchema.parse(req.body.msg); //TODO: check how to make it standardize with the other controller where the request is parsed from req.body
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`Login request validated successfully`, { }, request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    res.status(500).json(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating login request: ${error}`, { error }, req));
+    return res.status(500).json(response);
   }
 
   try {
     HTTPprocessLoginRequest(request, res);
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed ${error}`, "", error));
+    logger.warning(log.CONTROLLER.PROCESSING(`Login request failed: ${error}`, { error }, request));
     // res.status(500).json(response);
-    throw error;
   }
 }
 
@@ -78,47 +72,37 @@ export async function HTTPvalidateAndHandleJwtRefreshRequest(req: Request, res: 
 
   try {
     request = FrontendLoginSchema.parse(req.body.msg); //TODO: check how to make it standardize with the other controller where the request is parsed from req.body
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`JWT Refresh request validated successfully`, { }, request));
   } catch (error) {
-    console.error(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    res.status(500).json(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating JWT refresh request: ${error}`, { error }, req));
+    return res.status(500).json(response);
   }
 
   try {
     HTTPprocessJwtRefreshRequest(request, res);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed ${error}`, "", error));
+    logger.warning(log.CONTROLLER.PROCESSING(`JWT Refresh request failed: ${error}`, { error }, request));
     // res.status(500).json(response);
-    throw error;
   }
 }
 
 export async function HTTPvalidateAndHandleUserInformation(req: Request, res: Response) {
-  // let info: { email: string; token: string } = { email: "", token: "" };
+  // let info: { email: string; token: string } = { email:token: "" };
   let response: IAuthResponseDTO = { status: status.ERROR, message: "Invalid data format", token: null };
   let request: IOrderInfoDTO;
 
   try {
     request = FrontendLoginReqchema.parse(req.body);
-    console.log(log.CONTROLLER.INFO.VALIDATING(`Authorization request validated successfully`, "", request));
+    logger.info(log.CONTROLLER.VALIDATING(`User info validation request validated successfully`, { }, request));
   } catch (error) {
-    console.log(log.CONTROLLER.WARNING.VALIDATING(`Error validating authorization request`, "", error));
-    res.status(500).json(response);
-    throw error;
+    logger.error(log.CONTROLLER.VALIDATING(`Error validating user info validation request: ${error}`, { error }, req));
+    return res.status(500).json(response);
   }
 
   try {
-    HTTPprocessUserInformationRequest(request, res);
-    console.log(
-      log.CONTROLLER.INFO.PROCESSING(`Authorization request for ${request.email} processed successfully`, "", request)
-    );
+    HTTPprocessUserInformationRequest(request, res)
   } catch (error) {
-    console.error(log.CONTROLLER.ERROR.PROCESSING(`Order request failed ${error}`, "", error));
+    logger.warning(log.CONTROLLER.PROCESSING(`User info validation request failed: ${error}`, { error }, request));
     // res.status(500).json(response);
-    throw error;
   }
 }

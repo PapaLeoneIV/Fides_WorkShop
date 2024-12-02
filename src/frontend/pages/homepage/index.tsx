@@ -15,6 +15,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+const makeRefreshRequest = async (msg : any) => {
+  const response = await fetch('http://localhost:3004/auth/refreshJWT', {
+    method: 'POST',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      msg
+    })
+  })
+  return await response.json();
+}
+
 export default function Home() {
   const [value, setValue] = useState<{
     start: CalendarDate;
@@ -61,7 +76,7 @@ export default function Home() {
     try {
       setIsLoading(false)
       const result = await fetchBookingData(data)
-      console.log(result)
+      console.log("result: " , result)
       switch (result.status) {
         case 200: {
           let order_id = result.order_id;
@@ -78,15 +93,15 @@ export default function Home() {
           break;
         }
         case 400: {
-          console.error("Bad request")
+          console.log("Bad request")
           break;
         }
         case 401: {
-          console.error("Need to refresh JWT")
+          console.log("Need to refresh JWT")
           break;
         }
         default: {
-          console.error("Order failed")
+          console.log("Order failed")
         }
       }
     } catch (error) {

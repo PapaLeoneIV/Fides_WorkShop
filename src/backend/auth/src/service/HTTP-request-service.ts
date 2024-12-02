@@ -1,4 +1,5 @@
-import { Messages as log } from "../config/Messages";
+import logger from '../config/logger';
+import log  from "../config/logs";
 import { RequestStatus as status } from "../config/RequestStatus";
 import { User } from "../models/User";
 import { userRepository } from "../repository/user-repository";
@@ -23,15 +24,11 @@ export async function HTTPprocessRegistrationRequest(request: IRegistrationReque
 
     if (!user) throw new Error("Failed to register user");
 
-    console.log(log.SERVICE.INFO.PROCESSING(`User registered successfully`, "", request));
-    
+    logger.info(log.SERVICE.PROCESSING(`User registered successfully`, { }, request));
     res.status(200).json(response);
 
   } catch (error) {
-
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to register user: ${error}`, "", request));
-    
-    //TODO check for all other response to frontend that response.message = error.message;
+    logger.error(log.SERVICE.PROCESSING(`Failed to register user: ${error}`, { error }, request));
     response.status = status.ERROR;
     response.message = error.message;
     
@@ -51,22 +48,24 @@ export async function HTTPprocessLoginRequest(request: ILoginRequestDTO, res: Re
 
     if (!(await user.validatePassword(request.password))) throw new Error("Wrong password");
 
-    console.log(log.SERVICE.INFO.PROCESSING(`User logged in successfully`, "", request));
-    
+    logger.info(log.SERVICE.PROCESSING(`User logged in successfully`, { }, request));
     if (!request.jwtToken) {
-    
-      console.log(log.SERVICE.INFO.PROCESSING(`JWT Token not found, generating new token`, "", request));
-    
+      logger.info(log.SERVICE.PROCESSING(`JWT Token not found, generating new token`, { }, request));
       response.token = user.generateAccessToken();
     
       res.status(200).json(response);
       return;
     }
 
-  } catch (error) {
+    logger.info(log.SERVICE.PROCESSING(`JWT Token found, validating token`, { }, request));
+    //TODO: investigate why this part of the code is commented
+    // if (!User.authenticateToken(request.jwtToken)) throw new Error("JWT Token is invalid");
 
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to login user: ${error}`, "", request));
-    
+    // response.token = user.generateAccessToken();
+    // // modified from the original code (500 status code)
+    // res.status(200).json(response);
+  } catch (error) {
+    logger.error(log.SERVICE.PROCESSING(`Failed to login user: ${error}`, { error }, request));
     response.status = status.ERROR;
     response.message = error.message;
     
@@ -89,8 +88,7 @@ export async function HTTPprocessJwtRefreshRequest(req: ILoginRequestDTO, res: R
     let isJWTValid = User.authenticateToken(req.jwtToken as string);
 
     if (!isJWTValid || req.email !== isJWTValid.email) {
-      
-      console.log(log.SERVICE.INFO.PROCESSING(`JWT Token is invalid, generating new token`, "", req));
+      logger.info(log.SERVICE.PROCESSING(`JWT Token is invalid, generating new token`, { }, req));
       //TODO: create a new static method to generate a new token from an email(?)
       user = new User(await userRepository.read.getRow_byColumn("email", req.email));
       
@@ -101,9 +99,7 @@ export async function HTTPprocessJwtRefreshRequest(req: ILoginRequestDTO, res: R
       res.status(200).json(response);
     }
   } catch (error) {
-
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to refresh token: ${error}`, "", req));
-    
+    logger.error(log.SERVICE.PROCESSING(`Failed to refresh token: ${error}`, { error }, req));
     response.status = status.ERROR;
     response.message = error.message;
     
@@ -126,9 +122,10 @@ export async function HTTPprocessUserInformationRequest(req: IOrderInfoDTO, res:
     user = new User(await userRepository.read.getRow_byColumn("email", req.email));
     if (!user) throw new Error("User does not exist");
 
+    logger.info(log.SERVICE.PROCESSING(`User information retrieved successfully for ${user.id}`, { user }, req));
     res.status(200).json(user); //?? response ??
   } catch (error) {
-    console.error(log.SERVICE.ERROR.PROCESSING(`Failed to retrieve user information: ${error}`, "", req));
+    logger.error(log.SERVICE.PROCESSING(`Failed to validate user information: ${error}`, { error }, req));
     response.status = status.ERROR;
     response.message = error.message;
     res.status(500).json(response);
