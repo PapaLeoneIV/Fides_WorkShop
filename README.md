@@ -20,8 +20,8 @@ We organize the work in order to acomplish the projects main goals:
 
 ## Build prerequisites
 To build the project you need to have the following tools installed on your machine:
-- python3
-- docker
+- `python3`
+- `docker`
 
 ## Architecture
 The project is divided in two main parts:
@@ -40,18 +40,20 @@ And others helper services:
 - The ELK stack which is responsible for the monitoring of the services
 
 ### Macro View of MicroService Architecture
-![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
+![docs/images/GeneralMicroArchitecture](./docs/images/GeneralMicroArchitecture.png)
 
-
-The services are connected to each other using a RabbitMQ message broker and also API calls.
-This is an example of the flow of an order request:
-<!-- dsisplat a jpg from a local url -->
-![docs/images/orderRequestFlow](./docs/images/orderRequestFlow.png)
-
-
+### Macro View of MicroService Communication Architecture
+![docs/images/CommunicationArchitecture](./docs/images/CommunicationArchitecture.png)
 
 ### Frontend
 The frontend is a simple web application that allows the user to interact with the backend services.
+
+## URLs
+- **http::/localhost:6969/auth/register** (Used to register a User)
+- **http::/localhost:6969/auth/login** (Used to Login a User)
+- **http::/localhost:6969/homepage** (Page to insert the order)
+- **http::/localhost:6969/summary** (Page where the Order Result is shown)
+
 
 ## How to run the project
 The project is still in development, so the only way to run it is to run it in development mode.
