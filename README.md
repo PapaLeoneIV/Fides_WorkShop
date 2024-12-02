@@ -1,7 +1,9 @@
-# Fides WorkShop Project
+# MicroservicesArchApp
+
 This is the repository for the Fides Workshop project.
 
 ## Goals
+
 We organize the work in order to acomplish the projects main goals:
 
 - [X] Create a backend using a microservice architecture with Node and ExpressJS
