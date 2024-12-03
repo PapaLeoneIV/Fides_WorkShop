@@ -8,8 +8,9 @@ We organize the work in order to acomplish the projects main goals:
 
 - [X] Create a backend using a microservice architecture with Node and ExpressJS
 - [X] Frontend developed with NextJS as a simple interface for the backend
-- [X] Organized work and directory around Layered Architecture
-- [X] Use of various Design Patterns (Repository Patterns, State Pattern, Saga Pattern, ...) 
+- [X] Organized work and directories around Layered Architecture
+- [X] Use of various Design Patterns (Repository Patterns, State Pattern, Saga Pattern, ...)
+- [X] Used Prisma (ORM) to handle database queries   
 - [X] Async communication between microservices through RabbitMQ
 - [X] Sync communication between Client-Server with HTTP Req/Res
 - [X] Auth/Registration with JWT Token
